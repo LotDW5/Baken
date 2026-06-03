@@ -116,15 +116,7 @@ export default function MoodCheckInScreen() {
 					</View>
 				</ScrollView>
 
-				{/* Mood Card (fixed 40px above bottom) */}
-				<View style={[styles.moodCardAbsolute, { backgroundColor: selectedMood.bgColor }]}>
-					<Image
-						source={MOOD_ICON_SOURCES[selectedMood.id]}
-						style={{ width: 60, height: 60, tintColor: selectedMood.color }}
-						resizeMode="contain"
-					/>
-					<Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
-				</View>
+				{/* (Removed duplicate fixed mood card to match design) */}
 
 				{/* Footer Buttons */}
 				<View style={styles.footer}>
@@ -199,7 +191,7 @@ const styles = StyleSheet.create({
 		scrollContent: {
 			flexGrow: 1,
 			paddingHorizontal: THEME.spacing.m,
-			paddingTop: 90,
+			paddingTop: 140,
 			paddingBottom: 220,
 		},
 	moodCard: {
@@ -207,25 +199,12 @@ const styles = StyleSheet.create({
 			paddingVertical: 16,
 			paddingHorizontal: THEME.spacing.m,
 			alignItems: 'center',
+			alignSelf: 'center',
 			marginBottom: 24,
 			width: '100%',
 			maxWidth: 361,
 	},
-	moodCardAbsolute: {
-			position: 'absolute',
-			left: THEME.spacing.m,
-			right: THEME.spacing.m,
-			bottom: 40,
-			borderRadius: 24,
-			paddingVertical: 16,
-			paddingHorizontal: THEME.spacing.m,
-			alignItems: 'center',
-		shadowColor: '#000',
-		shadowOpacity: 0.18,
-		shadowRadius: 12,
-		shadowOffset: { width: 0, height: 4 },
-		elevation: 7,
-	},
+	/* moodCardAbsolute removed */
 	moodCardTitle: {
 		fontSize: 18,
 		fontWeight: '600',
