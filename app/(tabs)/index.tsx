@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
 
@@ -149,12 +150,18 @@ export default function HomeScreen() {
             {Object.keys(weekChecks).length === 0 ? (
               <View style={{height: 32}} />
             ) : (
-              Object.keys(weekChecks).map((d, i) => {
+                Object.keys(weekChecks).map((d, i) => {
                 const checked = weekChecks[d];
                 const short = ['Ma','Di','Wo','Do','Vr','Za','Zo'][i];
                 return (
                   <View key={d} style={styles.weekDayItem}>
-                    <View style={[styles.weekDot, checked ? { backgroundColor: theme.color, borderColor: theme.color } : null]} />
+                    <View style={[styles.weekDot, checked ? { borderColor: theme.color } : null]}>
+                      {checked && (
+                        <View style={[styles.weekDotInner, { backgroundColor: theme.color }]}>
+                          <Ionicons name="checkmark" size={12} color="#fff" />
+                        </View>
+                      )}
+                    </View>
                     <Text style={styles.weekDayLabel}>{short}</Text>
                   </View>
                 );
@@ -293,10 +300,12 @@ const styles = StyleSheet.create({
     top: THEME.spacing.l + 40 + 48,
     left: THEME.spacing.l,
     right: THEME.spacing.l,
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     zIndex: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.04)',
   },
   weekHeader: {
     flexDirection: 'row',
@@ -305,18 +314,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   weekTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.mutedForeground,
-  },
-  weekCount: {
-    fontSize: 12,
-    color: COLORS.mutedForeground,
-  },
-  weekDots: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    backgroundColor: 'transparent',
+    marginBottom: 6,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  weekDotInner: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
     paddingHorizontal: 6,
   },
   weekDayItem: {
