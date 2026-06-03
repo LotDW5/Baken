@@ -9,7 +9,7 @@ import Instellingen from './app/(tabs)/instellingen';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
 import MoodCheckInScreen from './app/stemming/[mood].tsx';
-import BottomTabBar from './components/ui/bottom-tab-bar';
+import BottomTabBar from './components/ui/bottom-tab-bar.tsx';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
