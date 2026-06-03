@@ -1,4 +1,5 @@
 import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import THEME from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -139,10 +140,10 @@ const styles = StyleSheet.create({
 		position: 'relative',
 	},
 	topBar: {
-		position: 'absolute',
-		top: 56,
-		left: 24,
-		right: 24,
+			position: 'absolute',
+			top: THEME.spacing.m,
+			left: THEME.spacing.m,
+			right: THEME.spacing.m,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
@@ -166,9 +167,9 @@ const styles = StyleSheet.create({
 	},
 		header: {
 			position: 'absolute',
-			top: 104,
-			left: 24,
-			right: 24,
+			top: THEME.spacing.m + 48,
+			left: THEME.spacing.m,
+			right: THEME.spacing.m,
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
