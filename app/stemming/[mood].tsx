@@ -99,10 +99,10 @@ export default function MoodCheckInScreen() {
                     </View>
                 </ScrollView>
 
-                <View style={[styles.moodCardAbsolute, { backgroundColor: selectedMood.bgColor }]}>
+                <View style={[styles.moodCardAbsolute, { backgroundColor: selectedMood.bgColor }]}> 
                     <Image
                         source={MOOD_ICON_SOURCES[selectedMood.id]}
-                        style={{ width: 60, height: 60, tintColor: selectedMood.color }}
+                        style={{ width: 72, height: 72, tintColor: selectedMood.color }}
                         resizeMode="contain"
                     />
                     <Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 24,
         right: 24,
-        bottom: 40,
+        top: 120,
         borderRadius: 24,
         paddingVertical: 28,
         paddingHorizontal: 24,
