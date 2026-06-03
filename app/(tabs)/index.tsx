@@ -28,6 +28,8 @@ export default function HomeScreen() {
   const [theme, setTheme] = useState(getTheme());
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const [bgLoaded, setBgLoaded] = useState(false);
+  const [weekChecks, setWeekChecks] = useState<Record<string, boolean>>({});
+  const [weekCount, setWeekCount] = useState(0);
 
   const loadPreferences = async () => {
     try {
@@ -44,6 +46,45 @@ export default function HomeScreen() {
   useEffect(() => {
     // load preferences on mount
     loadPreferences();
+
+    // load mood check-ins for week tracker
+    const loadWeekChecks = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('moodCheckIns') || '[]';
+        const moods = JSON.parse(raw);
+
+        // build this week's dates (Mon-Sun)
+        const today = new Date();
+        const day = today.getDay(); // 0 (Sun) - 6 (Sat)
+        const mondayOffset = (day === 0) ? -6 : (1 - day);
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + mondayOffset);
+
+        const week: string[] = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          week.push(d.toDateString());
+        }
+
+        const checks: Record<string, boolean> = {};
+        week.forEach(d => (checks[d] = false));
+
+        moods.forEach((m: any) => {
+          try {
+            const ts = new Date(m.timestamp).toDateString();
+            if (checks[ts] === false) checks[ts] = true;
+          } catch (e) { /* ignore malformed */ }
+        });
+
+        const count = Object.values(checks).filter(Boolean).length;
+        setWeekChecks(checks);
+        setWeekCount(count);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadWeekChecks();
 
     // listen for focus events from navigation
     const unsubscribe = (navigation as any)?.addListener?.('focus', loadPreferences);
@@ -96,6 +137,30 @@ export default function HomeScreen() {
               <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
             </View>
           </TouchableOpacity>
+        </View>
+
+        {/* Week tracker (positioned above card) */}
+        <View style={[styles.weekTrackerWrapper, { backgroundColor: COLORS.white, ...applyShadow({ opacity: 0.06, radius: 8, offsetX:0, offsetY:4, elevation:4 }) }]}> 
+          <View style={styles.weekHeader}>
+            <Text style={styles.weekTitle}>Deze week</Text>
+            <Text style={styles.weekCount}>{weekCount}/7 dagen</Text>
+          </View>
+          <View style={styles.weekDots}>
+            {Object.keys(weekChecks).length === 0 ? (
+              <View style={{height: 32}} />
+            ) : (
+              Object.keys(weekChecks).map((d, i) => {
+                const checked = weekChecks[d];
+                const short = ['Ma','Di','Wo','Do','Vr','Za','Zo'][i];
+                return (
+                  <View key={d} style={styles.weekDayItem}>
+                    <View style={[styles.weekDot, checked ? { backgroundColor: theme.color, borderColor: theme.color } : null]} />
+                    <Text style={styles.weekDayLabel}>{short}</Text>
+                  </View>
+                );
+              })
+            )}
+          </View>
         </View>
 
         {/* Main card */}
@@ -220,6 +285,56 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: THEME.typography.label.lineHeight,
     marginTop: 8,
+  },
+  weekTrackerWrapper: {
+    marginBottom: 12,
+    alignSelf: 'stretch',
+    position: 'absolute',
+    top: THEME.spacing.l + 40 + 48,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    zIndex: 15,
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  weekTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.mutedForeground,
+  },
+  weekCount: {
+    fontSize: 12,
+    color: COLORS.mutedForeground,
+  },
+  weekDots: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  weekDayItem: {
+    alignItems: 'center',
+    width: THEME.sizes.moodButtonWidth,
+  },
+  weekDot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.card,
+    marginBottom: 6,
+  },
+  weekDayLabel: {
+    fontSize: 12,
+    color: COLORS.mutedForeground,
   },
   iconImage: {
     width: THEME.sizes.iconSmall,
