@@ -83,7 +83,7 @@ export default function MoodCheckInScreen() {
 				{/* Header */}
 				<View style={styles.header}>
 					<TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-						<Ionicons name="arrow-back" size={24} color={COLORS.foreground} />
+						<Image source={require('../../../assets/icons/Terug.png')} style={{ width: 24, height: 24, tintColor: COLORS.foreground }} />
 					</TouchableOpacity>
 					<Text style={styles.headerTitle}>Hoe voel je je?</Text>
 					<View style={{ width: 24 }} />
