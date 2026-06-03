@@ -5,17 +5,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+	Alert,
+	Image,
+	KeyboardAvoidingView,
+	Platform,
+	SafeAreaView,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -67,27 +67,28 @@ export default function MoodCheckInScreen() {
 				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 				keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 0}
 			>
-				{/* Top Bar with Icons */}
-				<View style={styles.topBar}>
+				{/* Fixed header container with icons + title to guarantee spacing */}
+				<View style={styles.headerContainer}>
+					<View style={styles.topBar}>
 						<TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
 							<View style={styles.iconCircle}>
 								<Ionicons name="person" size={20} color={theme.color} />
 							</View>
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
-						<View style={styles.iconCircle}>
-							<Ionicons name="settings" size={20} color={theme.color} />
-						</View>
-					</TouchableOpacity>
-				</View>
+							<View style={styles.iconCircle}>
+								<Ionicons name="settings" size={20} color={theme.color} />
+							</View>
+						</TouchableOpacity>
+					</View>
 
-				{/* Header */}
-				<View style={styles.header}>
-					<TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-						<Image source={require('../../../assets/icons/Terug.png')} style={{ width: 24, height: 24, tintColor: COLORS.foreground }} />
-					</TouchableOpacity>
-					<Text style={styles.headerTitle}>Hoe voel je je?</Text>
-					<View style={{ width: 24 }} />
+					<View style={styles.header}>
+						<TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
+							<Image source={require('../../../assets/icons/Terug.png')} style={{ width: 24, height: 24, tintColor: COLORS.foreground }} />
+						</TouchableOpacity>
+						<Text style={styles.headerTitle}>Hoe voel je je?</Text>
+						<View style={{ width: 24 }} />
+					</View>
 				</View>
 
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -142,14 +143,10 @@ const styles = StyleSheet.create({
 		position: 'relative',
 	},
 	topBar: {
-			position: 'absolute',
-			top: THEME.spacing.m,
-			left: THEME.spacing.m,
-			right: THEME.spacing.m,
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		zIndex: 10,
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			zIndex: 10,
 	},
 	iconButton: {
 		padding: 4,
@@ -168,14 +165,11 @@ const styles = StyleSheet.create({
 		elevation: 7,
 	},
 		header: {
-			position: 'absolute',
-			top: 90,
-			left: THEME.spacing.m,
-			right: THEME.spacing.m,
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			paddingVertical: 12,
+			marginTop: THEME.spacing.m,
 			zIndex: 9,
 		},
 	backButton: {
@@ -191,7 +185,7 @@ const styles = StyleSheet.create({
 		scrollContent: {
 			flexGrow: 1,
 			paddingHorizontal: THEME.spacing.m,
-			paddingTop: 140,
+			paddingTop: 176,
 			paddingBottom: 220,
 		},
 	moodCard: {
@@ -202,8 +196,19 @@ const styles = StyleSheet.create({
 			alignSelf: 'center',
 			marginBottom: 24,
 			width: '100%',
-			maxWidth: 361,
+			maxWidth: 393,
 	},
+
+	headerContainer: {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			right: 0,
+			height: 160,
+			paddingHorizontal: THEME.spacing.m,
+			paddingTop: THEME.spacing.s,
+			zIndex: 11,
+		},
 	/* moodCardAbsolute removed */
 	moodCardTitle: {
 		fontSize: 18,
