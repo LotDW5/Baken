@@ -91,6 +91,16 @@ export default function MoodCheckInScreen() {
 				</View>
 
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+					{/* Mood Card placed under top icons */}
+					<View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}> 
+						<Image
+							source={MOOD_ICON_SOURCES[selectedMood.id]}
+							style={{ width: 60, height: 60, tintColor: selectedMood.color }}
+							resizeMode="contain"
+						/>
+						<Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
+					</View>
+
 					{/* Optional Note Section */}
 					<View style={styles.noteSection}>
 						<Text style={styles.noteLabel}>Wil je er iets over vertellen? (optioneel)</Text>
@@ -167,7 +177,7 @@ const styles = StyleSheet.create({
 	},
 		header: {
 			position: 'absolute',
-			top: THEME.spacing.m + 48,
+			top: 90,
 			left: THEME.spacing.m,
 			right: THEME.spacing.m,
 			flexDirection: 'row',
@@ -186,28 +196,30 @@ const styles = StyleSheet.create({
 		flex: 1,
 		textAlign: 'center',
 	},
-	scrollContent: {
-		flexGrow: 1,
-		paddingHorizontal: 24,
-		paddingTop: 12,
-		paddingBottom: 220,
-	},
+		scrollContent: {
+			flexGrow: 1,
+			paddingHorizontal: THEME.spacing.m,
+			paddingTop: 90,
+			paddingBottom: 220,
+		},
 	moodCard: {
-		borderRadius: 24,
-		paddingVertical: 28,
-		paddingHorizontal: 24,
-		alignItems: 'center',
-		marginBottom: 40,
+			borderRadius: 24,
+			paddingVertical: 16,
+			paddingHorizontal: THEME.spacing.m,
+			alignItems: 'center',
+			marginBottom: 24,
+			width: '100%',
+			maxWidth: 361,
 	},
 	moodCardAbsolute: {
-		position: 'absolute',
-		left: 24,
-		right: 24,
-		bottom: 40,
-		borderRadius: 24,
-		paddingVertical: 28,
-		paddingHorizontal: 24,
-		alignItems: 'center',
+			position: 'absolute',
+			left: THEME.spacing.m,
+			right: THEME.spacing.m,
+			bottom: 40,
+			borderRadius: 24,
+			paddingVertical: 16,
+			paddingHorizontal: THEME.spacing.m,
+			alignItems: 'center',
 		shadowColor: '#000',
 		shadowOpacity: 0.18,
 		shadowRadius: 12,
@@ -230,30 +242,31 @@ const styles = StyleSheet.create({
 		marginBottom: 12,
 	},
 	noteInput: {
-		backgroundColor: COLORS.white,
-		borderRadius: 16,
-		borderWidth: 1,
-		borderColor: COLORS.border,
-		padding: 12,
-		minHeight: 100,
-		fontSize: 14,
-		color: COLORS.foreground,
-		textAlignVertical: 'top',
+			backgroundColor: COLORS.white,
+			borderRadius: 16,
+			borderWidth: 1,
+			borderColor: COLORS.border,
+			padding: THEME.spacing.m,
+			minHeight: 100,
+			fontSize: 14,
+			color: COLORS.foreground,
+			textAlignVertical: 'top',
 	},
 	footer: {
-		paddingHorizontal: 24,
-		paddingBottom: 24,
-		paddingTop: 12,
+			paddingHorizontal: THEME.spacing.m,
+			paddingBottom: 24,
+			paddingTop: 12,
 	},
 	button: {
-		borderRadius: 16,
-		paddingVertical: 14,
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOpacity: 0.1,
-		shadowRadius: 8,
-		elevation: 3,
+			borderRadius: 16,
+			paddingVertical: 14,
+			alignItems: 'center',
+			justifyContent: 'center',
+			shadowColor: '#000',
+			shadowOpacity: 0.1,
+			shadowRadius: 8,
+			elevation: 3,
+			width: '100%',
 	},
 	buttonText: {
 		fontSize: 16,
