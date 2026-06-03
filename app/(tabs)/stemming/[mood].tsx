@@ -24,10 +24,12 @@ const MOOD_ICON_SOURCES: Record<string, any> = {
   crisis: require('../../../assets/icons/Crisis.png'),
 };
 
-// Layout constants to keep Figma spacing consistent across devices
-const HEADER_HEIGHT = 160; // total reserved header area (icons + title)
-const CARD_MAX_WIDTH = 393; // Figma card width
-const FOOTER_BOTTOM = 80; // space reserved above bottom nav for CTA
+// Layout constants
+const HEADER_HEIGHT = 120;
+const CARD_MAX_WIDTH = 393;
+const FOOTER_BOTTOM = 80;
+
+// previous constants removed to avoid redeclaration
 
 export default function MoodCheckInScreen() {
   const navigation = useNavigation();
@@ -68,8 +70,22 @@ export default function MoodCheckInScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 0}
       >
-        {/* Header */}
-        <View style={styles.header}>
+      {/* Fixed header container */}
+      <View style={styles.headerContainer} pointerEvents="box-none">
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../assets/icons/Profiel.png')} style={{ width: 32, height: 32 }} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../assets/icons/Instellingen.png')} style={{ width: 28, height: 28 }} />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.headerInner}>
           <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
             <Image
               source={require('../../../assets/icons/Terug.png')}
@@ -81,8 +97,9 @@ export default function MoodCheckInScreen() {
 
           <View style={{ width: 24 }} />
         </View>
+      </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
           {/* Mood card */}
           <View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}>
@@ -146,6 +163,22 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 4,
   },
+  iconButton: {
+    padding: 4,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 7,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
@@ -158,8 +191,8 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: THEME.spacing.m,
-    paddingTop: 24,
-    paddingBottom: 24,
+    paddingTop: HEADER_HEIGHT + THEME.spacing.s,
+    paddingBottom: FOOTER_BOTTOM,
   },
 
   moodCard: {
@@ -170,7 +203,31 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 24,
     width: '100%',
-    maxWidth: 393,
+    maxWidth: CARD_MAX_WIDTH,
+  },
+
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: HEADER_HEIGHT,
+    paddingHorizontal: THEME.spacing.m,
+    paddingTop: THEME.spacing.s,
+    zIndex: 20,
+  },
+
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  headerInner: {
+    marginTop: THEME.spacing.m,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   moodCardTitle: {
     fontSize: 18,
