@@ -146,15 +146,16 @@ export default function HomeScreen() {
             <Text style={styles.weekTitle}>Deze week</Text>
             <Text style={styles.weekCount}>{weekCount}/7 dagen</Text>
           </View>
-          <View style={styles.weekDots}>
+          <View style={[styles.weekDots, { width: 345 }]}> 
             {Object.keys(weekChecks).length === 0 ? (
               <View style={{height: 32}} />
             ) : (
-                Object.keys(weekChecks).map((d, i) => {
-                const checked = weekChecks[d];
-                const short = ['Ma','Di','Wo','Do','Vr','Za','Zo'][i];
+              // ensure we always render 7 days left-to-right
+              ['Ma','Di','Wo','Do','Vr','Za','Zo'].map((short, i) => {
+                const d = Object.keys(weekChecks)[i];
+                const checked = !!weekChecks[d];
                 return (
-                  <View key={d} style={styles.weekDayItem}>
+                  <View key={short} style={styles.weekDayItem}>
                     <View style={[styles.weekDot, checked ? { borderColor: theme.color } : null]}>
                       {checked && (
                         <View style={[styles.weekDotInner, { backgroundColor: theme.color }]}>
