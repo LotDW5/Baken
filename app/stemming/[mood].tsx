@@ -72,6 +72,11 @@ export default function MoodCheckInScreen() {
                     <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
                         <View style={styles.iconCircle}>
                             <Ionicons name="settings" size={20} color={theme.color} />
+                        footer: {
+                            paddingHorizontal: 24,
+                            paddingBottom: 24,
+                            paddingTop: 12,
+                        },
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -110,10 +115,10 @@ export default function MoodCheckInScreen() {
 
                 <View style={styles.footer}>
                     <TouchableOpacity
-                        style={[styles.button, { backgroundColor: theme.color }]}
+                        style={[styles.button, { backgroundColor: '#00C853' }]}
                         onPress={handleSave}
                     >
-                        <Text style={styles.buttonText}>Opslaan</Text>
+                        <Text style={styles.buttonText}>TEST OPSLAAN</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
