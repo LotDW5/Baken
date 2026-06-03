@@ -48,3 +48,16 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Figma workflow for this app
+
+This project is an Expo Router app that uses React Native with TypeScript, so Figma screens should be translated into `.tsx` screens and components.
+
+Recommended workflow:
+
+1. Export or inspect the Figma frame you want to build.
+2. Translate the frame into React Native components in the matching route under `app/`.
+3. Reuse the existing design tokens from `constants/colors.ts` and `constants/theme.ts`.
+4. Keep the implementation responsive for mobile first.
+
+If a language selector asks for a target, prefer `React Native` or `TypeScript/TSX` when available. If only `React (JSX)` is available, use that as the fallback and then convert the output to `.tsx` in this codebase.

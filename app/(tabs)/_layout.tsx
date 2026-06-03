@@ -1,35 +1,29 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { getTheme } from '@/constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// expo-router removed — use App.tsx with react-navigation instead
+import { useEffect, useState } from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const TAB_ICON_SIZE = 24;
+const TAB_ICON_SOURCES: Record<string, any> = {
+  contacten: require('../../assets/icons/Contacten.png'),
+  index: require('../../assets/icons/Check-in.png'),
+  agenda: require('../../assets/icons/Agenda.png'),
+  statistieken: require('../../assets/icons/Statistieken.png'),
+};
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function Layout() {
+  const [theme, setTheme] = useState(getTheme());
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('appTheme');
+      if (savedTheme) {
+        setTheme(getTheme(savedTheme));
+      }
+    };
+    loadTheme();
+  }, []);
+
+  // App now uses App.tsx for navigation. Keep a harmless fallback to avoid build errors.
+  return null;
 }
