@@ -315,9 +315,28 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   weekTitle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.foreground,
+  },
+  weekCount: {
+    fontSize: 12,
+    color: COLORS.mutedForeground,
+  },
+  weekDots: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  weekDayItem: {
+    alignItems: 'center',
+    width: THEME.sizes.moodButtonWidth,
+  },
+  weekDot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     borderWidth: 1.5,
     borderColor: COLORS.border,
     backgroundColor: 'transparent',
@@ -331,21 +350,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-    paddingHorizontal: 6,
-  },
-  weekDayItem: {
-    alignItems: 'center',
-    width: THEME.sizes.moodButtonWidth,
-  },
-  weekDot: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    marginBottom: 6,
   },
   weekDayLabel: {
     fontSize: 12,
