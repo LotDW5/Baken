@@ -23,8 +23,8 @@ export const THEME = {
     cardHeight: 139,
     iconSmall: 20,
     iconMedium: 36,
-    moodButtonWidth: 68,
-    moodButtonHeight: 110,
+    moodButtonWidth: 80,
+    moodButtonHeight: 100,
     tabBarHeight: Platform.select({ web: 64, default: 92 }),
   },
 };
