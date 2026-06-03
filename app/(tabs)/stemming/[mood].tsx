@@ -131,10 +131,10 @@ export default function MoodCheckInScreen() {
         {/* Footer button */}
         <View style={styles.footer}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.color }]}
+            style={[styles.button, { backgroundColor: '#00C853' }]}
             onPress={handleSave}
           >
-            <Text style={styles.buttonText}>Ga verder</Text>
+            <Text style={styles.buttonText}>TEST OPSLAAN</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -145,7 +145,7 @@ export default function MoodCheckInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#FFCDD2',
   },
   keyboardAvoiding: {
     flex: 1,
