@@ -1,5 +1,5 @@
 import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
-import { Ionicons } from '@expo/vector-icons';
+import THEME from '@/constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -66,10 +66,29 @@ export default function ActivitiesScreen() {
         const saved = await AsyncStorage.getItem('copingActivities');
         const copingActivities = saved ? JSON.parse(saved) : {};
         const moodSuggestions: string[] = (copingActivities && copingActivities[mood as string]) || [];
-        // limit suggestions to max 4
-        setSuggestions(moodSuggestions.slice(0, 4));
-        // default activities left-to-right
+        // pick up to 4 random suggestions from onboarding selections for this mood
+        const pickRandom = (arr: string[], n: number) => {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a.slice(0, n);
+        };
+
+        let chosen: string[] = [];
+        if ((moodSuggestions || []).length > 0) {
+          chosen = pickRandom(moodSuggestions, 4);
+        }
+        // fill with defaults if less than 4
         const defaults = DEFAULT_BY_MOOD[mood as string] || [];
+        let fillIdx = 0;
+        while (chosen.length < 4 && fillIdx < defaults.length) {
+          const candidate = defaults[fillIdx++];
+          if (!chosen.includes(candidate)) chosen.push(candidate);
+        }
+        setSuggestions(chosen);
+        // default activities left-to-right
         setActivities(defaults);
       } catch (error) {
         console.error(error);
@@ -150,27 +169,30 @@ export default function ActivitiesScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Bar with Icons */}
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-          <View style={styles.iconCircle}>
-            <Image source={require('../../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
-          <View style={styles.iconCircle}>
-            <Image source={require('../../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
-          </View>
-        </TouchableOpacity>
-      </View>
+      {/* Header container with top icons and title below */}
+      <View style={styles.headerContainer} pointerEvents="box-none">
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.foreground} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Hoe voel je je?</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerInner}>
+          <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
+            <Image source={require('../../../../assets/icons/Terug.png')} style={{ width: 24, height: 24, tintColor: COLORS.foreground }} />
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>Hoe voel je je?</Text>
+
+          <View style={{ width: 24 }} />
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -195,14 +217,14 @@ export default function ActivitiesScreen() {
           </View>
           <Text style={styles.activitiesSubtitle}>Klik op een activiteit voor meer informatie</Text>
 
-          {/* Default activities (vertical cards, max 4) */}
-          {activities.slice(0, 4).map((activity, idx) => (
-            <View key={`def-${idx}`}>
+          {/* Show exactly 4 activities chosen from onboarding (or defaults filled) */}
+          {suggestions.slice(0, 4).map((activity, idx) => (
+            <View key={`sug-${idx}`}>
               <TouchableOpacity
                 style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
                 onPress={() => setSelectedActivity(activity)}
               >
-                <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}>
+                <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
                   <Image
                     source={getMoodIconSource(selectedMood.id)}
                     style={{ width: 24, height: 24, tintColor: COLORS.white }}
@@ -224,25 +246,6 @@ export default function ActivitiesScreen() {
               )}
             </View>
           ))}
-
-          {/* User suggestions from onboarding */}
-          {suggestions.length > 0 && (
-            <View style={styles.suggestionsSection}>
-              <Text style={styles.suggestionsTitle}>Suggesties</Text>
-              {suggestions.slice(0, 4).map((activity, index) => (
-                <TouchableOpacity key={`sug-${index}`} style={[styles.activityCard]} onPress={() => handleDoActivity(activity)}>
-                  <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}>
-                    <Image
-                      source={getMoodIconSource(selectedMood.id)}
-                      style={{ width: 24, height: 24, tintColor: COLORS.white }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <Text style={styles.activityTitle}>{activity}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
         </View>
       </ScrollView>
 
@@ -266,9 +269,9 @@ const styles: any = StyleSheet.create({
   },
   topBar: {
     position: 'absolute',
-    top: 56,
-    left: 24,
-    right: 24,
+    top: THEME.spacing.l,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -281,7 +284,7 @@ const styles: any = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -324,6 +327,22 @@ const styles: any = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     marginBottom: 24,
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    paddingHorizontal: THEME.spacing.m,
+    paddingTop: THEME.spacing.s,
+    zIndex: 20,
+  },
+  headerInner: {
+    marginTop: THEME.spacing.m,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   moodIconCircle: {
     width: 56,
@@ -448,7 +467,7 @@ const styles: any = StyleSheet.create({
   primaryAction: {
     paddingVertical: 10,
     paddingHorizontal: 30,
-    borderRadius: 22,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -472,7 +491,7 @@ const styles: any = StyleSheet.create({
     paddingTop: 12,
   },
   button: {
-    borderRadius: 16,
+    borderRadius: 20,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',

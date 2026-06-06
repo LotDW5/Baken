@@ -1,4 +1,5 @@
 import { COLORS, getTheme } from '@/constants/colors';
+import THEME from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -355,9 +356,9 @@ const styles = StyleSheet.create<any>({
   container: { flex: 1, backgroundColor: COLORS.white },
   formTopBar: {
     position: 'absolute',
-    top: 56,
-    left: 24,
-    right: 24,
+  top: THEME.spacing.l,
+  left: THEME.spacing.l,
+  right: THEME.spacing.l,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -403,7 +404,7 @@ const styles = StyleSheet.create<any>({
   emptyCard: {
     backgroundColor: COLORS.card,
     borderRadius: 16,
-    borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Changed to a different value for demonstration
     borderColor: COLORS.border,
     paddingVertical: 40,
     paddingHorizontal: 24,
@@ -425,7 +426,7 @@ const styles = StyleSheet.create<any>({
   primaryButton: {
     width: '85%',
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 20,
     alignSelf: 'center',
   },
   primaryButtonText: {
@@ -574,7 +575,7 @@ const styles = StyleSheet.create<any>({
   },
   modalPrimaryButton: {
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   modalPrimaryText: {
     color: COLORS.white,
@@ -584,7 +585,7 @@ const styles = StyleSheet.create<any>({
   },
   modalSecondaryButton: {
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 20,
     backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -597,7 +598,7 @@ const styles = StyleSheet.create<any>({
   },
   deleteButton: {
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 20,
     backgroundColor: COLORS.destructive,
   },
   deleteButtonText: {

@@ -1,5 +1,5 @@
 import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
-import { Ionicons } from '@expo/vector-icons';
+import THEME from '@/constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -23,6 +23,11 @@ const MOOD_ICON_SOURCES: Record<string, any> = {
     bad: require('../../assets/icons/Niet goed.png'),
     crisis: require('../../assets/icons/Crisis.png'),
 };
+
+// Layout constants
+const HEADER_HEIGHT = 120;
+const CARD_MAX_WIDTH = 393;
+const FOOTER_BOTTOM = 80;
 
 export default function MoodCheckInScreen() {
     const navigation = useNavigation();
@@ -63,33 +68,45 @@ export default function MoodCheckInScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 0}
             >
-                <View style={styles.topBar}>
-                    <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-                        <View style={styles.iconCircle}>
-                            <Ionicons name="person" size={20} color={theme.color} />
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
-                        <View style={styles.iconCircle}>
-                            <Ionicons name="settings" size={20} color={theme.color} />
-                        footer: {
-                            paddingHorizontal: 24,
-                            paddingBottom: 24,
-                            paddingTop: 12,
-                        },
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                {/* Fixed header container */}
+                <View style={styles.headerContainer} pointerEvents="box-none">
+                    <View style={styles.topBar}>
+                        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+                            <View style={styles.iconCircle}>
+                                <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} resizeMode="contain" />
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+                            <View style={styles.iconCircle}>
+                                <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} resizeMode="contain" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
 
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={COLORS.foreground} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Hoe voel je je?</Text>
-                    <View style={{ width: 24 }} />
+                    <View style={styles.headerInner}>
+                        <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
+                            <Image
+                                source={require('../../assets/icons/Terug.png')}
+                                style={{ width: 24, height: 24, tintColor: COLORS.foreground }}
+                            />
+                        </TouchableOpacity>
+
+                        <Text style={styles.headerTitle}>Hoe voel je je?</Text>
+
+                        <View style={{ width: 24 }} />
+                    </View>
                 </View>
 
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                    <View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}> 
+                        <Image
+                            source={MOOD_ICON_SOURCES[selectedMood.id]}
+                            style={[styles.moodIcon, { tintColor: selectedMood.color }]}
+                            resizeMode="contain"
+                        />
+                        <Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
+                    </View>
+
                     <View style={styles.noteSection}>
                         <Text style={styles.noteLabel}>Wil je er iets over vertellen? (optioneel)</Text>
                         <TextInput
@@ -104,21 +121,12 @@ export default function MoodCheckInScreen() {
                     </View>
                 </ScrollView>
 
-                <View style={[styles.moodCardAbsolute, { backgroundColor: selectedMood.bgColor }]}> 
-                    <Image
-                        source={MOOD_ICON_SOURCES[selectedMood.id]}
-                        style={{ width: 72, height: 72, tintColor: selectedMood.color }}
-                        resizeMode="contain"
-                    />
-                    <Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
-                </View>
-
                 <View style={styles.footer}>
                     <TouchableOpacity
-                        style={[styles.button, { backgroundColor: '#00C853' }]}
+                        style={[styles.button, styles.ctaButton]}
                         onPress={handleSave}
                     >
-                        <Text style={styles.buttonText}>TEST OPSLAAN</Text>
+                        <Text style={styles.buttonText}>Ga verder</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
@@ -129,7 +137,7 @@ export default function MoodCheckInScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.white,
     },
     keyboardAvoiding: {
         flex: 1,
@@ -137,22 +145,22 @@ const styles = StyleSheet.create({
     },
     topBar: {
         position: 'absolute',
-        top: 56,
-        left: 24,
-        right: 24,
+        top: THEME.spacing.l,
+        left: THEME.spacing.l,
+        right: THEME.spacing.l,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         zIndex: 10,
     },
     iconButton: {
-        padding: 4,
+        padding: 0,
     },
     iconCircle: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: COLORS.white,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
@@ -161,13 +169,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         elevation: 7,
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 24,
-        paddingVertical: 12,
+    iconImage: {
+        width: 24,
+        height: 24,
+        tintColor: COLORS.foreground,
     },
+    
     backButton: {
         padding: 4,
     },
@@ -176,44 +183,41 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: COLORS.foreground,
         flex: 1,
-        textAlign: 'center',
+        textAlign: 'left',
+        marginLeft: 8,
     },
+    /* CONTENT */
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: 24,
-        paddingTop: 12,
-        paddingBottom: 220,
+        paddingHorizontal: THEME.spacing.m,
+        paddingTop: 172,
+        paddingBottom: FOOTER_BOTTOM,
     },
     moodCard: {
         borderRadius: 24,
-        paddingVertical: 28,
-        paddingHorizontal: 24,
+        paddingVertical: 16,
+        paddingHorizontal: THEME.spacing.m,
         alignItems: 'center',
-        marginBottom: 40,
+        alignSelf: 'center',
+        marginBottom: 24,
+        width: '100%',
+        maxWidth: CARD_MAX_WIDTH,
     },
-    moodCardAbsolute: {
-        position: 'absolute',
-        left: 24,
-        right: 24,
-        top: 120,
-        borderRadius: 24,
-        paddingVertical: 28,
-        paddingHorizontal: 24,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 7,
+    moodIcon: {
+        width: 96,
+        height: 96,
     },
     moodCardTitle: {
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 22,
+        fontWeight: '700',
         textAlign: 'center',
-        marginTop: 12,
+        marginTop: 16,
     },
     noteSection: {
+        marginTop: 24,
         marginBottom: 28,
+        flex: 1,
+        justifyContent: 'flex-start',
     },
     noteLabel: {
         fontSize: 14,
@@ -222,30 +226,55 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     noteInput: {
-        backgroundColor: COLORS.white,
+        backgroundColor: '#F9F8FC',
         borderRadius: 16,
         borderWidth: 1,
         borderColor: COLORS.border,
-        padding: 12,
-        minHeight: 100,
+        padding: 20,
         fontSize: 14,
         color: COLORS.foreground,
         textAlignVertical: 'top',
+        flex: 1,
     },
+    headerContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: HEADER_HEIGHT,
+        paddingHorizontal: THEME.spacing.m,
+        paddingTop: THEME.spacing.s,
+        zIndex: 20,
+    },
+
+    headerInner: {
+        position: 'absolute',
+        top: 108,
+        left: THEME.spacing.m,
+        right: THEME.spacing.m,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+
     footer: {
-        paddingHorizontal: 24,
+        paddingHorizontal: THEME.spacing.m,
         paddingBottom: 24,
         paddingTop: 12,
     },
     button: {
-        borderRadius: 16,
-        paddingVertical: 14,
+        borderRadius: 20,
+        paddingVertical: 16,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOpacity: 0.12,
+        shadowRadius: 10,
+        elevation: 4,
+        width: '100%',
+    },
+    ctaButton: {
+        backgroundColor: '#3CA98A',
     },
     buttonText: {
         fontSize: 16,

@@ -725,14 +725,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
-    paddingHorizontal: 16,
+    button: {
+      borderRadius: 20,
     paddingTop: 8,
     paddingBottom: 12,
     gap: 12,
     backgroundColor: 'rgba(247, 245, 251, 0.98)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(225, 223, 232, 0.95)',
+      borderRadius: 20,
   },
   button: {
     borderRadius: 18,

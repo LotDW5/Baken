@@ -8,6 +8,7 @@ import HomeScreen from './app/(tabs)/index';
 import Instellingen from './app/(tabs)/instellingen';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
+import Activities from './app/(tabs)/stemming/[mood]/activiteiten';
 import MoodCheckInScreen from './app/stemming/[mood].tsx';
 import BottomTabBar from './components/ui/bottom-tab-bar.tsx';
 
@@ -35,7 +36,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Tabs} />
-          <Stack.Screen name="Stemming" component={MoodCheckInScreen} />
+        <Stack.Screen name="Stemming" component={MoodCheckInScreen} />
+        <Stack.Screen name="Activiteiten" component={Activities} />
         <Stack.Screen name="Profiel" component={Profiel} />
         <Stack.Screen name="Instellingen" component={Instellingen} />
       </Stack.Navigator>

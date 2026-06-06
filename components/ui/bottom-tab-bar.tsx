@@ -14,7 +14,8 @@ export default function BottomTabBar(props: BottomTabBarProps) {
     <View style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
       <View style={styles.container}>
       {state.routes.map((route, index) => {
-        const focused = state.index === index;
+        // Show bottom navigation but do not indicate an active tab
+        const focused = false;
         const descriptor = descriptors[route.key];
         const label = descriptor.options.title ?? route.name;
         const icons: Record<string, any> = {
@@ -41,9 +42,9 @@ export default function BottomTabBar(props: BottomTabBarProps) {
             activeOpacity={0.75}
           >
             <View style={styles.iconWrap}>
-              <Image source={icons[route.name]} style={[styles.icon, { tintColor: focused ? theme.color : '#B0A299' }]} />
+              <Image source={icons[route.name]} style={[styles.icon, { tintColor: '#B0A299' }]} />
             </View>
-            <Text style={[styles.label, { color: focused ? theme.color : '#B0A299' }]}>{label}</Text>
+            <Text style={[styles.label, { color: '#B0A299' }]}>{label}</Text>
           </TouchableOpacity>
         );
       })}

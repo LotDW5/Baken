@@ -16,7 +16,6 @@ import {
 	TouchableOpacity,
 	View
 } from 'react-native';
-
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../assets/icons/Goed.png'),
   okay: require('../../../assets/icons/Minder goed.png'),
@@ -55,8 +54,6 @@ export default function MoodCheckInScreen() {
 
   const handleSave = async () => {
     try {
-      await AsyncStorage.setItem('tempMoodNote', moodNote);
-      (navigation as any).navigate('Activiteiten', { mood: selectedMood.id });
     } catch (error) {
       Alert.alert('Error', 'Er is iets misgegaan.');
       console.error(error);
@@ -75,12 +72,12 @@ export default function MoodCheckInScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../../assets/icons/Profiel.png')} style={{ width: 32, height: 32 }} />
+              <Image source={require('../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} resizeMode="contain" />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../../assets/icons/Instellingen.png')} style={{ width: 28, height: 28 }} />
+              <Image source={require('../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} resizeMode="contain" />
             </View>
           </TouchableOpacity>
         </View>
@@ -162,15 +159,17 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
+    width: 32,
+    alignItems: 'center',
   },
   iconButton: {
-    padding: 4,
+    padding: 0,
   },
   iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.white,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -179,19 +178,25 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 7,
   },
+  iconImage: {
+    width: 24,
+    height: 24,
+    tintColor: COLORS.foreground,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.foreground,
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
+    marginLeft: 8,
   },
 
   /* CONTENT */
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: THEME.spacing.m,
-    paddingTop: HEADER_HEIGHT + THEME.spacing.s,
+    paddingTop: 172,
     paddingBottom: FOOTER_BOTTOM,
   },
 
@@ -201,6 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: THEME.spacing.m,
     alignItems: 'center',
     alignSelf: 'center',
+    marginTop: 0,
     marginBottom: 24,
     width: '100%',
     maxWidth: CARD_MAX_WIDTH,
@@ -221,10 +227,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 0,
   },
 
   headerInner: {
-    marginTop: THEME.spacing.m,
+    position: 'absolute',
+    top: 108,
+    left: THEME.spacing.m,
+    right: THEME.spacing.m,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

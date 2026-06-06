@@ -1,4 +1,5 @@
 import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import THEME from '@/constants/theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -118,27 +119,28 @@ export default function ActivityDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Bar with Icons */}
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-          <View style={styles.iconCircle}>
-            <Image source={require('../../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
-          <View style={styles.iconCircle}>
-            <Image source={require('../../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
-          </View>
-        </TouchableOpacity>
-      </View>
+      {/* Header container with top icons and title below */}
+      <View style={styles.headerContainer} pointerEvents="box-none">
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => (navigation as any).goBack()}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.foreground} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Hoe voel je je?</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerInner}>
+          <TouchableOpacity onPress={() => (navigation as any).goBack()}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.foreground} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Hoe voel je je?</Text>
+          <View style={{ width: 24 }} />
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -200,9 +202,9 @@ const styles = StyleSheet.create({
   },
   topBar: {
     position: 'absolute',
-    top: 56,
-    left: 24,
-    right: 24,
+    top: THEME.spacing.l,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -235,6 +237,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingVertical: 12,
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    paddingHorizontal: THEME.spacing.m,
+    paddingTop: THEME.spacing.s,
+    zIndex: 20,
+  },
+  headerInner: {
+    marginTop: THEME.spacing.m,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 20,
