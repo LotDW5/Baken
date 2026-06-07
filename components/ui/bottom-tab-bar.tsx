@@ -109,8 +109,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'stretch',
     backgroundColor: '#FFF',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.04)',
   },
   container: {
     width: '100%',

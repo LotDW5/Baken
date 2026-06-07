@@ -34,6 +34,8 @@ export default function ContactsScreen() {
   const [buttonHeight, setButtonHeight] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [showFab, setShowFab] = useState(false);
+  const hideTimerRef = useRef<any>(null);
+  const [layoutTick, setLayoutTick] = useState(0);
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
@@ -89,16 +91,37 @@ export default function ContactsScreen() {
 
   useEffect(() => {
     if (buttonY === null || containerHeight === 0) {
+      const t = setTimeout(() => setLayoutTick((t) => t + 1), 50);
       setShowFab(false);
-      return;
+      return () => clearTimeout(t);
     }
 
     const visibleTop = scrollY;
-    const visibleBottom = scrollY + containerHeight - (insets.bottom + THEME.sizes.tabBarHeight + 24);
+    const visibleBottom = scrollY + containerHeight - (insets.bottom + THEME.sizes.tabBarHeight);
     const buttonTop = buttonY;
     const buttonBottom = buttonY + buttonHeight;
-    setShowFab(buttonTop < visibleTop || buttonBottom > visibleBottom);
+
+    const outOfView = buttonTop < (visibleTop + 4) || buttonBottom > (visibleBottom - 4);
+    const shouldShow = outOfView && contacts.length > 0;
+
+    if (shouldShow) {
+      if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = null; }
+      setShowFab(true);
+      return;
+    }
+
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => {
+      setShowFab(false);
+      hideTimerRef.current = null;
+    }, 300);
   }, [scrollY, buttonY, buttonHeight, containerHeight, insets.bottom]);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = null; }
+    };
+  }, []);
 
   const favorites = contacts.filter((c) => c.favorite);
   const others = contacts.filter((c) => !c.favorite);
@@ -347,7 +370,6 @@ const styles = StyleSheet.create<any>({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },
     elevation: 3,
-    boxShadow: '0px 6px 12px rgba(0,0,0,0.05)',
   },
   cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   avatarAndInfo: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
