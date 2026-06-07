@@ -2,8 +2,6 @@ import { COLORS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// eslint-disable-next-line import/no-named-as-default
-import applyShadow from '@/utils/shadow';
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
@@ -11,7 +9,7 @@ export default function BottomTabBar(props: BottomTabBarProps) {
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
-    <View style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
+    <View style={styles.wrapper}>
       {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
       {Platform.OS === 'web' && (() => {
         const focusedRoute = state.routes[state.index];
