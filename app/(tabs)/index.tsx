@@ -1,6 +1,5 @@
 import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -154,13 +153,11 @@ export default function HomeScreen() {
               ['Ma','Di','Wo','Do','Vr','Za','Zo'].map((short, i) => {
                 const d = Object.keys(weekChecks)[i];
                 const checked = !!weekChecks[d];
-                return (
-                  <View key={short} style={[styles.weekDayItem, i < 6 ? { marginRight: THEME.spacing.s } : null]}>
-                    <View style={[styles.weekDot, checked ? { borderColor: theme.color } : null]}>
+                  return (
+                    <View key={d} style={[styles.weekDayItem, i < 6 ? { marginRight: THEME.spacing.s } : null]}>
+                    <View style={[styles.weekDot, checked ? { borderColor: theme.color, backgroundColor: theme.bgColor } : null]}>
                       {checked && (
-                        <View style={[styles.weekDotInner, { backgroundColor: theme.color }]}>
-                          <Ionicons name="checkmark" size={12} color="#fff" />
-                        </View>
+                        <Image source={require('../../assets/icons/Check.png')} style={[styles.checkIcon, { tintColor: theme.color }]} resizeMode="contain" />
                       )}
                     </View>
                     <Text style={styles.weekDayLabel}>{short}</Text>
@@ -187,7 +184,7 @@ export default function HomeScreen() {
                     style={[styles.moodImage, { tintColor: mood.color }]}
                     resizeMode="contain"
                   />
-                  <Text style={[styles.moodLabel, { color: mood.color }]}>{mood.label}</Text>
+                  <Text style={styles.moodLabel}>{mood.label}</Text>
                 </TouchableOpacity>
             ))}
           </View>
@@ -211,15 +208,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: THEME.spacing.l,
-    paddingTop: THEME.spacing.l,
+    paddingHorizontal: 24,
+    paddingTop: 120,
     paddingBottom: THEME.sizes.tabBarHeight + 40,
   },
   header: {
     position: 'absolute',
-    top: THEME.spacing.l,
-    left: THEME.spacing.l,
-    right: THEME.spacing.l,
+    top: 56,
+    left: 24,
+    right: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -235,7 +232,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
   cardContainer: {
     backgroundColor: '#FFFFFF',
@@ -247,8 +245,8 @@ const styles = StyleSheet.create({
     ...applyShadow({ opacity: 0.14, radius: 18, offsetX: 0, offsetY: 8, elevation: 8 }),
     position: 'absolute',
     alignSelf: 'center',
-    left: THEME.spacing.m,
-    right: THEME.spacing.m,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
     bottom: 129,
   },
   title: {
@@ -279,7 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: THEME.spacing.s,
     paddingBottom: THEME.spacing.s,
-    marginHorizontal: THEME.spacing.s,
+    marginHorizontal: THEME.spacing.xs,
     ...applyShadow({ opacity: 0.06, radius: 4, offsetX: 0, offsetY: 1, elevation: 1 }),
   },
   moodEmoji: {
@@ -296,14 +294,15 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.label.fontWeight as any,
     textAlign: 'center',
     lineHeight: THEME.typography.label.lineHeight,
-    marginTop: THEME.spacing.s,
+    marginTop: THEME.spacing.xs,
+    color: COLORS.foreground,
   },
   weekTrackerWrapper: {
     marginBottom: 12,
     position: 'absolute',
-    top: 116,
-    left: THEME.spacing.m,
-    right: THEME.spacing.m,
+    top: 160,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
     borderRadius: 18,
     paddingVertical: 10,
     paddingHorizontal: THEME.spacing.m,
@@ -329,7 +328,7 @@ const styles = StyleSheet.create({
   },
   weekDots: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: THEME.spacing.s,
     width: '100%',
@@ -355,6 +354,10 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkIcon: {
+    width: 18,
+    height: 18,
   },
   weekDayLabel: {
     fontSize: 12,

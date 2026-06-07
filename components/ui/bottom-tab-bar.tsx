@@ -1,7 +1,7 @@
-import { getTheme } from '@/constants/colors';
+import { COLORS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
 
@@ -12,11 +12,59 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
   return (
     <View style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
+      {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
+      {Platform.OS === 'web' && (() => {
+        const focusedRoute = state.routes[state.index];
+        const nested = focusedRoute.state as any;
+        const nestedActiveName = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index].name : null;
+        // Show Ga verder on Stemming, and an Overslaan white FAB on Activiteiten
+        if (focusedRoute.name === 'Check-in' && (nestedActiveName === 'Stemming' || nestedActiveName === 'Activiteiten')) {
+          const currentNestedRoute = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index] : null;
+          const moodParam = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
+
+          if (nestedActiveName === 'Stemming') {
+            const onPress = () => {
+              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { mood: moodParam } } as any);
+            };
+
+            return (
+              <View style={styles.fabWrap} pointerEvents="box-none">
+                <TouchableOpacity style={styles.fabButtonLarge} onPress={onPress}>
+                  <Text style={[styles.fabText, { color: COLORS.white }]}>Ga verder</Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }
+
+          if (nestedActiveName === 'Activiteiten') {
+            const onPress = () => {
+              // Try to emit a custom event to the nested Activiteiten route (listener based)
+              console.log('[bottom-tab-bar] Overslaan FAB pressed');
+              // Navigate with a changing param to ensure the screen reacts when focused
+              console.log('[bottom-tab-bar] navigating to Activiteiten with __overslaan param');
+              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } } as any);
+            };
+
+            return (
+              <View style={styles.fabWrap} pointerEvents="box-none">
+                <TouchableOpacity style={styles.fabButton} onPress={onPress}>
+                  <Text style={[styles.fabText, { color: COLORS.foreground }]}>Overslaan</Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }
+        }
+        return null;
+      })()}
       <View style={styles.container}>
       {state.routes.map((route, index) => {
-        // Show bottom navigation but do not indicate an active tab
-        const focused = false;
+        // Determine whether this tab is focused
+        const focused = state.index === index;
         const descriptor = descriptors[route.key];
+        // Allow screens to hide their tab via `options.tabBarVisible === false`
+        if (descriptor && descriptor.options && descriptor.options.tabBarVisible === false) {
+          return null;
+        }
         const label = descriptor.options.title ?? route.name;
         const icons: Record<string, any> = {
           'Check-in': require('@/assets/icons/Check-in.png'),
@@ -42,9 +90,9 @@ export default function BottomTabBar(props: BottomTabBarProps) {
             activeOpacity={0.75}
           >
             <View style={styles.iconWrap}>
-              <Image source={icons[route.name]} style={[styles.icon, { tintColor: '#B0A299' }]} />
+              <Image source={icons[route.name]} style={[styles.icon, { tintColor: focused ? theme.color : COLORS.mutedForeground }]} />
             </View>
-            <Text style={[styles.label, { color: '#B0A299' }]}>{label}</Text>
+            <Text style={[styles.label, { color: focused ? theme.color : COLORS.mutedForeground }]}>{label}</Text>
           </TouchableOpacity>
         );
       })}
@@ -94,9 +142,54 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
   },
+  
   label: {
     marginTop: 0,
     fontSize: 11,
     fontWeight: '500',
+  },
+  fabWrap: {
+    position: 'absolute',
+    left: THEME.spacing.s,
+    right: THEME.spacing.s,
+    bottom: THEME.sizes.tabBarHeight + 48,
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  fabButton: {
+    width: '100%',
+    alignSelf: 'center',
+    maxWidth: 520,
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingHorizontal: THEME.spacing.m,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  fabButtonLarge: {
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: '#3CA98A',
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingHorizontal: THEME.spacing.m,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  fabText: {
+    color: COLORS.foreground,
+    fontWeight: '600',
+    fontSize: 15,
   },
 });

@@ -19,7 +19,7 @@
       "package": "com.anonymous.FinalProjectApp"
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/icons/Profiel.png"
     },
     "updates": {

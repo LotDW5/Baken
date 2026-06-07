@@ -1,19 +1,20 @@
 import { COLORS, getTheme } from '@/constants/colors';
+import THEME from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-    Alert,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CalendarEvent {
   id: string;
@@ -22,6 +23,7 @@ interface CalendarEvent {
   time?: string;
   location?: string;
   notes?: string;
+  addToGoogle?: boolean;
 }
 
 const STORAGE_KEY = 'calendar_events';
@@ -29,6 +31,7 @@ const STORAGE_KEY = 'calendar_events';
 export default function AgendaScreen() {
   const navigation = useNavigation();
   const theme = useMemo(() => getTheme(), []);
+  const insets = useSafeAreaInsets();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [date, setDate] = useState('');
   const [title, setTitle] = useState('');
@@ -36,6 +39,14 @@ export default function AgendaScreen() {
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const scrollRef = useRef<any>(null);
+  const [scrollY, setScrollY] = useState(0);
+  const [buttonY, setButtonY] = useState<number | null>(null);
+  const [buttonHeight, setButtonHeight] = useState<number>(0);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [showFab, setShowFab] = useState(false);
+  const [layoutTick, setLayoutTick] = useState(0);
+  const hideTimerRef = useRef<any>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -48,7 +59,9 @@ export default function AgendaScreen() {
     };
 
     load();
-  }, []);
+    const unsubscribe = (navigation as any).addListener('focus', load);
+    return () => unsubscribe();
+  }, [navigation]);
 
   const save = async (nextEvents: CalendarEvent[]) => {
     setEvents(nextEvents);
@@ -98,108 +111,241 @@ export default function AgendaScreen() {
     return a.date.localeCompare(b.date);
   });
 
+  // Calendar state & helpers
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [selectedDay, setSelectedDay] = useState<Date | null>(new Date());
+
+  const isoForDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const selectedDateString = () => (selectedDay ? isoForDay(selectedDay) : null);
+
+  const onSelectDay = (d: Date) => {
+    setSelectedDay(d);
+    setDate(isoForDay(d));
+  };
+
+  useEffect(() => {
+    if (buttonY === null || containerHeight === 0) {
+      // try again on next tick to allow layout to settle (helps web initial render)
+      const t = setTimeout(() => setLayoutTick((t) => t + 1), 50);
+      setShowFab(false);
+      return () => clearTimeout(t);
+    }
+
+    // Compute visible window inside the scroll content. Use tabBarHeight
+    // only — avoid extra magic offsets so we detect overlap with the bottom nav.
+    const bottomOffset = insets.bottom + THEME.sizes.tabBarHeight;
+    const visibleTop = scrollY;
+    const visibleBottom = scrollY + containerHeight - bottomOffset;
+
+    const buttonTop = buttonY;
+    const buttonBottom = buttonY + buttonHeight;
+
+    // consider out of view when it sits above or below the visible window
+    const outOfView = buttonTop < (visibleTop + 4) || buttonBottom > (visibleBottom - 4);
+
+    // Only show if there is at least one appointment for the selected day
+    const selectedEvents = sortedEvents.filter((e) => e.date === selectedDateString());
+    const shouldShow = !!(outOfView && selectedEvents.length > 0);
+
+    // If it should be shown, show immediately and cancel any pending hide timer.
+    if (shouldShow) {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+      setShowFab(true);
+      return;
+    }
+
+    // If it should not be shown, don't hide immediately — debounce to avoid
+    // flicker while the user is scrolling. Only hide if the condition stays
+    // false for 300ms.
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => {
+      setShowFab(false);
+      hideTimerRef.current = null;
+    }, 300);
+  }, [scrollY, buttonY, buttonHeight, containerHeight, insets.bottom, sortedEvents.length, selectedDay, layoutTick]);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const calendarDays = (month: Date) => {
+    const year = month.getFullYear();
+    const m = month.getMonth();
+    const first = new Date(year, m, 1);
+    const last = new Date(year, m + 1, 0);
+    // Week starts Monday -> convert JS Sunday(0) to index 6
+    const leading = (first.getDay() + 6) % 7;
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < leading; i++) days.push(null);
+    for (let d = 1; d <= last.getDate(); d++) days.push(new Date(year, m, d));
+    // pad to full weeks
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-            <View style={styles.iconCircle}>
-              <Ionicons name="person" size={18} color={theme.color} />
+      <View style={styles.topIconsRow}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.pageHeader}>
+        <View style={styles.titleWrap}>
+          <Text style={styles.pageTitle}>Mijn Agenda</Text>
+        </View>
+        {showFab && (
+          <TouchableOpacity activeOpacity={0.9} style={styles.fabHeader} onPress={() => (navigation as any).navigate('NieuweAfspraak', { date: selectedDateString() })}>
+            <View style={[styles.fabCircle, { backgroundColor: theme.color }]}>
+              <Image source={require('../../assets/icons/Plus.png')} style={styles.fabIcon} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
-            <View style={styles.iconCircle}>
-              <Ionicons name="settings-outline" size={18} color={theme.color} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.title}>Agenda</Text>
-        <Text style={styles.subtitle}>Plan en beheer je afspraken</Text>
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>{editingId ? 'Afspraak bewerken' : 'Nieuwe afspraak'}</Text>
-
-          <Text style={styles.label}>Datum *</Text>
-          <TextInput value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" style={styles.input} />
-
-          <Text style={styles.label}>Titel *</Text>
-          <TextInput value={title} onChangeText={setTitle} placeholder="Wat voor afspraak?" style={styles.input} />
-
-          <Text style={styles.label}>Tijd</Text>
-          <TextInput value={time} onChangeText={setTime} placeholder="HH:MM" style={styles.input} />
-
-          <Text style={styles.label}>Locatie</Text>
-          <TextInput value={location} onChangeText={setLocation} placeholder="Waar vindt het plaats?" style={styles.input} />
-
-          <Text style={styles.label}>Notities</Text>
-          <TextInput
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Extra informatie..."
-            style={[styles.input, styles.multiline]}
-            multiline
-          />
-
-          <View style={styles.actionRow}>
-            <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.color }]} onPress={handleSave}>
-              <Text style={styles.actionButtonText}>Opslaan</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.secondaryButton} onPress={resetForm}>
-              <Text style={styles.secondaryButtonText}>Wissen</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.listHeader}>
-          <Text style={styles.sectionTitle}>Afspraken</Text>
-          <Text style={styles.listMeta}>{sortedEvents.length} totaal</Text>
-        </View>
-
-        {sortedEvents.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyTitle}>Nog geen afspraken</Text>
-            <Text style={styles.emptyText}>Voeg hierboven een afspraak toe.</Text>
-          </View>
-        ) : (
-          sortedEvents.map((event) => (
-            <View key={event.id} style={styles.eventCard}>
-              <View style={styles.eventRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.eventDate}>{event.date}</Text>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
-                  {!!event.time && <Text style={styles.eventMeta}>{event.time}</Text>}
-                  {!!event.location && <Text style={styles.eventMeta}>{event.location}</Text>}
-                  {!!event.notes && <Text style={styles.eventNotes}>{event.notes}</Text>}
-                </View>
-
-                <View style={styles.eventActions}>
-                  <TouchableOpacity
-                    style={styles.smallButton}
-                    onPress={() => {
-                      setEditingId(event.id);
-                      setDate(event.date);
-                      setTitle(event.title);
-                      setTime(event.time || '');
-                      setLocation(event.location || '');
-                      setNotes(event.notes || '');
-                    }}
-                  >
-                    <Ionicons name="pencil-outline" size={16} color={theme.color} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.smallButton} onPress={() => handleDelete(event.id)}>
-                    <Ionicons name="trash-outline" size={16} color="#E25772" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          ))
         )}
+      </View>
+      <View style={{ flex: 1 }} onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}>
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.content}
+          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
+          scrollEventThrottle={16}
+        >
 
-        {Platform.OS === 'web' ? <Text style={styles.webHint}>Web-compatibele agenda actief.</Text> : null}
-      </ScrollView>
+        {/* Calendar card */}
+        <View style={styles.calendarCard}>
+          <View style={styles.calendarHeader}>
+            <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} style={styles.chevButton}>
+              <Ionicons name="chevron-back" size={20} color={theme.color} />
+            </TouchableOpacity>
+
+            <Text style={styles.calendarTitle}>{currentMonth.toLocaleString('nl-NL', { month: 'long', year: 'numeric' })}</Text>
+
+            <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} style={styles.chevButton}>
+              <Ionicons name="chevron-forward" size={20} color={theme.color} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.weekDaysRow}>
+            {['M', 'D', 'W', 'D', 'V', 'Z', 'Z'].map((d, i) => (
+              <Text key={`${d}-${i}`} style={styles.weekDayLabel}>{d}</Text>
+            ))}
+          </View>
+
+          <View style={styles.calendarGrid}>
+            {calendarDays(currentMonth).map((day, idx) => {
+              const isEmpty = day === null;
+              const isSelected = day && selectedDateString() === isoForDay(day);
+
+              return (
+                <TouchableOpacity
+                  key={`${String(day)}-${idx}`}
+                  style={styles.dayCell}
+                  activeOpacity={day ? 0.8 : 1}
+                  onPress={() => day && onSelectDay(day)}
+                >
+                  {isEmpty ? <View /> : (
+                    <View style={[styles.dayNumberWrap, isSelected && { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.22, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } }]}>
+                      <Text style={[styles.dayNumber, isSelected && { color: '#fff' }]}>{day.getDate()}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Selected day section: date header + events for that day */}
+        <View style={styles.daySection}>
+          {selectedDay && (
+            <>
+              <Text style={styles.daySectionTitle}>{selectedDay.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+
+              {(() => {
+                const selectedEvents = sortedEvents.filter((e) => e.date === selectedDateString());
+                // if there are no events for the selected day, show nothing (matches mock)
+                if (selectedEvents.length === 0) return null;
+
+                return selectedEvents.map((event) => (
+                  <View key={event.id} style={styles.eventCardLarge}>
+                    <View style={styles.eventRowLarge}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.eventTitle}>{event.title}</Text>
+
+                        {event.time ? (
+                          <View style={styles.metaRow}>
+                            <Ionicons name="time-outline" size={14} color={theme.color} />
+                            <Text style={styles.eventMetaText}>{event.time}</Text>
+                          </View>
+                        ) : null}
+
+                        {event.location ? (
+                          <View style={styles.metaRow}>
+                            <Ionicons name="location-outline" size={14} color={COLORS.mutedForeground} />
+                            <Text style={styles.eventMetaText}>{event.location}</Text>
+                          </View>
+                        ) : null}
+
+                        {event.notes ? (
+                          <Text style={styles.eventNotesText}>{event.notes}</Text>
+                        ) : null}
+                        {event.addToGoogle ? (
+                          <View style={styles.googleRow}>
+                            <Ionicons name="calendar-outline" size={14} color={theme.color} />
+                            <Text style={[styles.eventMetaText, { color: theme.color, marginLeft: 6 }]}>Toegevoegd aan Google kalender</Text>
+                          </View>
+                        ) : null}
+                      </View>
+
+                      <TouchableOpacity style={styles.editCircle} onPress={() => {
+                        setEditingId(event.id);
+                        (navigation as any).navigate('NieuweAfspraak', { event });
+                      }}>
+                        <Image source={require('../../assets/icons/Bewerken.png')} style={[styles.editIcon, { tintColor: theme.color }]} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ));
+              })()}
+            </>
+          )}
+        </View>
+
+          <View style={styles.centerButtonWrap}>
+            <TouchableOpacity
+              style={[styles.floatingButton, { backgroundColor: theme.color, position: 'relative' }]}
+              onPress={() => (navigation as any).navigate('NieuweAfspraak', { date: selectedDateString() })}
+              activeOpacity={0.9}
+              onLayout={(e) => {
+                setButtonY(e.nativeEvent.layout.y);
+                setButtonHeight(e.nativeEvent.layout.height);
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Image source={require('../../assets/icons/Plus.png')} style={[styles.plusIcon, { tintColor: '#fff' }]} />
+                <Text style={styles.floatingButtonText}>Nieuwe afspraak</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+
+      {/* absolute floating button removed; button now lives inside the content for visual parity with the mock */}
     </SafeAreaView>
   );
 }
@@ -207,21 +353,38 @@ export default function AgendaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
   },
   content: {
-    padding: 20,
-    paddingTop: 56,
-    paddingBottom: 32,
+    paddingHorizontal: 24,
+    paddingTop: 0,
+    paddingBottom: 140,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 18,
   },
+  pageHeader: {
+    marginTop: 144,
+    marginBottom: 24,
+    paddingHorizontal: 24,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
+  },
+  titleWrap: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
   iconButton: {
     padding: 4,
   },
+      fabHeader: { marginLeft: 'auto', zIndex: 70, alignSelf: 'center' },
+  fabCircle: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
+  fabIcon: { width: 20, height: 20, tintColor: '#fff', resizeMode: 'contain' },
   iconCircle: {
     width: 40,
     height: 40,
@@ -229,16 +392,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
-  title: {
-    fontSize: 28,
+  iconImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  pageTitle: {
+    fontSize: 24,
     fontWeight: '700',
     color: COLORS.foreground,
+    textAlign: 'left',
+    marginTop: 0,
+    marginBottom: 0,
   },
   subtitle: {
     marginTop: 4,
@@ -272,7 +440,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.inputBackground,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 12,
+    borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 12,
     color: COLORS.foreground,
@@ -334,6 +502,40 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: COLORS.mutedForeground,
   },
+  emptyCardSmall: {
+    backgroundColor: 'transparent',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+  daySection: {
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  daySectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.foreground,
+    marginBottom: 10,
+    textTransform: 'lowercase',
+  },
+  eventCardLarge: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
+  eventRowLarge: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  editCircle: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#FAF9FD', justifyContent: 'center', alignItems: 'center' },
+  editIcon: { width: 18, height: 18, resizeMode: 'contain' },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
+  eventMetaText: { marginLeft: 6, color: COLORS.mutedForeground },
+  plusIcon: { width: 18, height: 18, resizeMode: 'contain' },
   eventCard: {
     backgroundColor: COLORS.white,
     borderRadius: 18,
@@ -350,13 +552,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: COLORS.mutedForeground,
-    marginBottom: 4,
   },
   eventTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.foreground,
   },
+  eventNotesText: {
+    marginTop: 8,
+    color: COLORS.foreground,
+  },
+  googleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
   eventMeta: {
     marginTop: 2,
     color: COLORS.mutedForeground,
@@ -382,5 +588,109 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: COLORS.mutedForeground,
     fontSize: 12,
+  },
+  floatingButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    width: 200,
+    height: 52,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+    zIndex: 20,
+  },
+  floatingButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  topIconsRow: {
+    position: 'absolute',
+    top: 56,
+    left: 24,
+    right: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  calendarCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    marginTop: 24,
+    marginBottom: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    marginBottom: 6,
+  },
+  calendarTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.foreground,
+    textTransform: 'capitalize',
+  },
+  chevButton: {
+    padding: 8,
+  },
+  weekDaysRow: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    paddingHorizontal: 6,
+    marginBottom: 8,
+  },
+  weekDayLabel: {
+    width: '14.2857%',
+    textAlign: 'center',
+    color: COLORS.mutedForeground,
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  calendarGrid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayCell: {
+    width: '14.2857%',
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayNumberWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  dayNumber: {
+    color: COLORS.foreground,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  centerButtonWrap: {
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 24,
   },
 });
