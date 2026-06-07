@@ -26,6 +26,8 @@ function Tabs() {
       <Tab.Screen name="Check-in" component={CheckInStack} />
         <Tab.Screen name="Contacten" component={Contacten} />
       <Tab.Screen name="Agenda" component={Agenda} />
+      <Tab.Screen name="Profiel" component={Profiel} options={{ tabBarVisible: false }} />
+      <Tab.Screen name="Instellingen" component={Instellingen} options={{ tabBarVisible: false }} />
       <Tab.Screen name="NieuweAfspraak" component={NieuweAfspraak} options={{ tabBarVisible: false }} />
       <Tab.Screen name="Statistieken" component={Statistieken} />
     </Tab.Navigator>
@@ -38,8 +40,7 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Tabs} />
         <Stack.Screen name="ContactForm" component={ContactForm} />
-        <Stack.Screen name="Profiel" component={Profiel} />
-        <Stack.Screen name="Instellingen" component={Instellingen} />
+        {/* Profiel and Instellingen are now part of the bottom tabs to keep the tab bar visible */}
       </Stack.Navigator>
     </NavigationContainer>
   );

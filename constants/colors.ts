@@ -1,10 +1,12 @@
 export const THEME_COLORS = [
-  { id: "purple", name: "Paars", color: "#6B5CE7", bgColor: "#F0EDF7" },
-  { id: "blue", name: "Blauw", color: "#3B82F6", bgColor: "#DBEAFE" },
-  { id: "green", name: "Groen", color: "#10B981", bgColor: "#D1FAE5" },
-  { id: "teal", name: "Turquoise", color: "#14B8A6", bgColor: "#CCFBF1" },
-  { id: "orange", name: "Oranje", color: "#F59E0B", bgColor: "#FEF3C7" },
-  { id: "pink", name: "Roze", color: "#EC4899", bgColor: "#FCE7F3" },
+  { id: 'purple', name: 'Paars', color: '#6B5CE7', bgColor: '#F0EDF7' },
+  { id: 'blue', name: 'Blauw', color: '#3B82F6', bgColor: '#DBEAFE' },
+  { id: 'green', name: 'Groen', color: '#10B981', bgColor: '#D1FAE5' },
+  { id: 'teal', name: 'Turquoise', color: '#14B8A6', bgColor: '#CCFBF1' },
+  { id: 'yellow', name: 'Geel', color: '#F59E0B', bgColor: '#FEF3C7' },
+  { id: 'pink', name: 'Roze', color: '#EC4899', bgColor: '#FCE7F3' },
+  { id: 'coral', name: 'Koraal', color: '#E85D75', bgColor: '#FFE8ED' },
+  { id: 'black', name: 'Zwart', color: '#000000', bgColor: '#F0F0F0' },
 ];
 
 export function getTheme(savedTheme?: string) {

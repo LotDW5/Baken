@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
+    paddingTop: 144,
   },
 
   topIconsRow: {
@@ -145,9 +146,10 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
     color: COLORS.foreground,
+    textAlign: 'left',
   },
 
   iconCircle: {
@@ -158,6 +160,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
   iconImage: {
     width: 20,
@@ -168,12 +172,12 @@ const styles = StyleSheet.create({
   titleRow: {
     paddingHorizontal: 24,
     paddingTop: 8,
-    paddingBottom: 6,
+    paddingBottom: 24,
   },
 
   content: {
     paddingHorizontal: 24,
-    paddingTop: 120,
+    paddingTop: 24,
     paddingBottom: 24,
     gap: 16,
   },

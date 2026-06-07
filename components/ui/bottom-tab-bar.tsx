@@ -11,7 +11,8 @@ export default function BottomTabBar(props: BottomTabBarProps) {
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
-    <View style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
+    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
+      <View style={styles.separator} />
       {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
       {Platform.OS === 'web' && (() => {
         const focusedRoute = state.routes[state.index];
@@ -109,7 +110,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'stretch',
     backgroundColor: '#FFF',
+    borderTopWidth: 0.666667,
+    borderTopColor: 'rgba(0,0,0,0.04)',
+    zIndex: 9999,
   },
+  separator: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 0.666667,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    zIndex: 2,
+  },
+  
   container: {
     width: '100%',
     minHeight: THEME.sizes.tabBarHeight,
@@ -145,6 +159,15 @@ const styles = StyleSheet.create({
     marginTop: 0,
     fontSize: 11,
     fontWeight: '500',
+  },
+  wrapperContacten: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'stretch',
+    backgroundColor: 'transparent',
+    borderTopWidth: 0,
   },
   fabWrap: {
     position: 'absolute',

@@ -202,7 +202,9 @@ const styles = StyleSheet.create({
   },
   bgPlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(247,245,251,0.6)'
+    backgroundColor: 'rgba(247,245,251,0.6)',
+    zIndex: 0,
+    pointerEvents: 'none',
   },
   container: {
     flex: 1,

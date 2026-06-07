@@ -1,5 +1,4 @@
 import { COLORS, getTheme } from '@/constants/colors';
-import THEME from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -124,57 +123,8 @@ export default function AgendaScreen() {
   };
 
   useEffect(() => {
-    if (buttonY === null || containerHeight === 0) {
-      // try again on next tick to allow layout to settle (helps web initial render)
-      const t = setTimeout(() => setLayoutTick((t) => t + 1), 50);
-      setShowFab(false);
-      return () => clearTimeout(t);
-    }
-
-    // Compute visible window inside the scroll content. Use tabBarHeight
-    // only — avoid extra magic offsets so we detect overlap with the bottom nav.
-    const bottomOffset = insets.bottom + THEME.sizes.tabBarHeight;
-    const visibleTop = scrollY;
-    const visibleBottom = scrollY + containerHeight - bottomOffset;
-
-    const buttonTop = buttonY;
-    const buttonBottom = buttonY + buttonHeight;
-
-    // consider out of view when it sits above or below the visible window
-    const outOfView = buttonTop < (visibleTop + 4) || buttonBottom > (visibleBottom - 4);
-
-    // Only show if there is at least one appointment for the selected day
-    const selectedEvents = sortedEvents.filter((e) => e.date === selectedDateString());
-    const shouldShow = !!(outOfView && selectedEvents.length > 0);
-
-    // If it should be shown, show immediately and cancel any pending hide timer.
-    if (shouldShow) {
-      if (hideTimerRef.current) {
-        clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = null;
-      }
-      setShowFab(true);
-      return;
-    }
-
-    // If it should not be shown, don't hide immediately — debounce to avoid
-    // flicker while the user is scrolling. Only hide if the condition stays
-    // false for 300ms.
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = setTimeout(() => {
-      setShowFab(false);
-      hideTimerRef.current = null;
-    }, 300);
-  }, [scrollY, buttonY, buttonHeight, containerHeight, insets.bottom, sortedEvents.length, selectedDay, layoutTick]);
-
-  useEffect(() => {
-    return () => {
-      if (hideTimerRef.current) {
-        clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = null;
-      }
-    };
-  }, []);
+    setShowFab(events.length > 0);
+  }, [events.length]);
 
   const calendarDays = (month: Date) => {
     const year = month.getFullYear();
@@ -382,9 +332,9 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 4,
   },
-      fabHeader: { marginLeft: 'auto', zIndex: 70, alignSelf: 'center' },
-  fabCircle: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
-  fabIcon: { width: 20, height: 20, tintColor: '#fff', resizeMode: 'contain' },
+        fabHeader: { position: 'absolute', right: 24, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
+      fabCircle: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
+      fabIcon: { width: 18, height: 18, tintColor: '#fff', resizeMode: 'contain' },
   iconCircle: {
     width: 40,
     height: 40,

@@ -4,18 +4,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-	Alert,
-	Image,
-	KeyboardAvoidingView,
-	Platform,
-	SafeAreaView,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	View
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../assets/icons/Goed.png'),
   okay: require('../../../assets/icons/Minder goed.png'),
@@ -26,13 +27,14 @@ const MOOD_ICON_SOURCES: Record<string, any> = {
 // Layout constants
 const HEADER_HEIGHT = 120;
 const CARD_MAX_WIDTH = 393;
-const FOOTER_BOTTOM = 80;
+const FOOTER_BOTTOM = 140;
 
 // previous constants removed to avoid redeclaration
 
 export default function MoodCheckInScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const insets = useSafeAreaInsets();
   const { mood } = (route.params || {}) as { mood: string };
   const [moodNote, setMoodNote] = useState('');
   const [theme, setTheme] = useState(getTheme());
@@ -54,6 +56,32 @@ export default function MoodCheckInScreen() {
 
   const handleSave = async () => {
     try {
+      await AsyncStorage.setItem('tempMoodNote', moodNote || '');
+      Alert.alert('Debug', 'handleSave called — navigating...');
+      const navAny: any = navigation;
+      // First try to navigate within the current navigator
+      try {
+        console.log('Attempting navigation: navigation.navigate("Activiteiten")');
+        (navigation as any).navigate('Activiteiten', { mood: selectedMood.id });
+        Alert.alert('Debug', 'Tried navigation.navigate("Activiteiten")');
+      } catch (err) {
+        console.warn('navigation.navigate("Activiteiten") threw:', err);
+      }
+
+      const parent = navAny.getParent && navAny.getParent();
+      // If parent is the tab navigator expose 'Check-in', deep navigate into it
+      if (parent && typeof parent.getState === 'function') {
+        try {
+          const state = parent.getState();
+          if (state && Array.isArray(state.routeNames) && state.routeNames.includes('Check-in')) {
+            console.log('Parent has Check-in tab — navigating into it');
+            Alert.alert('Debug', 'Parent has Check-in — navigating into Activiteiten');
+            parent.navigate('Check-in', { screen: 'Activiteiten', params: { mood: selectedMood.id } });
+          }
+        } catch (err) {
+          console.warn('parent navigation attempt failed', err);
+        }
+      }
     } catch (error) {
       Alert.alert('Error', 'Er is iets misgegaan.');
       console.error(error);
@@ -82,21 +110,10 @@ export default function MoodCheckInScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.headerInner}>
-          <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-            <Image
-              source={require('../../../assets/icons/Terug.png')}
-              style={{ width: 24, height: 24, tintColor: COLORS.foreground }}
-            />
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>Hoe voel je je?</Text>
-
-          <View style={{ width: 24 }} />
-        </View>
+        {/* header title and back arrow intentionally removed to match design */}
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + THEME.sizes.tabBarHeight + 24 }]} showsVerticalScrollIndicator={false}>
           
           {/* Mood card */}
           <View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}>
@@ -120,20 +137,25 @@ export default function MoodCheckInScreen() {
               multiline
               placeholder="Wat gebeurt er..."
               placeholderTextColor={COLORS.mutedForeground}
-              style={styles.noteInput}
+              style={[styles.noteInput, { minHeight: Platform.OS === 'web' ? 420 : 180 }]}
             />
           </View>
+          
         </ScrollView>
 
-        {/* Footer button */}
-        <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#00C853' }]}
-            onPress={handleSave}
-          >
-            <Text style={styles.buttonText}>TEST OPSLAAN</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Footer button (fixed above tab bar) - hide on web because BottomTabBar shows a FAB there */}
+        {Platform.OS !== 'web' && (
+          <View style={[styles.fixedFooterWrap, { left: 16, right: 16, bottom: insets.bottom + THEME.sizes.tabBarHeight + 48 }]} pointerEvents="box-none">
+            <View style={[styles.footerCard, { zIndex: 99999, elevation: 30 }]}> 
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: '#00C853', width: '100%' }]}
+                onPress={handleSave}
+              >
+                <Text style={styles.buttonText}>Ga verder</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -142,7 +164,7 @@ export default function MoodCheckInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFCDD2',
+    backgroundColor: COLORS.background,
   },
   keyboardAvoiding: {
     flex: 1,
@@ -163,12 +185,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconButton: {
-    padding: 0,
+    padding: 4,
   },
   iconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -179,8 +201,8 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   iconImage: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     tintColor: COLORS.foreground,
   },
   headerTitle: {
@@ -196,7 +218,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: THEME.spacing.m,
-    paddingTop: 172,
+    paddingTop: 120,
     paddingBottom: FOOTER_BOTTOM,
   },
 
@@ -224,10 +246,14 @@ const styles = StyleSheet.create({
   },
 
   topBar: {
+    position: 'absolute',
+    top: 56,
+    left: 24,
+    right: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 0,
+    zIndex: 10,
   },
 
   headerInner: {
@@ -261,7 +287,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     padding: THEME.spacing.m,
-    minHeight: 100,
+    minHeight: 180,
     fontSize: 14,
     color: COLORS.foreground,
     textAlignVertical: 'top',
@@ -273,8 +299,25 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingTop: 12,
   },
-  button: {
+  
+  fixedFooterWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    zIndex: 99999,
+    elevation: 30,
+  },
+  footerCard: {
+    width: '100%',
     borderRadius: 16,
+    padding: 8,
+    backgroundColor: COLORS.card,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  button: {
+    borderRadius: 20,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',

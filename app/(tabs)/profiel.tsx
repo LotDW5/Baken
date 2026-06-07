@@ -1,16 +1,17 @@
 import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import THEME from '@/constants/theme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
@@ -26,7 +27,7 @@ const BACKGROUNDS = [
   { id: 'butterfly', name: 'Vlinder', file: require('../../assets/images/butterfly-wild.jpg') },
   { id: 'grand-canyon', name: 'Grand Canyon', file: require('../../assets/images/grand-canyon-nature-footage-arizona-usa.jpg') },
   { id: 'trees-mountain', name: 'Bergbos', file: require('../../assets/images/green-yellow-trees-near-mountain-white-clouds-daytime.jpg') },
-  { id: 'forest-path', name: 'Wandelpad', file: require('../../assets/images/nature-journey-travel-trekking-summertime-concept-vertical-shot-pathway-park-leading-forested-area-outdoor-view-wooden-boardwalk-along-tall-pine-trees-morning-forest.jpg') },
+  { id: 'forest-path', name: 'Wandelpad', file: require('../../assets/images/green-yellow-trees-near-mountain-white-clouds-daytime.jpg') },
   { id: 'river-trees', name: 'Rivier', file: require('../../assets/images/river-trees.jpg') },
   { id: 'flowers-butterfly', name: 'Bloemen', file: require('../../assets/images/spring-scene-with-flowers-butterfly.jpg') },
   { id: 'lagoon', name: 'Lagune', file: require('../../assets/images/vertical-shot-beautiful-lagoon-surrounded-by-mossy-rocks-forest-skrad-croatia.jpg') },
@@ -43,6 +44,7 @@ export default function ProfileScreen() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
+  const [customBackgrounds, setCustomBackgrounds] = useState<Array<{id:string; uri:string}>>([]);
 
   useEffect(() => {
     loadPreferences();
@@ -55,12 +57,19 @@ export default function ProfileScreen() {
 
       const savedTheme = await AsyncStorage.getItem('appTheme');
       const savedBg = await AsyncStorage.getItem('homeBackground');
+      const savedCustom = await AsyncStorage.getItem('customBackgrounds');
 
       if (savedTheme) {
         setSelectedTheme(savedTheme);
         setTheme(getTheme(savedTheme));
       }
       if (savedBg) setSelectedBackground(savedBg);
+      if (savedCustom) {
+        try {
+          const parsed = JSON.parse(savedCustom);
+          setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
+        } catch (e) { setCustomBackgrounds([]); }
+      }
     } catch (e) {
       console.error(e);
     }
@@ -85,7 +94,44 @@ export default function ProfileScreen() {
     }
   };
 
-  const displayBackgrounds = BACKGROUNDS;
+  // Build grid: fixed order — plus tile, then built-in backgrounds (excluding the 3rd one per request), then custom backgrounds
+  const removedBuiltInId = BACKGROUNDS[2]?.id; // third item (index 2)
+  const builtInEntries = BACKGROUNDS
+    .filter(b => b.id !== removedBuiltInId)
+    .map(b => ({ id: b.id, file: b.file }));
+
+  const customEntries = customBackgrounds.map(c => ({ id: c.id, file: { uri: c.uri } }));
+
+  const displayBackgrounds = [
+    { id: 'add' },
+    ...builtInEntries,
+    ...customEntries,
+  ];
+
+  const handleAddBackground = async () => {
+    try {
+      const ImagePicker = await import('expo-image-picker');
+      const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
+      if (perm && perm.status !== 'granted') {
+        alert("Toegang tot je foto's is nodig om een achtergrond te kiezen.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      if (result && !result.cancelled) {
+        const newId = `custom-${Date.now()}`;
+        const newEntry = { id: newId, uri: result.uri };
+        const next = [newEntry, ...customBackgrounds];
+        setCustomBackgrounds(next);
+        await AsyncStorage.setItem('customBackgrounds', JSON.stringify(next));
+        // set selected to the new custom background
+        setSelectedBackground(newId);
+        await AsyncStorage.setItem('homeBackground', newId);
+      }
+    } catch (e) {
+      console.warn('[profiel] image picker error', e);
+      alert('Kon de fotokeuze niet openen (image picker niet beschikbaar).');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -154,26 +200,44 @@ export default function ProfileScreen() {
           <View style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Achtergrond</Text>
             <View style={styles.bgGrid}>
-              {displayBackgrounds.map((bg) => (
-                <TouchableOpacity
-                  key={bg.id}
-                  style={[
-                    styles.bgThumbWrapper,
-                    selectedBackground === bg.id && styles.bgThumbWrapperSelected,
-                  ]}
-                  onPress={() => handleBackgroundChange(bg.id)}
-                >
-                  <Image source={bg.file} style={styles.bgThumbImage} />
-
-                  {selectedBackground === bg.id && (
-                    <View style={styles.bgSelectedOverlay}>
-                      <View style={styles.bgSelectedCircle}>
-                        <Ionicons name="checkmark" size={32} color="#2D2D3A" />
+              {displayBackgrounds.map((bg) => {
+                if (bg.id === 'add') {
+                  return (
+                    <TouchableOpacity
+                      key="add"
+                      style={[styles.bgThumbWrapper, styles.addThumb]}
+                      onPress={handleAddBackground}
+                    >
+                      <View style={styles.addInner}>
+                        <Image source={require('../../assets/icons/Plus.png')} style={styles.addIcon} />
                       </View>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
+                    </TouchableOpacity>
+                  );
+                }
+
+                const isSelected = selectedBackground === bg.id;
+                const source = (bg as any).file ? (bg as any).file : (BACKGROUND_IMAGES as any)[bg.id];
+                return (
+                  <TouchableOpacity
+                    key={bg.id}
+                    style={[
+                      styles.bgThumbWrapper,
+                      isSelected && styles.bgThumbWrapperSelected,
+                    ]}
+                    onPress={() => handleBackgroundChange(bg.id)}
+                  >
+                    <Image source={source} style={styles.bgThumbImage} />
+
+                    {isSelected && (
+                      <View style={styles.bgSelectedOverlay}>
+                        <View style={styles.bgSelectedCircle}>
+                          <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: theme.color }]} />
+                        </View>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         </View>
@@ -187,7 +251,7 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: COLORS.background,
-    paddingTop: 116,
+    paddingTop: 144,
   },
 
   header: {
@@ -237,6 +301,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
 
   iconImage: {
@@ -248,13 +314,14 @@ const styles = StyleSheet.create({
   titleRow: {
     paddingHorizontal: 24,
     paddingTop: 8,
-    paddingBottom: 6,
+    paddingBottom: 24,
   },
 
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '700',
     color: COLORS.foreground,
+    textAlign: 'left',
   },
 
   headerIcons: {
@@ -264,7 +331,8 @@ const styles = StyleSheet.create({
 
   content: { 
     paddingHorizontal: 24, 
-    paddingVertical: 12,
+    paddingTop: 24,
+    paddingBottom: THEME.sizes.tabBarHeight + 32,
   },
 
   card: {
@@ -366,24 +434,29 @@ const styles = StyleSheet.create({
     rowGap: 14,
     alignItems: 'center',
   },
-
   colorSwatch: {
-    width: 68,
-    height: 68,
-    borderRadius: 20,
+    width: 64,
+    height: 64,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#CFCFD8',
+    borderWidth: 1.5,
+    borderColor: '#E6E8EE',
+    backgroundColor: '#F8F8FB',
   },
   colorSwatchSelected: {
-    borderWidth: 3,
-    borderColor: '#2D2D3A',
+    borderWidth: 2.5,
+    borderColor: '#1F2230',
+    backgroundColor: '#FBFAFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
   },
   colorDot: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -418,6 +491,25 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
   },
 
+  addThumb: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  addInner: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 14,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addPlus: {
+    // legacy: kept for reference
+  },
+
   bgThumbWrapperSelected: {
     borderWidth: 1.5,
     borderColor: '#1F2230',
@@ -441,11 +533,22 @@ const styles = StyleSheet.create({
   },
 
   bgSelectedCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bgCheckIcon: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
+  },
+  addIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+    tintColor: '#000',
   },
 });
