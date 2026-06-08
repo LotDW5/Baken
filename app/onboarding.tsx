@@ -1,7 +1,7 @@
 import { COLORS } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -117,6 +117,7 @@ const MOOD_ICONS: Record<string, any> = {
 
 export default function OnboardingScreen() {
   const navigation = useNavigation();
+  const route = useRoute<any>();
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const GRID_GAP = 10;
@@ -252,6 +253,11 @@ export default function OnboardingScreen() {
   const canAddCustomActivity = customActivityName.trim().length > 0;
 
   useEffect(() => {
+    const requested = (route.params as any)?.step as OnboardingStep | undefined;
+    if (requested && ['good', 'okay', 'bad', 'crisis', 'profile', 'welcome'].includes(requested)) {
+      setCurrentStep(requested as OnboardingStep);
+    }
+
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 
@@ -262,16 +268,16 @@ export default function OnboardingScreen() {
       showSub.remove();
       hideSub.remove();
     };
-  }, []);
+  }, [route]);
 
   if (currentStep === 'welcome') {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.welcomeContainer}>
           <Text style={styles.welcomeTitle}>Welkom!</Text>
-          <Text style={styles.welcomeSubtitle}>Deze app helpt je om beter voor jezelf te zorgen</Text>
+          <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen</Text>
         </View>
-        <View style={styles.footer}>
+        <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 16 }]}> 
           <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
@@ -725,8 +731,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+    paddingTop: 8,
+    paddingBottom: 12,
+    gap: 12,
+    backgroundColor: 'rgba(247, 245, 251, 0.98)',
+    borderTopWidth: 1,
+    borderRadius: 20,
   },
-
   button: {
     borderRadius: 18,
     paddingVertical: 17,

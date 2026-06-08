@@ -69,7 +69,7 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         
         {/* NONVERBAAL */}
-        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Nonverbaal')}>
+        <TouchableOpacity style={styles.card} onPress={() => { const parent = (navigation as any).getParent && (navigation as any).getParent(); (parent || navigation).navigate('Nonverbaal'); }}>
           <View style={styles.left}>
             <Image source={settingsIcons.nonverbal} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>
@@ -110,7 +110,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         {/* ACTIVITEITEN AANPASSEN */}
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good' })}>
           <View style={styles.left}>
             <Image source={settingsIcons.adjust} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>

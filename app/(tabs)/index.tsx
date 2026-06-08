@@ -177,7 +177,7 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={mood.id}
                   style={[styles.moodButton, { borderColor: mood.color }]}
-                  onPress={() => (navigation as any).navigate('Stemming', { mood: mood.id })}
+                  onPress={() => (navigation as any).navigate('Check-in', { screen: 'Stemming', params: { mood: mood.id } })}
                 >
                   <Image 
                     source={iconMap[mood.id]} 

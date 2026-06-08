@@ -7,6 +7,7 @@ import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
   const theme = getTheme();
+  // Always render the bottom tab bar for every route
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
@@ -58,6 +59,8 @@ export default function BottomTabBar(props: BottomTabBarProps) {
       })()}
       <View style={styles.container}>
       {state.routes.map((route, index) => {
+        // Don't render tab buttons for hidden helper routes
+        if (route.name === 'Nonverbaal' || route.name === 'NonverbaalMessage') return null;
         // Determine whether this tab is focused
         const focused = state.index === index;
         const descriptor = descriptors[route.key];

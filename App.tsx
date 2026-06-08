@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import 'react-native-gesture-handler';
 import Agenda from './app/(tabs)/agenda';
 import ContactForm from './app/(tabs)/contact-form';
@@ -12,6 +15,7 @@ import Nonverbaal from './app/(tabs)/nonverbaal';
 import NonverbaalMessage from './app/(tabs)/nonverbaal-bericht';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
+import Onboarding from './app/onboarding';
 import BottomTabBar from './components/ui/bottom-tab-bar';
 
 const Tab = createBottomTabNavigator();
@@ -28,8 +32,11 @@ function Tabs() {
       <Tab.Screen name="Check-in" component={CheckInStack} />
         <Tab.Screen name="Contacten" component={Contacten} />
       <Tab.Screen name="Agenda" component={Agenda} />
+      <Tab.Screen name="Nonverbaal" component={Nonverbaal} />
+      <Tab.Screen name="NonverbaalMessage" component={NonverbaalMessage} />
       <Tab.Screen name="Profiel" component={Profiel} options={{ tabBarStyle: { display: 'none' } }} />
       <Tab.Screen name="Instellingen" component={Instellingen} options={{ tabBarStyle: { display: 'none' } }} />
+      {/* Nonverbaal screens are full-screen Stack screens (no bottom tab) */}
       <Tab.Screen name="NieuweAfspraak" component={NieuweAfspraak} options={{ tabBarStyle: { display: 'none' } }} />
       <Tab.Screen name="Statistieken" component={Statistieken} />
     </Tab.Navigator>
@@ -37,13 +44,38 @@ function Tabs() {
 }
 
 export default function App() {
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    AsyncStorage.getItem('onboarding_completed')
+      .then(value => {
+        if (!mounted) return;
+        if (value === 'true') setInitialRoute('Main');
+        else setInitialRoute('Onboarding');
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setInitialRoute('Onboarding');
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  if (initialRoute === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Tabs} />
+        <Stack.Screen name="Onboarding" component={Onboarding} />
         <Stack.Screen name="ContactForm" component={ContactForm} />
-        <Stack.Screen name="Nonverbaal" component={Nonverbaal} />
-        <Stack.Screen name="NonverbaalMessage" component={NonverbaalMessage} />
+        {/* Nonverbaal screens moved into the Tab navigator so bottom tab is always visible */}
         {/* Profiel and Instellingen are now part of the bottom tabs to keep the tab bar visible */}
       </Stack.Navigator>
     </NavigationContainer>
