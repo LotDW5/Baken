@@ -121,7 +121,8 @@ export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const GRID_GAP = 10;
-  const cardWidth = (screenWidth - 32 - GRID_GAP) / 2;
+  // subtract 24px left + 24px right to keep cards 24px from edges
+  const cardWidth = (screenWidth - 48 - GRID_GAP) / 2;
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -660,7 +661,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   activitiesScroll: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     paddingBottom: 0,
   },
   categoryHeaderRow: {
