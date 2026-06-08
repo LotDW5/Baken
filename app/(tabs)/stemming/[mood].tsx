@@ -37,6 +37,7 @@ export default function MoodCheckInScreen() {
   const insets = useSafeAreaInsets();
   const { mood } = (route.params || {}) as { mood: string };
   const [moodNote, setMoodNote] = useState('');
+  const [isNoteFocused, setIsNoteFocused] = useState(false);
   const [theme, setTheme] = useState(getTheme());
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
@@ -137,7 +138,13 @@ export default function MoodCheckInScreen() {
               multiline
               placeholder="Wat gebeurt er..."
               placeholderTextColor={COLORS.mutedForeground}
-              style={[styles.noteInput, { minHeight: Platform.OS === 'web' ? 420 : 180 }]}
+              onFocus={() => setIsNoteFocused(true)}
+              onBlur={() => setIsNoteFocused(false)}
+              style={[
+                styles.noteInput,
+                (isNoteFocused || moodNote.trim() !== '') ? styles.noteInputFocus : null,
+                { minHeight: Platform.OS === 'web' ? 320 : 120, marginBottom: 8 },
+              ]}
             />
           </View>
           
@@ -145,13 +152,13 @@ export default function MoodCheckInScreen() {
 
         {/* Footer button (fixed above tab bar) - hide on web because BottomTabBar shows a FAB there */}
         {Platform.OS !== 'web' && (
-          <View style={[styles.fixedFooterWrap, { left: 16, right: 16, bottom: insets.bottom + THEME.sizes.tabBarHeight + 48 }]} pointerEvents="box-none">
+          <View style={[styles.fixedFooterWrap, { left: 24, right: 24, bottom: insets.bottom + THEME.sizes.tabBarHeight + 48 }]} pointerEvents="box-none">
             <View style={[styles.footerCard, { zIndex: 99999, elevation: 30 }]}> 
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: '#00C853', width: '100%' }]}
+                style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center' }]}
                 onPress={handleSave}
               >
-                <Text style={styles.buttonText}>Ga verder</Text>
+                <Text style={styles.modalPrimaryText}>Ga verder</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -164,7 +171,7 @@ export default function MoodCheckInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
   },
   keyboardAvoiding: {
     flex: 1,
@@ -194,11 +201,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 7,
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
   iconImage: {
     width: 20,
@@ -217,21 +221,45 @@ const styles = StyleSheet.create({
   /* CONTENT */
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: THEME.spacing.m,
-    paddingTop: 120,
+    paddingHorizontal: 24,
+    backgroundColor: COLORS.white,
+    paddingTop: 144,
     paddingBottom: FOOTER_BOTTOM,
   },
 
   moodCard: {
     borderRadius: 24,
     paddingVertical: 16,
-    paddingHorizontal: THEME.spacing.m,
+    paddingHorizontal: 24,
     alignItems: 'center',
     alignSelf: 'center',
     marginTop: 0,
     marginBottom: 24,
     width: '100%',
     maxWidth: CARD_MAX_WIDTH,
+  },
+  footerCard: {
+    width: '100%',
+    maxWidth: 393,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+  },
+  fixedFooterWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: THEME.sizes.tabBarHeight - 8,
+    alignItems: 'center',
+    zIndex: 9999,
+    elevation: 30,
   },
 
   headerContainer: {
@@ -240,7 +268,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: HEADER_HEIGHT,
-    paddingHorizontal: THEME.spacing.m,
+    paddingHorizontal: 24,
     paddingTop: THEME.spacing.s,
     zIndex: 20,
   },
@@ -258,7 +286,7 @@ const styles = StyleSheet.create({
 
   headerInner: {
     position: 'absolute',
-    top: 108,
+    top: 136,
     left: THEME.spacing.m,
     right: THEME.spacing.m,
     flexDirection: 'row',
@@ -282,7 +310,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   noteInput: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#F9F8FC',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -292,44 +320,22 @@ const styles = StyleSheet.create({
     color: COLORS.foreground,
     textAlignVertical: 'top',
   },
-
+  noteInputFocus: {
+    borderColor: '#6B5CE7',
+    shadowColor: '#6B5CE7',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    // web focus outline
+    outlineColor: '#6B5CE7' as any,
+    outlineWidth: 1 as any,
+    outlineStyle: 'solid' as any,
+  },
   /* FOOTER */
   footer: {
     paddingHorizontal: THEME.spacing.m,
     paddingBottom: 24,
     paddingTop: 12,
   },
-  
-  fixedFooterWrap: {
-    position: 'absolute',
-    alignItems: 'center',
-    zIndex: 99999,
-    elevation: 30,
-  },
-  footerCard: {
-    width: '100%',
-    borderRadius: 16,
-    padding: 8,
-    backgroundColor: COLORS.card,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-  },
-  button: {
-    borderRadius: 20,
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    width: '100%',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.white,
-  },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, width: 160 },
+  modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
 });

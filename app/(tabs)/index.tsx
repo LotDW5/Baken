@@ -23,7 +23,7 @@ const BACKGROUND_IMAGES: Record<string, any> = {
   'waterfall': require('@/assets/images/waterfall-chae-son-national-park-lampang-thailand.jpg'),
 };
 
-export default function HomeScreen() {
+function HomeContent() {
   const navigation = useNavigation<any>();
   const [theme, setTheme] = useState(getTheme());
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
@@ -194,6 +194,25 @@ export default function HomeScreen() {
   );
 }
 
+// Wrap HomeContent and the staging screens in a Stack so nested navigation works
+import { createStackNavigator } from '@react-navigation/stack';
+import MoodCheckInScreen from './stemming/[mood]';
+import ActivityDetail from './stemming/[mood]/[activity]';
+import ActivitiesScreen from './stemming/[mood]/activiteiten';
+
+const Stack = createStackNavigator();
+
+export default function CheckInStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={HomeContent} />
+      <Stack.Screen name="Stemming" component={MoodCheckInScreen} />
+      <Stack.Screen name="Activiteiten" component={ActivitiesScreen} />
+      <Stack.Screen name="ActivityDetail" component={ActivityDetail} />
+    </Stack.Navigator>
+  );
+}
+
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
@@ -302,7 +321,7 @@ const styles = StyleSheet.create({
   weekTrackerWrapper: {
     marginBottom: 12,
     position: 'absolute',
-    top: 160,
+    top: 144,
     left: THEME.spacing.l,
     right: THEME.spacing.l,
     borderRadius: 18,

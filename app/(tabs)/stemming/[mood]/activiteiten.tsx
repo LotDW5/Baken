@@ -4,13 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -25,6 +25,9 @@ const DEFAULT_BY_MOOD: Record<string, string[]> = {
   bad: ['Ademhalingsoefeningen doen', 'Mediteren', 'Bellen met vrienden', 'Naar buiten gaan'],
   crisis: ['Bellen met vrienden', 'Huisdier knuffelen', 'Slapen', 'Bidden'],
 };
+
+// Layout constants
+const CARD_MAX_WIDTH = 393;
 
 const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Dansen': 'Dans op muziek die je fijn vindt',
@@ -184,38 +187,27 @@ export default function ActivitiesScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.headerInner}>
-          <TouchableOpacity onPress={() => (navigation as any).goBack()} style={styles.backButton}>
-            <Image source={require('../../../../assets/icons/Terug.png')} style={{ width: 24, height: 24, tintColor: COLORS.foreground }} />
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>Hoe voel je je?</Text>
-
-          <View style={{ width: 24 }} />
-        </View>
+        <View style={styles.headerInner} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Mood Card */}
-        <View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}>
-          <View style={[styles.moodIconCircle, { borderColor: selectedMood.color }]}>
-            <Image
-              source={getMoodIconSource(selectedMood.id)}
-              style={{ width: 28, height: 28, tintColor: selectedMood.color }}
-              resizeMode="contain"
-            />
-          </View>
-          <Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>
-            Ik voel me {selectedMood.label.toLowerCase()}
-          </Text>
+        {/* mood card sits directly under header (no extra page title) */}
+
+        {/* Mood Card styled like Contacten's empty card */}
+        <View style={[styles.moodCard, { backgroundColor: selectedMood.bgColor }]}> 
+          <Image
+            source={getMoodIconSource(selectedMood.id)}
+            style={{ width: 60, height: 60, tintColor: selectedMood.color }}
+            resizeMode="contain"
+          />
+          <Text style={[styles.moodCardTitle, { color: COLORS.foreground }]}>Ik voel me {selectedMood.label.toLowerCase()}</Text>
         </View>
 
         {/* Activities Section */}
         <View style={styles.activitiesSection}>
           <View style={styles.activitiesTitleContainer}>
-            <Text style={styles.activitiesSectionTitle}>Dit kan je helpen</Text>
+            <Text style={styles.activitiesSectionTitle}>Kies een activiteit die je kan helpen</Text>
           </View>
-          <Text style={styles.activitiesSubtitle}>Klik op een activiteit voor meer informatie</Text>
 
           {/* Show exactly 4 activities chosen from onboarding (or defaults filled) */}
           {suggestions.slice(0, 4).map((activity, idx) => (
@@ -249,14 +241,22 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Footer Buttons */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.button, { borderColor: COLORS.foreground, borderWidth: 2, backgroundColor: 'transparent' }]}
-          onPress={handleSkip}
-        >
-          <Text style={[styles.buttonText, { color: COLORS.foreground }]}>Overslaan</Text>
-        </TouchableOpacity>
+      {/* Floating footer card with outlined button (sits over activities) */}
+      <View style={styles.fixedFooterWrap} pointerEvents="box-none">
+        <View style={styles.footerCard}>
+          <TouchableOpacity
+            style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center' }]}
+            onPress={() => {
+              if (selectedActivity) {
+                handleDoActivity(selectedActivity);
+              } else {
+                handleSkip();
+              }
+            }}
+          >
+            <Text style={styles.modalPrimaryText}>Ga verder</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -265,13 +265,13 @@ export default function ActivitiesScreen() {
 const styles: any = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
   },
   topBar: {
     position: 'absolute',
-    top: THEME.spacing.l,
-    left: THEME.spacing.l,
-    right: THEME.spacing.l,
+    top: 56,
+    left: 24,
+    right: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -287,11 +287,8 @@ const styles: any = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 7,
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
   iconImage: {
     width: 20,
@@ -318,15 +315,19 @@ const styles: any = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 24,
+    paddingTop: 144,
+    paddingBottom: THEME.sizes.tabBarHeight + 140,
   },
   moodCard: {
     borderRadius: 24,
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 0,
     marginBottom: 24,
+    width: '100%',
+    maxWidth: CARD_MAX_WIDTH,
   },
   headerContainer: {
     position: 'absolute',
@@ -339,7 +340,10 @@ const styles: any = StyleSheet.create({
     zIndex: 20,
   },
   headerInner: {
-    marginTop: THEME.spacing.m,
+    position: 'absolute',
+    top: 136,
+    left: THEME.spacing.m,
+    right: THEME.spacing.m,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -370,15 +374,11 @@ const styles: any = StyleSheet.create({
     gap: 8,
   },
   activitiesSectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: COLORS.foreground,
   },
-  activitiesSubtitle: {
-    fontSize: 12,
-    color: COLORS.mutedForeground,
-    marginBottom: 16,
-  },
+  
   horizontalList: {
     paddingVertical: 6,
     paddingBottom: 12,
@@ -462,7 +462,7 @@ const styles: any = StyleSheet.create({
     fontSize: 14,
     color: COLORS.foreground,
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   primaryAction: {
     paddingVertical: 10,
@@ -490,6 +490,31 @@ const styles: any = StyleSheet.create({
     paddingBottom: 24,
     paddingTop: 12,
   },
+  fixedFooterWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: THEME.sizes.tabBarHeight - 8,
+    alignItems: 'center',
+    zIndex: 9999,
+    elevation: 30,
+  },
+  footerCard: {
+    width: '100%',
+    maxWidth: CARD_MAX_WIDTH,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+  },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, width: 160 },
+  modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
   button: {
     borderRadius: 20,
     paddingVertical: 14,

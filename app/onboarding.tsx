@@ -27,9 +27,9 @@ const ACTIVITY_CATEGORIES = [
       { name: 'Een warme douche nemen', icon: require('../assets/icons/Water.png') },
       { name: 'Een bad nemen', icon: require('../assets/icons/Water.png') },
       { name: 'Ontspanningsmuziek luisteren', icon: require('../assets/icons/Muziek.png') },
-      { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Buiten.png') },
-      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Natuur.png') },
-      { name: 'Iemand knuffelen', icon: require('../assets/icons/Huisdier.png') }
+      { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Natuur.png') },
+      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Bos.png') },
+      { name: 'Iemand knuffelen', icon: require('../assets/icons/Hart.png') }
     ]
   },
   {
@@ -431,15 +431,15 @@ export default function OnboardingScreen() {
                         ]}
                         onPress={() => handleActivityToggle(currentMood.id, activity.name)}
                       >
-                              {typeof activity.icon === 'number' ? (
-                                <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? PRIMARY_COLOR : COLORS.mutedForeground }]} />
-                              ) : (
+                              {typeof activity.icon === 'string' ? (
                                 <Ionicons
                                   name={activity.icon as any}
                                   size={28}
                                   color={isSelected ? PRIMARY_COLOR : COLORS.mutedForeground}
                                   style={styles.activityIcon}
                                 />
+                              ) : (
+                                <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? PRIMARY_COLOR : COLORS.mutedForeground }]} />
                               )}
                         <Text
                           style={[

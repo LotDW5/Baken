@@ -4,14 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Alert,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -201,6 +201,7 @@ export default function AgendaScreen() {
             {calendarDays(currentMonth).map((day, idx) => {
               const isEmpty = day === null;
               const isSelected = day && selectedDateString() === isoForDay(day);
+              const hasEvent = !!(day && events.some(e => e.date === isoForDay(day)));
 
               return (
                 <TouchableOpacity
@@ -212,6 +213,9 @@ export default function AgendaScreen() {
                   {isEmpty ? <View /> : (
                     <View style={[styles.dayNumberWrap, isSelected && { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.22, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } }]}>
                       <Text style={[styles.dayNumber, isSelected && { color: '#fff' }]}>{day.getDate()}</Text>
+                      {hasEvent && !isSelected && (
+                        <View style={[styles.eventDot, { backgroundColor: theme.color, left: 16, bottom: -5, position: 'absolute' }]} />
+                      )}
                     </View>
                   )}
                 </TouchableOpacity>
@@ -637,6 +641,12 @@ const styles = StyleSheet.create({
     color: COLORS.foreground,
     fontWeight: '700',
     fontSize: 14,
+  },
+  eventDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 6,
   },
   centerButtonWrap: {
     alignItems: 'center',

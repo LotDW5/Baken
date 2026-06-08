@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   },
   fabWrap: {
     position: 'absolute',
-    left: THEME.spacing.s,
-    right: THEME.spacing.s,
+    left: THEME.spacing.l,
+    right: THEME.spacing.l,
     bottom: THEME.sizes.tabBarHeight + 48,
     alignItems: 'center',
     zIndex: 9999,
