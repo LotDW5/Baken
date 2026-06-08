@@ -69,7 +69,7 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         
         {/* NONVERBAAL */}
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Nonverbaal')}>
           <View style={styles.left}>
             <Image source={settingsIcons.nonverbal} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>
@@ -77,7 +77,7 @@ export default function SettingsScreen() {
               <Text style={styles.cardSubtitle}>Communiceer via tekst</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* NOTIFICATIES */}
         <View style={styles.card}>

@@ -8,6 +8,8 @@ import Contacten from './app/(tabs)/contacten';
 import CheckInStack from './app/(tabs)/index';
 import Instellingen from './app/(tabs)/instellingen';
 import NieuweAfspraak from './app/(tabs)/nieuwe-afspraak';
+import Nonverbaal from './app/(tabs)/nonverbaal';
+import NonverbaalMessage from './app/(tabs)/nonverbaal-bericht';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
 import BottomTabBar from './components/ui/bottom-tab-bar';
@@ -40,6 +42,8 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Tabs} />
         <Stack.Screen name="ContactForm" component={ContactForm} />
+        <Stack.Screen name="Nonverbaal" component={Nonverbaal} />
+        <Stack.Screen name="NonverbaalMessage" component={NonverbaalMessage} />
         {/* Profiel and Instellingen are now part of the bottom tabs to keep the tab bar visible */}
       </Stack.Navigator>
     </NavigationContainer>
