@@ -10,7 +10,7 @@ import Instellingen from './app/(tabs)/instellingen';
 import NieuweAfspraak from './app/(tabs)/nieuwe-afspraak';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
-import BottomTabBar from './components/ui/bottom-tab-bar.tsx';
+import BottomTabBar from './components/ui/bottom-tab-bar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -26,9 +26,9 @@ function Tabs() {
       <Tab.Screen name="Check-in" component={CheckInStack} />
         <Tab.Screen name="Contacten" component={Contacten} />
       <Tab.Screen name="Agenda" component={Agenda} />
-      <Tab.Screen name="Profiel" component={Profiel} options={{ tabBarVisible: false }} />
-      <Tab.Screen name="Instellingen" component={Instellingen} options={{ tabBarVisible: false }} />
-      <Tab.Screen name="NieuweAfspraak" component={NieuweAfspraak} options={{ tabBarVisible: false }} />
+      <Tab.Screen name="Profiel" component={Profiel} options={{ tabBarStyle: { display: 'none' } }} />
+      <Tab.Screen name="Instellingen" component={Instellingen} options={{ tabBarStyle: { display: 'none' } }} />
+      <Tab.Screen name="NieuweAfspraak" component={NieuweAfspraak} options={{ tabBarStyle: { display: 'none' } }} />
       <Tab.Screen name="Statistieken" component={Statistieken} />
     </Tab.Navigator>
   );

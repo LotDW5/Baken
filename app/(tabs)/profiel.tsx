@@ -1,19 +1,20 @@
 import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
-import THEME from '@/constants/theme';
+import themeConstants from '@/constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-// eslint-disable-next-line import/no-named-as-default
+ 
 import applyShadow from '@/utils/shadow';
 
 interface UserData {
@@ -44,7 +45,7 @@ export default function ProfileScreen() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
-  const [customBackgrounds, setCustomBackgrounds] = useState<Array<{id:string; uri:string}>>([]);
+  const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
 
   useEffect(() => {
     loadPreferences();
@@ -68,7 +69,7 @@ export default function ProfileScreen() {
         try {
           const parsed = JSON.parse(savedCustom);
           setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
-        } catch (e) { setCustomBackgrounds([]); }
+        } catch { setCustomBackgrounds([]); }
       }
     } catch (e) {
       console.error(e);
@@ -110,7 +111,12 @@ export default function ProfileScreen() {
 
   const handleAddBackground = async () => {
     try {
-      const ImagePicker = await import('expo-image-picker');
+      if (Platform.OS === 'web') {
+        alert('Fotokeuze is niet beschikbaar in de webversie.');
+        return;
+      }
+          // eslint-disable-next-line import/no-unresolved
+          const ImagePicker = await import('expo-image-picker');
       const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
       if (perm && perm.status !== 'granted') {
         alert("Toegang tot je foto's is nodig om een achtergrond te kiezen.");
@@ -150,11 +156,13 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
-        <View style={styles.titleRow}>
-          <Text style={styles.headerTitle}>Mijn Profiel</Text>
+      <View style={styles.pageHeader}>
+        <View style={styles.titleWrap}>
+          <Text style={styles.pageTitle}>Mijn Profiel</Text>
         </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* PROFILE CARD */}
         <View style={styles.cardProfile}>
@@ -216,7 +224,7 @@ export default function ProfileScreen() {
                 }
 
                 const isSelected = selectedBackground === bg.id;
-                const source = (bg as any).file ? (bg as any).file : (BACKGROUND_IMAGES as any)[bg.id];
+                const source = (bg as any).file ?? require('../../assets/images/butterfly-wild.jpg');
                 return (
                   <TouchableOpacity
                     key={bg.id}
@@ -250,8 +258,8 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: COLORS.background,
-    paddingTop: 144,
+    backgroundColor: COLORS.white,
+    overflow: 'hidden',
   },
 
   header: {
@@ -300,10 +308,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
   },
+  
 
   iconImage: {
     width: 20,
@@ -311,18 +319,20 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 
-  titleRow: {
+  pageHeader: {
+    marginTop: 144,
+    marginBottom: 24,
     paddingHorizontal: 24,
-    paddingTop: 8,
-    paddingBottom: 24,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
   },
 
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.foreground,
-    textAlign: 'left',
-  },
+  titleWrap: { flex: 1, alignItems: 'flex-start' },
+
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
 
   headerIcons: {
     flexDirection: 'row',
@@ -331,16 +341,18 @@ const styles = StyleSheet.create({
 
   content: { 
     paddingHorizontal: 24, 
-    paddingTop: 24,
-    paddingBottom: THEME.sizes.tabBarHeight + 32,
+    paddingTop: 0,
+    paddingBottom: themeConstants.sizes.tabBarHeight + 32,
   },
 
   card: {
     backgroundColor: COLORS.card,
-    borderRadius: 26,
+    borderRadius: 16,
     padding: 22,
     marginBottom: 24,
-    marginHorizontal: 18,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     shadowColor: '#000',
     shadowOpacity: 0.04,
     shadowRadius: 18,
@@ -349,19 +361,24 @@ const styles = StyleSheet.create({
   },
   cardProfile: {
     backgroundColor: COLORS.card,
-    borderRadius: 26,
+    borderRadius: 16,
     paddingVertical: 28,
     paddingHorizontal: 20,
+    marginTop: 0,
     marginBottom: 18,
-    marginHorizontal: 12,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     ...applyShadow({ opacity: 0.04, radius: 18, offsetX: 0, offsetY: 8, elevation: 4 }),
   },
   cardOption: {
     backgroundColor: COLORS.card,
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 18,
     marginBottom: 18,
-    marginHorizontal: 12,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     shadowColor: '#000',
     shadowOpacity: 0.03,
     shadowRadius: 12,

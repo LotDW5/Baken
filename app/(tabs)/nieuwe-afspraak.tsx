@@ -1,24 +1,23 @@
 import { COLORS, getTheme } from '@/constants/colors';
-import THEME from '@/constants/theme';
+import themeConstants from '@/constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Platform } from 'react-native';
-import * as Calendar from 'expo-calendar';
+// DateTimePicker is dynamically imported on native platforms to avoid web bundling issues
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Image,
-  Linking,
-  SafeAreaView,
+  Linking, Platform, SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DateTimePickerShim from './DateTimePickerShim';
+let Calendar: any = null;
 
 const STORAGE_KEY = 'calendar_events';
 
@@ -38,6 +37,7 @@ export default function NieuweAfspraak() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [timeDate, setTimeDate] = useState<Date>(new Date());
+  const [DateTimePickerComponent, setDateTimePickerComponent] = useState<any>(null);
   const [footerHeight, setFooterHeight] = useState<number>(0);
   const scrollRef = useRef<any>(null);
 
@@ -48,7 +48,7 @@ export default function NieuweAfspraak() {
       const t = setTimeout(() => {
         try {
           scrollRef.current?.scrollToEnd?.({ animated: true });
-        } catch (e) {
+        } catch {
           // ignore
         }
       }, 120);
@@ -110,12 +110,21 @@ export default function NieuweAfspraak() {
       if (addToGoogle) {
         if (Platform.OS !== 'web') {
           try {
+            if (!Calendar) {
+              Calendar = await import('expo-calendar');
+            }
             // request permissions and create event
             const status = await Calendar.requestCalendarPermissionsAsync();
             if (status.granted) {
               // find default calendar
-              const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-              let defaultCalendar = calendars.find((c) => c.allowsModifications) || calendars[0];
+              const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT) || [];
+              const defaultCalendar = (calendars.length > 0)
+                ? (calendars.find((c: any) => c.allowsModifications) || calendars[0])
+                : null;
+              if (!defaultCalendar) {
+                Alert.alert('Geen kalender', 'Er zijn geen beschikbare kalenders om het evenement aan toe te voegen.');
+                return;
+              }
               // create start/end
               let start: Date;
               let end: Date;
@@ -188,7 +197,7 @@ export default function NieuweAfspraak() {
         const end = `${String(next.getFullYear())}${String(next.getMonth()+1).padStart(2,'0')}${String(next.getDate()).padStart(2,'0')}`;
         dates = `&dates=${start}/${end}`;
       }
-    } catch (err) {
+    } catch {
       // ignore and leave dates empty
     }
     const ctz = '&ctz=Europe%2FAmsterdam';
@@ -256,7 +265,7 @@ export default function NieuweAfspraak() {
         ref={scrollRef}
         contentContainerStyle={[
           styles.formContent,
-          { paddingBottom: insets.bottom + THEME.sizes.tabBarHeight + footerHeight + 24 + 24 },
+          { paddingBottom: insets.bottom + themeConstants.sizes.tabBarHeight + footerHeight + 24 + 24 },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -294,7 +303,7 @@ export default function NieuweAfspraak() {
           <View style={[{ width: 140 }, styles.inputGroup]}>
             <Text style={styles.inputLabel}>Tijd</Text>
             <View style={[styles.inputWrapper, focusedField === 'time' ? { borderColor: '#6B5CE7' } : null]}>
-              <TouchableOpacity activeOpacity={0.8} onPress={() => {
+              <TouchableOpacity activeOpacity={0.8} onPress={async () => {
                 // parse existing time if present
                 if (time && /^(\d{1,2}):(\d{2})$/.test(time)) {
                   const [hh, mm] = time.split(':').map(Number);
@@ -304,15 +313,24 @@ export default function NieuweAfspraak() {
                 } else {
                   setTimeDate(new Date());
                 }
-                setShowTimePicker(true);
+                if (Platform.OS === 'web') {
+                  const defaultValue = time || '';
+                  const v = prompt('Kies tijd (HH:MM)', defaultValue);
+                  if (v) setTime(v);
+                } else {
+                  if (!DateTimePickerComponent) {
+                    setDateTimePickerComponent(() => DateTimePickerShim);
+                  }
+                  setShowTimePicker(true);
+                }
               }}>
                 <Text style={styles.input}>{time || 'UU:MM'}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-        {showTimePicker && (
-          <DateTimePicker
+        {showTimePicker && Platform.OS !== 'web' && DateTimePickerComponent && (
+          <DateTimePickerComponent
             value={timeDate}
             mode="time"
             is24Hour={true}
@@ -379,7 +397,7 @@ export default function NieuweAfspraak() {
         </View>
       </ScrollView>
 
-        <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight + 24 }} pointerEvents="box-none">
+        <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + themeConstants.sizes.tabBarHeight + 24 }} pointerEvents="box-none">
           <View style={styles.formFooter} pointerEvents="auto" onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}>
             <View style={styles.buttonRow}>
               <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color }]} onPress={save}>

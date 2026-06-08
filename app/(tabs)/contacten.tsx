@@ -347,7 +347,6 @@ const styles = StyleSheet.create<any>({
   editLink: { marginTop: 4, fontSize: 14, fontWeight: '600' },
   topBar: { position: 'absolute', top: 56, left: 24, right: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 },
   plusIcon: { width: 18, height: 18, tintColor: '#fff', resizeMode: 'contain' },
-  fabHeader: { marginLeft: 'auto', zIndex: 70, alignSelf: 'center' },
   fabHeader: { position: 'absolute', right: 24, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
   fabCircle: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
   fabIcon: { width: 18, height: 18, tintColor: '#fff', resizeMode: 'contain' },

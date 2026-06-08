@@ -1,9 +1,8 @@
 import { COLORS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import applyShadow from '@/utils/shadow';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// eslint-disable-next-line import/no-named-as-default
-import applyShadow from '@/utils/shadow';
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
@@ -25,7 +24,7 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
           if (nestedActiveName === 'Stemming') {
             const onPress = () => {
-              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { mood: moodParam } } as any);
+              (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { mood: moodParam } });
             };
 
             return (
@@ -43,7 +42,7 @@ export default function BottomTabBar(props: BottomTabBarProps) {
               console.log('[bottom-tab-bar] Overslaan FAB pressed');
               // Navigate with a changing param to ensure the screen reacts when focused
               console.log('[bottom-tab-bar] navigating to Activiteiten with __overslaan param');
-              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } } as any);
+              (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } });
             };
 
             return (
@@ -62,9 +61,12 @@ export default function BottomTabBar(props: BottomTabBarProps) {
         // Determine whether this tab is focused
         const focused = state.index === index;
         const descriptor = descriptors[route.key];
-        // Allow screens to hide their tab via `options.tabBarVisible === false`
-        if (descriptor && descriptor.options && descriptor.options.tabBarVisible === false) {
-          return null;
+        // Allow screens to hide their tab via `options.tabBarVisible === false` or `options.tabBarStyle.display === 'none'`
+        if (descriptor && descriptor.options) {
+          const opts: any = descriptor.options as any;
+          if (opts.tabBarVisible === false || (opts.tabBarStyle && (opts.tabBarStyle as any).display === 'none')) {
+            return null;
+          }
         }
         const label = descriptor.options.title ?? route.name;
         const icons: Record<string, any> = {

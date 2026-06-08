@@ -1,4 +1,5 @@
 import { COLORS, getTheme } from '@/constants/colors';
+import THEME from '@/constants/theme';
 import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -59,15 +60,14 @@ export default function StatistiekenScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.backButton} onPress={() => (navigation as any).goBack()}>
-            <Ionicons name="arrow-back" size={26} color={COLORS.foreground} />
-          </TouchableOpacity>
-
-          <Text style={styles.title}>Jouw statistieken</Text>
+      <View style={styles.pageHeader}>
+        <View style={styles.titleWrap}>
+          <Text style={styles.pageTitle}>Mijn statistieken</Text>
         </View>
+      </View>
 
+      <View style={styles.pageContent}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.filterRow}>
           <TouchableOpacity style={styles.periodButton} activeOpacity={0.8}>
             <Text style={styles.periodText}>{selectedPeriod}</Text>
@@ -127,7 +127,8 @@ export default function StatistiekenScreen() {
             );
           })}
         </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       <View style={styles.bottomSpacer} />
     </SafeAreaView>
@@ -159,7 +160,8 @@ const styles = StyleSheet.create<any>({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
   },
   iconImage: {
     width: 20,
@@ -168,27 +170,28 @@ const styles = StyleSheet.create<any>({
   },
   content: {
     paddingHorizontal: 24,
-    paddingTop: 116,
+    paddingTop: 0,
     paddingBottom: 32,
   },
-  headerRow: {
+  pageContent: {
+    paddingTop: 0,
+    flex: 1,
+    paddingBottom: THEME.sizes.tabBarHeight + 48,
+    backgroundColor: COLORS.white,
+    overflow: 'hidden',
+  },
+  pageHeader: {
+    marginTop: 144,
+    marginBottom: 24,
+    paddingHorizontal: 24,
+    zIndex: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    justifyContent: 'flex-start',
+    position: 'relative',
   },
-  backButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.foreground,
-    flexShrink: 1,
-  },
+  titleWrap: { flex: 1, alignItems: 'flex-start' },
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
   filterRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

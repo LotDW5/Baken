@@ -1,17 +1,16 @@
 import { COLORS, getTheme } from '@/constants/colors';
-import applyShadow from '@/utils/shadow';
+import themeConstants from '@/constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 export default function SettingsScreen() {
@@ -28,6 +27,7 @@ export default function SettingsScreen() {
     if (saved !== null) {
       setNotificationsEnabled(saved === 'true');
     }
+    // nonverbal setting removed
   };
 
   const handleNotificationsChange = async (value: boolean) => {
@@ -36,6 +36,7 @@ export default function SettingsScreen() {
   };
 
   const settingsIcons = {
+    nonverbal: require('../../assets/icons/Nonverbaal.png'),
     notifications: require('../../assets/icons/Notificaties.png'),
     help: require('../../assets/icons/Help.png'),
     adjust: require('../../assets/icons/Aanpassen.png'),
@@ -59,12 +60,25 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.titleRow}>
-        <Text style={styles.headerTitle}>Instellingen</Text>
+      <View style={styles.pageHeader}>
+        <View style={styles.titleWrap}>
+          <Text style={styles.pageTitle}>Instellingen</Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         
+        {/* NONVERBAAL */}
+        <View style={styles.card}>
+          <View style={styles.left}>
+            <Image source={settingsIcons.nonverbal} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View>
+              <Text style={styles.cardTitle}>Nonverbale modus</Text>
+              <Text style={styles.cardSubtitle}>Communiceer via tekst</Text>
+            </View>
+          </View>
+        </View>
+
         {/* NOTIFICATIES */}
         <View style={styles.card}>
           <View style={styles.left}>
@@ -75,12 +89,13 @@ export default function SettingsScreen() {
             </View>
           </View>
 
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={handleNotificationsChange}
-            trackColor={{ false: COLORS.muted, true: theme.bgColor }}
-            thumbColor={notificationsEnabled ? theme.color : COLORS.mutedForeground}
-          />
+          <TouchableOpacity
+            onPress={() => handleNotificationsChange(!notificationsEnabled)}
+            activeOpacity={0.9}
+            style={[styles.webSwitch, notificationsEnabled && { backgroundColor: theme.color }]}
+          >
+            <View style={[styles.webSwitchThumb, notificationsEnabled && { transform: [{ translateX: 26 }] }]} />
+          </TouchableOpacity>
         </View>
 
         {/* HELP & SUPPORT */}
@@ -127,7 +142,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    paddingTop: 144,
+    overflow: 'hidden',
   },
 
   topIconsRow: {
@@ -159,26 +174,35 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.95)',
     alignItems: 'center',
     justifyContent: 'center',
-    ...applyShadow({ opacity: 0.18, radius: 12, offsetX: 0, offsetY: 4, elevation: 7 }),
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
   },
+  
   iconImage: {
     width: 20,
     height: 20,
     resizeMode: 'contain',
   },
 
-  titleRow: {
+  pageHeader: {
+    marginTop: 144,
+    marginBottom: 24,
     paddingHorizontal: 24,
-    paddingTop: 8,
-    paddingBottom: 24,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
   },
+
+  titleWrap: { flex: 1, alignItems: 'flex-start' },
+
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
 
   content: {
     paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 24,
+    paddingTop: 0,
+    paddingBottom: themeConstants.sizes.tabBarHeight + 32,
     gap: 16,
   },
 
@@ -215,4 +239,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.mutedForeground,
   },
+  notificationToggle: {
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    minWidth: 88,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#6B5CE7',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  notificationToggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  webSwitch: { width: 56, height: 28, borderRadius: 20, backgroundColor: '#E6E6E9', justifyContent: 'center', padding: 4 },
+  webSwitchThumb: { width: 18, height: 18, borderRadius: 9, backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
 });
