@@ -24,79 +24,78 @@ const ACTIVITY_CATEGORIES = [
   {
     name: 'Zintuiglijke rust',
     activities: [
-      { name: 'Een warme douche nemen', icon: 'water' },
-      { name: 'Een bad nemen', icon: 'water' },
-      { name: 'Ontspanningsmuziek luisteren', icon: 'musical-notes' },
-      { name: 'Naar buiten gaan', icon: 'leaf' },
-      { name: 'In het zonlicht zitten', icon: 'sunny' },
-      { name: 'Iemand knuffelen', icon: 'heart' }
+      { name: 'Een warme douche nemen', icon: require('../assets/icons/Water.png') },
+      { name: 'Een bad nemen', icon: require('../assets/icons/Water.png') },
+      { name: 'Ontspanningsmuziek luisteren', icon: require('../assets/icons/Muziek.png') },
+      { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Buiten.png') },
+      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Zon.png') },
+      { name: 'Iemand knuffelen', icon: require('../assets/icons/Huisdier.png') }
     ]
   },
   {
     name: 'Mentale rust',
     activities: [
-      { name: 'Een boek lezen', icon: 'book' },
-      { name: 'Serie of film kijken', icon: 'film' },
-      { name: 'Podcast luisteren', icon: 'ear' },
-      { name: 'Mediteren', icon: 'flower' },
-      { name: 'Ademhalingsoefeningen doen', icon: 'accessibility' }
+      { name: 'Een boek lezen', icon: require('../assets/icons/Boek.png') },
+      { name: 'Serie of film kijken', icon: require('../assets/icons/TV.png') },
+      { name: 'Podcast luisteren', icon: require('../assets/icons/Muziek-1.png') },
+      { name: 'Mediteren', icon: require('../assets/icons/Tijd.png') },
+      { name: 'Ademhalingsoefeningen', icon: require('../assets/icons/Wind.png') }
     ]
   },
   {
     name: 'Creatieve rust',
     activities: [
-      { name: 'Tekenen of schilderen', icon: 'brush' },
-      { name: 'Iets opschrijven', icon: 'document-text' },
-      { name: 'Muziek maken', icon: 'musical-note' },
-      { name: 'Breien of haken', icon: 'create' },
-      { name: 'Knutselen', icon: 'cut' }
+      { name: 'Tekenen of schilderen', icon: require('../assets/icons/Schilderen.png') },
+      { name: 'Iets opschrijven', icon: require('../assets/icons/Schrijven.png') },
+      { name: 'Muziek maken', icon: require('../assets/icons/Muziek.png') },
+      { name: 'Breien of haken', icon: require('../assets/icons/Breien.png') },
+      { name: 'Knutselen', icon: require('../assets/icons/Knutselen.png') }
     ]
   },
   {
     name: 'Fysieke rust',
     activities: [
-      { name: 'Wandelen', icon: 'walk' },
-      { name: 'Yoga doen', icon: 'body' },
-      { name: 'Stretchen', icon: 'fitness' },
-      { name: 'Dansen', icon: 'pulse' },
-      { name: 'Tuinieren', icon: 'leaf' },
-      { name: 'Slapen', icon: 'moon' }
+      { name: 'Wandelen', icon: require('../assets/icons/Wandelen.png') },
+      { name: 'Sporten', icon: require('../assets/icons/Sporten.png') },
+      { name: 'Yoga doen', icon: require('../assets/icons/Yoga.png') },
+      { name: 'Slapen of een dutje doen', icon: require('../assets/icons/Slapen.png') },
+      { name: 'Dansen', icon: require('../assets/icons/Dansen.png') },
+      { name: 'Tuinieren', icon: require('../assets/icons/Tuinieren.png') }
     ]
   },
   {
     name: 'Sociale rust',
     activities: [
-      { name: 'Bellen met vrienden', icon: 'call' },
-      { name: 'Samen iets drinken', icon: 'cafe' },
-      { name: 'Huisdier knuffelen', icon: 'paw' },
-      { name: 'Social media bekijken', icon: 'logo-twitter' }
+      { name: 'Contact opnemen met vrienden', icon: require('../assets/icons/Contacten.png') },
+      { name: 'Bellen met een vriend(in)', icon: require('../assets/icons/Bellen.png') },
+      { name: 'Samen iets drinken', icon: require('../assets/icons/Drinken.png') },
+      { name: 'Huisdier knuffelen', icon: require('../assets/icons/Huisdier.png') }
     ]
   },
   {
     name: 'Afleiding & plezier',
     activities: [
-      { name: 'Een game spelen', icon: 'game-controller' },
-      { name: 'Opruimen', icon: 'layers' },
-      { name: 'Iets leuks kopen', icon: 'bag' },
-      { name: 'Koken of bakken', icon: 'flame' }
+      { name: 'Een game spelen', icon: require('../assets/icons/Spelen.png') },
+      { name: 'Opruimen', icon: require('../assets/icons/Schoonmaken.png') },
+      { name: 'Buiten zijn', icon: require('../assets/icons/Buiten.png') },
+      { name: 'Koken of bakken', icon: require('../assets/icons/Koken.png') }
     ]
   },
   {
     name: 'Structuur & veiligheid',
     activities: [
-      { name: 'To-do lijst maken', icon: 'checkbox' },
-      { name: 'Planning maken', icon: 'calendar' },
-      { name: 'Je routine volgen', icon: 'repeat' },
-      { name: 'Dagboek schrijven', icon: 'journal' }
+      { name: 'To-do lijst maken', icon: require('../assets/icons/To-do.png') },
+      { name: 'Planning maken', icon: require('../assets/icons/Planning.png') },
+      { name: 'Je routine volgen', icon: require('../assets/icons/Routine.png') },
+      { name: 'Dagboek schrijven', icon: require('../assets/icons/Dagboek.png') }
     ]
   },
   {
     name: 'Spirituele rust',
     activities: [
-      { name: 'Bidden', icon: 'hand-left' },
-      { name: 'Naar de kerk gaan', icon: 'home' },
-      { name: 'In de natuur zijn', icon: 'leaf' },
-      { name: 'Dankbaarheid oefenen', icon: 'heart' }
+      { name: 'Bidden', icon: require('../assets/icons/Bidden.png') },
+      { name: 'Naar de kerk gaan', icon: require('../assets/icons/Kerk.png') },
+      { name: 'In de natuur zijn', icon: require('../assets/icons/Natuur.png') }
     ]
   }
 ];
@@ -432,12 +431,16 @@ export default function OnboardingScreen() {
                         ]}
                         onPress={() => handleActivityToggle(currentMood.id, activity.name)}
                       >
-                              <Ionicons
-                                name={activity.icon as any}
-                                size={28}
-                                color={isSelected ? PRIMARY_COLOR : COLORS.mutedForeground}
-                                style={styles.activityIcon}
-                              />
+                              {typeof activity.icon === 'number' ? (
+                                <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? PRIMARY_COLOR : COLORS.mutedForeground }]} />
+                              ) : (
+                                <Ionicons
+                                  name={activity.icon as any}
+                                  size={28}
+                                  color={isSelected ? PRIMARY_COLOR : COLORS.mutedForeground}
+                                  style={styles.activityIcon}
+                                />
+                              )}
                         <Text
                           style={[
                             styles.activityText,
