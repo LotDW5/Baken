@@ -103,9 +103,9 @@ const ACTIVITY_CATEGORIES = [
 
 const MOOD_STEPS = [
   { id: 'good', title: 'Goed', color: '#4CAF93', bgColor: '#EAF8F0' },
-  { id: 'okay', title: 'Als je je minder goed voelt', color: '#6B5CE7', bgColor: '#F0EDF7' },
-  { id: 'bad', title: 'Als je je niet goed voelt', color: '#6B5CE7', bgColor: '#F0EDF7' },
-  { id: 'crisis', title: 'Als je in crisis bent', color: '#6B5CE7', bgColor: '#F0EDF7' }
+  { id: 'okay', title: 'Minder goed', color: '#FFB84D', bgColor: '#FFF6EB' },
+  { id: 'bad', title: 'Niet goed', color: '#9B8CE8', bgColor: '#F0EDF7' },
+  { id: 'crisis', title: 'Crisis', color: '#E85D75', bgColor: '#FFF0F2' }
 ];
 
 const MOOD_ICONS: Record<string, any> = {
@@ -411,7 +411,7 @@ export default function OnboardingScreen() {
           >
             <Image source={MOOD_ICONS[currentMood.id]} style={[styles.moodImage, { tintColor: currentMood.color, marginTop: 24 }]} resizeMode="contain" />
             <Text style={styles.moodTitle}>{currentMood.title}</Text>
-            <Text style={styles.moodSubtitle}>Kies activiteiten waar je je doorgaans goed bij voelt</Text>
+            <Text style={styles.moodSubtitle}>{currentMood.id === 'okay' ? 'Kies activiteiten die je kunnen helpen om je weer wat beter te voelen' : currentMood.id === 'bad' ? 'Kies activiteiten die je kunnen helpen op momenten dat je je niet goed voelt' : currentMood.id === 'crisis' ? 'Kies activiteiten die je kunnen helpen in momenten van crisis' : 'Kies activiteiten waar je je doorgaans goed bij voelt'}</Text>
 
             {ACTIVITY_CATEGORIES.map((category) => (
               <View key={category.name}>
