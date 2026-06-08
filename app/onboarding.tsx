@@ -251,6 +251,7 @@ export default function OnboardingScreen() {
 
   const currentMood = MOOD_STEPS.find(m => m.id === currentStep);
   const progressStep = MOOD_STEPS.findIndex(m => m.id === currentStep) + 1;
+  const MOOD_FOOTER_HEIGHT = 140;
   const canAddCustomActivity = customActivityName.trim().length > 0;
 
   useEffect(() => {
@@ -278,7 +279,7 @@ export default function OnboardingScreen() {
           <Text style={styles.welcomeTitle}>Welkom!</Text>
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
-        <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
+        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
           <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
@@ -313,7 +314,7 @@ export default function OnboardingScreen() {
             </View>
           </ScrollView>
           {!isKeyboardVisible && (
-            <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
+            <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
               <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
                 <Text style={styles.buttonText}>Volgende</Text>
               </TouchableOpacity>
@@ -344,7 +345,7 @@ export default function OnboardingScreen() {
 
           <ScrollView
             style={styles.moodScroll}
-            contentContainerStyle={[styles.activitiesScroll, { paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + 168 }]}
+            contentContainerStyle={[styles.activitiesScroll, { flexGrow: 1, paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + MOOD_FOOTER_HEIGHT + 8 }]}
             keyboardShouldPersistTaps="handled"
           >
             <Image source={MOOD_ICONS[currentMood.id]} style={[styles.moodImage, { tintColor: currentMood.color, marginTop: 24 }]} resizeMode="contain" />
@@ -489,14 +490,19 @@ export default function OnboardingScreen() {
             </TouchableOpacity>
           </ScrollView>
 
+          {/** Overlay footer: outer wrapper doesn't capture touches; inner view also allows touches to pass through except for the buttons */}
           {!isKeyboardVisible && (
-            <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white, borderRadius: 20, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 6 }]}> 
-              <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
-                <Text style={styles.buttonText}>Ga verder</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, marginTop: 12 }]} onPress={handleBack}>
-                <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
-              </TouchableOpacity>
+            <View pointerEvents="box-none" style={Platform.OS === 'web' ? { position: 'fixed' as any, left: 0, right: 0, bottom: 0, paddingHorizontal: 0, alignItems: 'center', zIndex: 99999 } : { position: 'absolute' as any, left: 0, right: 0, bottom: 0, paddingHorizontal: 0, alignItems: 'center' }}>
+              <View pointerEvents="box-none" style={{ width: '100%' }}>
+                <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderRadius: 0, paddingHorizontal: 24, paddingVertical: 18, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 6 }]}> 
+                  <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
+                    <Text style={styles.buttonText}>Ga verder</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, marginTop: 12 }]} onPress={handleBack}>
+                    <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           )}
         </View>
@@ -613,7 +619,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     paddingTop: 0,
     paddingBottom: 4,
     gap: 8,
@@ -626,6 +632,7 @@ const styles = StyleSheet.create({
   moodScreen: {
     flex: 1,
     paddingTop: 0,
+    position: 'relative',
   },
   moodScroll: {
     flex: 1,
@@ -738,6 +745,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     gap: 12,
     backgroundColor: COLORS.background,
+    zIndex: 10,
+    elevation: 10,
   },
   fixedFooter: {
     position: 'absolute',
