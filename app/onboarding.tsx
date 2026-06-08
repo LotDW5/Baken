@@ -28,7 +28,7 @@ const ACTIVITY_CATEGORIES = [
       { name: 'Een bad nemen', icon: require('../assets/icons/Water.png') },
       { name: 'Ontspanningsmuziek luisteren', icon: require('../assets/icons/Muziek.png') },
       { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Buiten.png') },
-      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Zon.png') },
+      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Natuur.png') },
       { name: 'Iemand knuffelen', icon: require('../assets/icons/Huisdier.png') }
     ]
   },
