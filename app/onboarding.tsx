@@ -138,6 +138,7 @@ export default function OnboardingScreen() {
     bad: [],
     crisis: [],
   });
+  const [isCustomFocused, setIsCustomFocused] = useState(false);
   const [editingCustom, setEditingCustom] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<Record<string, string[]>>({
     good: [],
@@ -253,7 +254,13 @@ export default function OnboardingScreen() {
   const currentMood = MOOD_STEPS.find(m => m.id === currentStep);
   const progressStep = MOOD_STEPS.findIndex(m => m.id === currentStep) + 1;
   const MOOD_FOOTER_HEIGHT = 140;
+  
   const canAddCustomActivity = customActivityName.trim().length > 0;
+  // overlay positioning: use fixed on web to avoid parent overflow issues
+  // Make the white overlay reach to the very bottom of the viewport on web
+  const overlayPosition = Platform.OS === 'web'
+    ? ({ position: 'fixed' as any, left: 0, right: 0, bottom: 0 })
+    : ({ position: 'absolute' as any, left: 0, right: 0, bottom: insets.bottom });
 
   useEffect(() => {
     const requested = (route.params as any)?.step as OnboardingStep | undefined;
@@ -273,6 +280,57 @@ export default function OnboardingScreen() {
     };
   }, [route]);
 
+  // Web-only: debug which elements set overflow:hidden and could block scrolling.
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    try {
+      const els = Array.from(document.querySelectorAll('*'));
+      const hidden = els.filter((e) => {
+        const s = window.getComputedStyle(e as Element);
+        return s.overflow === 'hidden' || s.overflowY === 'hidden' || s.overflowX === 'hidden' || s.overflow === 'clip';
+      }).slice(0, 30).map((e) => {
+        const s = window.getComputedStyle(e as Element);
+        const r = (e as Element).getBoundingClientRect?.() || { top: 0, left: 0, width: 0, height: 0 };
+        return {
+          tag: (e as Element).tagName,
+          id: (e as Element).id,
+          className: (e as Element).className,
+          overflow: `${s.overflow}/${s.overflowY}/${s.overflowX}`,
+          rect: { top: Math.round(r.top), height: Math.round(r.height) },
+        };
+      });
+      // verbose log for debugging in browser console
+      // eslint-disable-next-line no-console
+      console.log('[ONBOARDING DEBUG] overflow-hidden elements:', hidden);
+      if (hidden.length === 0) {
+        // eslint-disable-next-line no-console
+        console.log('[ONBOARDING DEBUG] no overflow:hidden elements found');
+      }
+
+      // TEMP FIX: allow scrolling by setting body/html overflow to auto while onboarding mood screen is active
+      try {
+        const prevBody = document.body.style.overflow;
+        const prevHtml = document.documentElement.style.overflow;
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+        // eslint-disable-next-line no-console
+        console.log('[ONBOARDING DEBUG] forced body/html overflow -> auto (prev:', prevBody, prevHtml, ')');
+        return () => {
+          document.body.style.overflow = prevBody || '';
+          document.documentElement.style.overflow = prevHtml || '';
+          // eslint-disable-next-line no-console
+          console.log('[ONBOARDING DEBUG] restored body/html overflow (prev:', prevBody, prevHtml, ')');
+        };
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[ONBOARDING DEBUG] failed to force overflow:auto', err);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[ONBOARDING DEBUG] error scanning DOM for overflow', err);
+    }
+  }, [currentStep]);
+
   if (currentStep === 'welcome') {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -280,7 +338,7 @@ export default function OnboardingScreen() {
           <Text style={styles.welcomeTitle}>Welkom!</Text>
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
-        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
+        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 60, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
           <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
@@ -315,7 +373,7 @@ export default function OnboardingScreen() {
             </View>
           </ScrollView>
           {!isKeyboardVisible && (
-            <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
+            <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: -2, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
               <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
                 <Text style={styles.buttonText}>Volgende</Text>
               </TouchableOpacity>
@@ -346,8 +404,10 @@ export default function OnboardingScreen() {
 
           <ScrollView
             style={styles.moodScroll}
-            contentContainerStyle={[styles.activitiesScroll, { flexGrow: 1, paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + MOOD_FOOTER_HEIGHT + 8 }]}
+            contentContainerStyle={[styles.activitiesScroll, { flexGrow: 1, paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + MOOD_FOOTER_HEIGHT + 24 }]}
             keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled
+            showsVerticalScrollIndicator={false}
           >
             <Image source={MOOD_ICONS[currentMood.id]} style={[styles.moodImage, { tintColor: currentMood.color, marginTop: 24 }]} resizeMode="contain" />
             <Text style={styles.moodTitle}>{currentMood.title}</Text>
@@ -449,16 +509,18 @@ export default function OnboardingScreen() {
             )}
 
             {showCustomActivity && (
-              <View style={styles.customActivityCard}>
+                <View style={styles.customActivityCard}>
                 <Text style={styles.customActivityLabel}>Nieuwe activiteit</Text>
                 <TextInput
-                  style={styles.customActivityInput}
+                  style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') && styles.profileInputFocus]}
                   value={customActivityName}
                   onChangeText={setCustomActivityName}
                   placeholder="Typ een activiteit"
                   placeholderTextColor={COLORS.mutedForeground}
                   returnKeyType="done"
                   onSubmitEditing={handleAddCustomActivity}
+                  onFocus={() => setIsCustomFocused(true)}
+                  onBlur={() => setIsCustomFocused(false)}
                 />
                 <View style={styles.customActivityActions}>
                   <TouchableOpacity
@@ -489,23 +551,23 @@ export default function OnboardingScreen() {
               <Ionicons name="add" size={18} color={PRIMARY_COLOR} />
               <Text style={styles.addActivityButtonText}>Voeg een activiteit toe</Text>
             </TouchableOpacity>
+
+            {/* spacer removed — paddingBottom handles spacing for the fixed footer */}
           </ScrollView>
 
           {/** Overlay footer: outer wrapper doesn't capture touches; inner view also allows touches to pass through except for the buttons */}
-          {!isKeyboardVisible && (
-            <View pointerEvents="box-none" style={Platform.OS === 'web' ? { position: 'fixed' as any, left: 0, right: 0, bottom: 0, paddingHorizontal: 0, alignItems: 'center', zIndex: 99999 } : { position: 'absolute' as any, left: 0, right: 0, bottom: 0, paddingHorizontal: 0, alignItems: 'center' }}>
-              <View pointerEvents="box-none" style={{ width: '100%' }}>
-                <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderRadius: 0, paddingHorizontal: 24, paddingVertical: 18, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 6 }]}> 
-                  <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
-                    <Text style={styles.buttonText}>Ga verder</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, marginTop: 12 }]} onPress={handleBack}>
-                    <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
-                  </TouchableOpacity>
-                </View>
+          <View pointerEvents="box-none" style={[overlayPosition, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 9999, elevation: 12 }]}>
+            <View pointerEvents="box-none" style={{ width: '100%' }}>
+              <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
+                <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR, width: '100%', paddingVertical: 16 }]} onPress={handleNext}>
+                  <Text style={styles.buttonText}>Ga verder</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={handleBack}>
+                  <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          )}
+          </View>
         </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -744,7 +806,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    gap: 12,
+    gap: 10,
     backgroundColor: COLORS.background,
     zIndex: 10,
     elevation: 10,
@@ -828,7 +890,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: PRIMARY_COLOR,
+    borderColor: '#E0E0E0',
     paddingHorizontal: 14,
     paddingVertical: 11,
     fontSize: 15,
@@ -864,17 +926,17 @@ const styles = StyleSheet.create({
   },
   customActivityCancelButton: {
     flex: 1,
-    borderRadius: 14,
+    borderRadius: 18,
     backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: PRIMARY_COLOR,
-    paddingVertical: 12,
+    borderColor: '#E0E0E0',
+    paddingVertical: 15,
     alignItems: 'center',
   },
   customActivityCancelButtonText: {
     fontSize: 14,
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
-    color: PRIMARY_COLOR,
+    color: COLORS.foreground,
   },
 });
