@@ -102,7 +102,7 @@ const ACTIVITY_CATEGORIES = [
 ];
 
 const MOOD_STEPS = [
-  { id: 'good', title: 'Als je je goed voelt', color: '#6B5CE7', bgColor: '#F0EDF7' },
+  { id: 'good', title: 'Goed', color: '#4CAF93', bgColor: '#EAF8F0' },
   { id: 'okay', title: 'Als je je minder goed voelt', color: '#6B5CE7', bgColor: '#F0EDF7' },
   { id: 'bad', title: 'Als je je niet goed voelt', color: '#6B5CE7', bgColor: '#F0EDF7' },
   { id: 'crisis', title: 'Als je in crisis bent', color: '#6B5CE7', bgColor: '#F0EDF7' }
@@ -129,6 +129,7 @@ export default function OnboardingScreen() {
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [showCustomActivity, setShowCustomActivity] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [isProfileFocused, setIsProfileFocused] = useState(false);
   const [customActivityName, setCustomActivityName] = useState('');
   const [customActivities, setCustomActivities] = useState<Record<string, string[]>>({
     good: [],
@@ -275,9 +276,9 @@ export default function OnboardingScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.welcomeContainer}>
           <Text style={styles.welcomeTitle}>Welkom!</Text>
-          <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen</Text>
+          <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
-        <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 16 }]}> 
+        <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
           <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
@@ -296,12 +297,14 @@ export default function OnboardingScreen() {
         >
           <ScrollView contentContainerStyle={styles.profileScrollContent} keyboardShouldPersistTaps="handled">
             <View style={styles.profileSimpleContent}>
-              <Text style={styles.profileTitle}>Hoe mogen we je noemen?</Text>
+              <Text style={styles.profileTitle}>Welke naam wil je gebruiken?</Text>
 
               <TextInput
-                style={styles.profileInput}
+                style={[styles.profileInput, (isProfileFocused || fullName.trim() !== '') && styles.profileInputFocus]}
                 value={fullName}
                 onChangeText={setFullName}
+                onFocus={() => setIsProfileFocused(true)}
+                onBlur={() => setIsProfileFocused(false)}
                 placeholder="Je naam"
                 placeholderTextColor={COLORS.mutedForeground}
                 autoCapitalize="words"
@@ -310,12 +313,12 @@ export default function OnboardingScreen() {
             </View>
           </ScrollView>
           {!isKeyboardVisible && (
-            <View style={styles.footer}>
+            <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
               <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
                 <Text style={styles.buttonText}>Volgende</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton} onPress={handleBack}>
-                <Text style={styles.secondaryButtonText}>Terug</Text>
+              <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white }]} onPress={handleBack}>
+                <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -333,7 +336,7 @@ export default function OnboardingScreen() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
         >
         <View style={styles.moodScreen}>
-          <View style={[styles.progressBar, { paddingTop: insets.top + 30 }]}>
+          <View style={[styles.progressBar, { paddingTop: insets.top + 56 }]}>
             {[1, 2, 3, 4].map((i) => (
               <View key={i} style={[styles.progressDot, { backgroundColor: i <= progressStep ? PRIMARY_COLOR : '#E1DFE8' }]} />
             ))}
@@ -344,9 +347,9 @@ export default function OnboardingScreen() {
             contentContainerStyle={[styles.activitiesScroll, { paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + 168 }]}
             keyboardShouldPersistTaps="handled"
           >
-            <Image source={MOOD_ICONS[currentMood.id]} style={[styles.moodImage, { tintColor: currentMood.color }]} resizeMode="contain" />
+            <Image source={MOOD_ICONS[currentMood.id]} style={[styles.moodImage, { tintColor: currentMood.color, marginTop: 24 }]} resizeMode="contain" />
             <Text style={styles.moodTitle}>{currentMood.title}</Text>
-            <Text style={styles.moodSubtitle}>Kies activiteiten die je kunnen helpen als je je zo voelt</Text>
+            <Text style={styles.moodSubtitle}>Kies activiteiten waar je je doorgaans goed bij voelt</Text>
 
             {ACTIVITY_CATEGORIES.map((category) => (
               <View key={category.name}>
@@ -487,13 +490,13 @@ export default function OnboardingScreen() {
           </ScrollView>
 
           {!isKeyboardVisible && (
-            <View style={[styles.fixedFooter, { paddingBottom: insets.bottom + 12 }]}>
-            <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
-              <Text style={styles.buttonText}>Volgende</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.secondaryButton} onPress={handleBack}>
-              <Text style={styles.secondaryButtonText}>Terug</Text>
-            </TouchableOpacity>
+            <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 32, paddingHorizontal: 24, backgroundColor: COLORS.white, borderRadius: 20, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 6 }]}> 
+              <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
+                <Text style={styles.buttonText}>Ga verder</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, marginTop: 12 }]} onPress={handleBack}>
+                <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -511,7 +514,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.white,
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -520,7 +523,7 @@ const styles = StyleSheet.create({
   profileScrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     paddingVertical: 24,
   },
   profileSimpleContent: {
@@ -534,7 +537,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
   },
   welcomeEmoji: {
     fontSize: 80,
@@ -569,14 +572,23 @@ const styles = StyleSheet.create({
   },
   profileInput: {
     width: '100%',
-    backgroundColor: '#F9F8FD',
+    backgroundColor: '#F9F8FC',
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(107, 92, 231, 0.06)',
+    borderColor: '#E0E0E0',
     paddingHorizontal: 18,
     paddingVertical: 16,
     fontSize: 16,
     color: COLORS.foreground,
+  },
+
+  profileInputFocus: {
+    borderColor: PRIMARY_COLOR,
+    borderWidth: 1,
+    // web focus outline (cast to any to satisfy RN typings)
+    outlineColor: PRIMARY_COLOR as any,
+    outlineWidth: 1 as any,
+    outlineStyle: 'solid' as any,
   },
   fullInput: {
     marginTop: 10,
@@ -608,8 +620,8 @@ const styles = StyleSheet.create({
   },
   progressDot: {
     flex: 1,
-    height: 6,
-    borderRadius: 2,
+    height: 8,
+    borderRadius: 4,
   },
   moodScreen: {
     flex: 1,
@@ -619,13 +631,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   moodImage: {
-    width: 70,
-    height: 70,
+    width: 86,
+    height: 86,
     alignSelf: 'center',
     marginBottom: 8,
   },
   moodTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
     color: COLORS.foreground,
