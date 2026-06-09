@@ -5,14 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Platform,
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -244,10 +244,10 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Floating footer card with outlined button (sits over activities) */}
-      {Platform.OS !== 'web' && (
-        <View style={styles.fixedFooterWrap} pointerEvents="box-none">
-          <View style={[styles.footerCard, { zIndex: 99999, elevation: 30 }]}> 
+      {/* Overlay footer: mirror onboarding activity picker (stacked primary + secondary full-width buttons) */}
+      <View style={[styles.overlayFooterWrap, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 99999, elevation: 30 }]} pointerEvents="box-none">
+        <View pointerEvents="box-none" style={{ width: '100%' }}>
+          <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 99999 }]}> 
             <TouchableOpacity
               style={[styles.button, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]}
               onPress={() => {
@@ -258,11 +258,14 @@ export default function ActivitiesScreen() {
                 }
               }}
             >
-              <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Ga verder</Text>
+              <Text style={styles.primaryActionText}>Ga verder</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={() => (navigation as any).navigate('Stemming', { mood: selectedMood.id })}>
+              <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
             </TouchableOpacity>
           </View>
         </View>
-      )}
+      </View>
     </SafeAreaView>
   );
 }
