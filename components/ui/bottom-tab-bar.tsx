@@ -31,24 +31,7 @@ export default function BottomTabBar(props: BottomTabBarProps) {
           const moodIdFromName = currentNestedRoute && typeof currentNestedRoute.name === 'string' ? currentNestedRoute.name : undefined;
           const moodParam = moodParamFromNested || moodParamFromFocused || moodIdFromName;
 
-          if (isStemmingRoute) {
-            const onPress = () => {
-              (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { mood: moodParam } });
-            };
-
-            const selectedMood = MOOD_OPTIONS.find(m => m.id === moodParam);
-            const bgColor = selectedMood ? selectedMood.color : theme.color;
-
-            return (
-              <View style={styles.fabWrap} pointerEvents="box-none">
-                <View style={styles.fabOverlay} pointerEvents="box-none">
-                  <TouchableOpacity style={[styles.button, { backgroundColor: bgColor, width: '100%', paddingVertical: 14, borderRadius: 20 }]} onPress={onPress}>
-                    <Text style={[styles.buttonText, { color: COLORS.white }]}>Ga verder</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          }
+          // Only render the overlay FAB for the Activiteiten nested route on web.
 
           if (isActiviteitenRoute) {
             const onPress = () => {
@@ -62,8 +45,11 @@ export default function BottomTabBar(props: BottomTabBarProps) {
             return (
               <View style={styles.fabWrap} pointerEvents="box-none">
                 <View style={styles.fabOverlay} pointerEvents="box-none">
-                  <TouchableOpacity style={[styles.secondaryButton, { width: '100%', paddingVertical: 14 }]} onPress={onPress}>
-                    <Text style={[styles.secondaryButtonText, { color: theme.color }]}>Overslaan</Text>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 14, borderRadius: 20 }]} onPress={() => (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } })}>
+                    <Text style={[styles.buttonText, { color: COLORS.white }]}>Ga verder</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.secondaryButton, { width: '100%', marginTop: 12 }]} onPress={() => (navigation as any).navigate('Check-in', { screen: 'Stemming', params: { mood: moodParam } })}>
+                    <Text style={[styles.secondaryButtonText, { color: theme.color }]}>Terug</Text>
                   </TouchableOpacity>
                 </View>
               </View>
