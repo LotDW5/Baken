@@ -16,7 +16,7 @@ export default function BottomTabBar(props: BottomTabBarProps) {
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
-    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
+    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, applyShadow({ opacity: 0.14, radius: 18, offsetX: 0, offsetY: -8, elevation: 16 })]}>
       <View style={styles.separator} />
       {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
       {Platform.OS === 'web' && (() => {
