@@ -2,8 +2,12 @@ import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// Layout constants matching app tokens
+const CARD_MAX_WIDTH = 393;
+const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
@@ -34,8 +38,37 @@ export default function BottomTabBar(props: BottomTabBarProps) {
           // Only render the overlay FAB for the Activiteiten nested route on web.
 
           if (isActiviteitenRoute) {
-            // Do not render the web overlay FAB for Activiteiten; use the page's own button instead
-            return null;
+            // Render a floating "Overslaan" button above the tab bar for Activiteiten
+            return (
+              <View key="fab-activiteiten" style={styles.fabWrap}>
+                <View style={styles.fabOverlay}>
+                  <TouchableOpacity
+                    style={styles.fabButtonLarge}
+                    onPress={async () => {
+                      try {
+                        const moodParamFromNested = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
+                        const moodParamFromFocused = (focusedRoute && (focusedRoute as any).params) ? (focusedRoute as any).params.mood : undefined;
+                        const moodId = moodParamFromNested || moodParamFromFocused || 'okay';
+
+                        const moodNote = await AsyncStorage.getItem('tempMoodNote');
+                        const moodData = { mood: moodId, note: moodNote || '', timestamp: new Date().toISOString() };
+                        const existing = await AsyncStorage.getItem('moodCheckIns') || '[]';
+                        const arr = JSON.parse(existing);
+                        arr.push(moodData);
+                        await AsyncStorage.setItem('moodCheckIns', JSON.stringify(arr));
+                        await AsyncStorage.setItem('lastMoodCheckIn', new Date().toDateString());
+                        await AsyncStorage.removeItem('tempMoodNote');
+                        navigation.navigate('Main');
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }}
+                  >
+                    <Text style={[styles.fabText, { color: '#fff' }]}>Overslaan</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
           }
         }
         return null;
@@ -159,19 +192,18 @@ const styles = StyleSheet.create({
   },
   fabWrap: {
     position: 'absolute',
-    left: THEME.spacing.l,
-    right: THEME.spacing.l,
-    bottom: THEME.sizes.tabBarHeight + 48,
+    left: 0,
+    right: 0,
+    bottom: THEME.sizes.tabBarHeight,
     alignItems: 'center',
-    zIndex: 9999,
+    zIndex: 99999,
   },
   fabOverlay: {
     width: '100%',
-    maxWidth: 520,
-    borderRadius: 12,
-    paddingHorizontal: 24,
-    paddingTop: 14,
-    paddingBottom: 14,
+    borderRadius: 0,
+    paddingHorizontal: 0,
+    paddingTop: 32,
+    paddingBottom: 32,
     backgroundColor: COLORS.white,
     shadowColor: '#000',
     shadowOpacity: 0.06,
@@ -179,6 +211,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -6 },
     elevation: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderColor: '#E0E0E0',
   },
   fabButton: {
     width: '100%',
@@ -198,12 +233,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
   },
   fabButtonLarge: {
-    width: '100%',
+    width: CARD_CONTENT_WIDTH - 32,
     alignSelf: 'center',
-    backgroundColor: '#3CA98A',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     paddingVertical: 14,
     paddingHorizontal: THEME.spacing.m,
+    marginHorizontal: 0,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
