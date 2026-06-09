@@ -56,7 +56,7 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
 };
 
 const ACTIVITY_ICON_SOURCES: Record<string, any> = {
-  'Dansen': require('../../../../assets/icons/DANSEN.png'),
+  'Dansen': require('../../../../assets/icons/Dansen.png'),
   'Wandelen': require('../../../../assets/icons/Wandelen.png'),
   'Muziek maken': require('../../../../assets/icons/Muziek.png'),
   'Muziek luisteren': require('../../../../assets/icons/Muziek.png'),
