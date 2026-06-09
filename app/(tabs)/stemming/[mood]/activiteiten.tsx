@@ -243,25 +243,29 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Overlay footer: mirror onboarding activity picker (stacked primary + secondary full-width buttons) */}
-      <View style={[styles.overlayFooterWrap, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 99999, elevation: 30 }]} pointerEvents="box-none">
+      {/* Overlay footer: white background spans full width to edges and bottom nav; inner content centered to CARD_MAX_WIDTH so buttons match cards above */}
+      <View style={[styles.overlayFooterWrap, { zIndex: 99999, elevation: 30 }]} pointerEvents="box-none">
         <View pointerEvents="box-none" style={{ width: '100%' }}>
-          <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 99999 }]}> 
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]}
-              onPress={() => {
-                if (selectedActivity) {
-                  handleDoActivity(selectedActivity);
-                } else {
-                  handleSkip();
-                }
-              }}
-            >
-              <Text style={styles.primaryActionText}>Ga verder</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={() => (navigation as any).navigate('Stemming', { mood: selectedMood.id })}>
-              <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
-            </TouchableOpacity>
+          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingTop: 14, paddingBottom: 14, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12 }]}> 
+            <View style={{ width: '100%', alignItems: 'center' }}>
+              <View style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, paddingHorizontal: 24 }}>
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]}
+                  onPress={() => {
+                    if (selectedActivity) {
+                      handleDoActivity(selectedActivity);
+                    } else {
+                      handleSkip();
+                    }
+                  }}
+                >
+                  <Text style={styles.primaryActionText}>Ga verder</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14, marginTop: 12 }]} onPress={() => (navigation as any).navigate('Stemming', { mood: selectedMood.id })}>
+                  <Text style={styles.secondaryButtonText}>Terug</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -496,6 +500,16 @@ const styles: any = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     paddingTop: 12,
+  },
+  overlayFooterWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'stretch',
+  },
+  footerFullWidth: {
+    width: '100%',
   },
   fixedFooterWrap: {
     position: 'absolute',
