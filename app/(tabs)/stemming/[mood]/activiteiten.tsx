@@ -55,6 +55,21 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Bidden': 'Neem even de tijd om te bidden',
 };
 
+const ACTIVITY_ICON_SOURCES: Record<string, any> = {
+  'Dansen': require('../../../../assets/icons/DANSEN.png'),
+  'Wandelen': require('../../../../assets/icons/Wandelen.png'),
+  'Muziek maken': require('../../../../assets/icons/Muziek.png'),
+  'Muziek luisteren': require('../../../../assets/icons/Muziek.png'),
+  'Een boek lezen': require('../../../../assets/icons/Boek.png'),
+  'Ademhalingsoefeningen doen': require('../../../../assets/icons/Yoga.png'),
+  'Mediteren': require('../../../../assets/icons/Yoga.png'),
+  'Bellen met vrienden': require('../../../../assets/icons/Bellen.png'),
+  'Naar buiten gaan in de natuur': require('../../../../assets/icons/Bos.png'),
+  'Huisdier knuffelen': require('../../../../assets/icons/Huisdier.png'),
+  'Slapen': require('../../../../assets/icons/Slapen.png'),
+  'Bidden': require('../../../../assets/icons/Bidden.png'),
+};
+
 export default function ActivitiesScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
@@ -256,16 +271,16 @@ export default function ActivitiesScreen() {
           {suggestions.slice(0, 4).map((activity, idx) => (
             <View key={`sug-${idx}`}>
               <TouchableOpacity
-                style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
-                onPress={() => setSelectedActivity(activity)}
+                  style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
+                  onPress={() => setSelectedActivity(activity)}
               >
-                <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
-                  <Image
-                    source={getMoodIconSource(selectedMood.id)}
-                    style={{ width: 24, height: 24, tintColor: COLORS.white }}
-                    resizeMode="contain"
-                  />
-                </View>
+                  <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
+                    <Image
+                      source={ACTIVITY_ICON_SOURCES[activity] || getMoodIconSource(selectedMood.id)}
+                      style={{ width: 24, height: 24, tintColor: COLORS.white }}
+                      resizeMode="contain"
+                    />
+                  </View>
                 <Text style={styles.activityTitle}>{activity}</Text>
               </TouchableOpacity>
 
