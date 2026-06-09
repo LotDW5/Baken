@@ -252,17 +252,20 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Overlay footer: white background spans full width to edges and bottom nav; inner content centered to CARD_MAX_WIDTH so buttons match cards above */}
-      <View style={[styles.overlayFooterWrap, { zIndex: 99999, elevation: 30 }]} pointerEvents="box-none">
+      {/* Footer overlay — match MoodCheckIn layout exactly */}
+      <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}> 
         <View pointerEvents="box-none" style={{ width: '100%' }}>
-          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingTop: 12, paddingBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12 }]}> 
-            <View style={{ width: '100%', alignItems: 'center' }}>
-              <View style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, paddingHorizontal: 24 }}>
-                <TouchableOpacity
-                  style={{
+          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 8, zIndex: 10006, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: -56 }]}> 
+            <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
+              <TouchableOpacity
+                style={[
+                  styles.modalPrimaryButton,
+                  {
+                    position: 'absolute',
+                    left: '50%',
+                    transform: [{ translateX: -((CARD_CONTENT_WIDTH - 32) / 2) }],
                     backgroundColor: selectedMood.color || '#F8B34A',
-                    width: CARD_CONTENT_WIDTH,
-                    alignSelf: 'center',
+                    width: CARD_CONTENT_WIDTH - 32,
                     paddingVertical: 16,
                     borderRadius: 28,
                     shadowColor: selectedMood.color || '#F8B34A',
@@ -270,14 +273,12 @@ export default function ActivitiesScreen() {
                     shadowRadius: 18,
                     shadowOffset: { width: 0, height: 6 },
                     elevation: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  onPress={() => handleContinue()}
-                >
-                  <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Ga verder</Text>
-                </TouchableOpacity>
-              </View>
+                  },
+                ]}
+                onPress={() => handleContinue()}
+              >
+                <Text style={styles.modalPrimaryText}>Ga verder</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -518,8 +519,9 @@ export default function ActivitiesScreen() {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: THEME.sizes.tabBarHeight - 8,
     alignItems: 'stretch',
+    zIndex: 999999,
   },
   footerFullWidth: {
     width: '100%',
