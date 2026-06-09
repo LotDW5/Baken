@@ -173,6 +173,14 @@ export default function ActivitiesScreen() {
     }
   };
 
+  const handleContinue = async () => {
+    if (selectedActivity) {
+      await handleDoActivity(selectedActivity);
+    } else {
+      await handleSkip();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header container with top icons and title below */}
@@ -265,9 +273,9 @@ export default function ActivitiesScreen() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
-                  onPress={() => handleSkip()}
+                  onPress={() => handleContinue()}
                 >
-                  <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Overslaan</Text>
+                  <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Ga verder</Text>
                 </TouchableOpacity>
               </View>
             </View>
