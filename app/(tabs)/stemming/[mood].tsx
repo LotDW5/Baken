@@ -146,7 +146,7 @@ export default function MoodCheckInScreen() {
         </ScrollView>
 
         {/* Footer button (fixed above tab bar) - render on web and native so the page footer matches onboarding */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0, zIndex: 10001 }]}
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10001 }]}
         >
           <View pointerEvents="box-none" style={{ width: '100%' }}>
             <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 10002 }]}> 
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight - 8,
+    bottom: THEME.sizes.tabBarHeight,
     alignItems: 'center',
     zIndex: 9999,
     elevation: 30,
