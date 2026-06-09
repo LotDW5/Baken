@@ -5,13 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -253,30 +254,29 @@ export default function ActivitiesScreen() {
       </ScrollView>
 
       {/* Footer overlay — simplified and anchored to bottom */}
-      <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0, zIndex: 10005 }]}> 
-        <View pointerEvents="box-none" style={{ width: '100%', alignItems: 'center' }}>
-          <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, paddingHorizontal: 24, paddingTop: 8, paddingBottom: THEME.sizes.tabBarHeight + 16, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 8, width: '100%' }]}>
-            <TouchableOpacity
-              style={[
-                styles.modalPrimaryButton,
-                {
-                  backgroundColor: selectedMood.color || theme.color || '#F8B34A',
-                  width: CARD_CONTENT_WIDTH - 32,
-                  paddingVertical: 16,
-                  borderRadius: 28,
-                  shadowColor: theme.color || selectedMood.color || '#F8B34A',
-                  shadowOpacity: 0.14,
-                  shadowRadius: 18,
-                  shadowOffset: { width: 0, height: 6 },
-                  elevation: 20,
-                  alignSelf: 'center',
-                },
-              ]}
-              onPress={() => handleSkip()}
-            >
-              <Text style={styles.modalPrimaryText}>Overslaan</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Footer overlay positioned above the tab bar (absolute/fixed) */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 16, alignItems: 'center', zIndex: 100000, elevation: 100 }}> 
+        <View style={[styles.footerCard, { maxWidth: CARD_MAX_WIDTH, width: '100%', alignItems: 'center', backgroundColor: COLORS.white }]}> 
+          <TouchableOpacity
+            style={[
+              styles.modalPrimaryButton,
+              {
+                backgroundColor: selectedMood.color || theme.color || '#F8B34A',
+                width: CARD_CONTENT_WIDTH - 32,
+                paddingVertical: 16,
+                borderRadius: 28,
+                shadowColor: theme.color || selectedMood.color || '#F8B34A',
+                shadowOpacity: 0.14,
+                shadowRadius: 18,
+                shadowOffset: { width: 0, height: 6 },
+                elevation: 20,
+                alignSelf: 'center',
+              },
+            ]}
+            onPress={() => handleSkip()}
+          >
+            <Text style={styles.modalPrimaryText}>Overslaan</Text>
+          </TouchableOpacity>
         </View>
       </View>
       </SafeAreaView>
