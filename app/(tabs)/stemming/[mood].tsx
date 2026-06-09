@@ -1,8 +1,9 @@
-import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Image,
@@ -38,17 +39,11 @@ export default function MoodCheckInScreen() {
   const { mood } = (route.params || {}) as { mood: string };
   const [moodNote, setMoodNote] = useState('');
   const [isNoteFocused, setIsNoteFocused] = useState(false);
-  const [theme, setTheme] = useState(getTheme());
+  const theme = useAppTheme();
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
 
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('appTheme');
-      if (savedTheme) setTheme(getTheme(savedTheme));
-    };
-    loadTheme();
-  }, []);
+  // theme handled by useAppTheme hook
 
   if (!selectedMood) {
     (navigation as any).goBack();

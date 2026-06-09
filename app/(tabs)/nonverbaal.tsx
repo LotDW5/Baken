@@ -1,8 +1,9 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,7 +11,7 @@ const STORAGE_KEY = 'nonverbal_messages';
 
 export default function NonverbaalScreen() {
   const navigation = useNavigation<any>();
-  const theme = useMemo(() => getTheme(), []);
+  const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const route = useRoute<any>();
   const [preview, setPreview] = useState<any>(route.params?.previewMessage ?? null);
@@ -160,8 +161,8 @@ const styles = StyleSheet.create({
   emptyIcon: { width: 34, height: 34, resizeMode: 'contain' },
   emptyTitle: { marginTop: 24, fontSize: 16, fontWeight: '700', color: COLORS.foreground },
   emptySubtitle: { marginTop: 8, fontSize: 13, color: COLORS.mutedForeground, textAlign: 'center', maxWidth: 300 },
-  modalPrimaryButton: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: '#6B5CE7', alignSelf: 'stretch', marginTop: 12, marginHorizontal: 0, alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, flexDirection: 'row', justifyContent: 'center' },
-  landingButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: '#6B5CE7', width: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  modalPrimaryButton: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: COLORS.card, alignSelf: 'stretch', marginTop: 12, marginHorizontal: 0, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, flexDirection: 'row', justifyContent: 'center' },
+  landingButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: COLORS.card, width: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
   landingButtonText: { color: COLORS.white, fontWeight: '700', fontSize: 16, marginLeft: 10 },
     /* bottomWrapper, separator and fab styles removed - use shared BottomTabBar instead */
   bottomContainer: {

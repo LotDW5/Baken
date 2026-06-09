@@ -1,8 +1,9 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
+import useAppTheme from '@/hooks/use-app-theme';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Image,
@@ -29,7 +30,7 @@ const STORAGE_KEY = 'calendar_events';
 
 export default function AgendaScreen() {
   const navigation = useNavigation();
-  const theme = useMemo(() => getTheme(), []);
+  const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [date, setDate] = useState('');

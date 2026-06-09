@@ -1,19 +1,20 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Image,
-  Linking,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    Linking,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,7 +29,7 @@ interface Contact {
 export default function ContactsScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const [theme] = useState(getTheme());
+  const theme = useAppTheme();
   const scrollRef = useRef<any>(null);
   const [scrollY, setScrollY] = useState(0);
   const [buttonY, setButtonY] = useState<number | null>(null);

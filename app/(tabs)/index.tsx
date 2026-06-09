@@ -1,5 +1,6 @@
-import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -25,7 +26,7 @@ const BACKGROUND_IMAGES: Record<string, any> = {
 
 function HomeContent() {
   const navigation = useNavigation<any>();
-  const [theme, setTheme] = useState(getTheme());
+  const theme = useAppTheme();
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const [bgLoaded, setBgLoaded] = useState(false);
   const [weekChecks, setWeekChecks] = useState<Record<string, boolean>>({});
@@ -36,7 +37,9 @@ function HomeContent() {
       const savedTheme = await AsyncStorage.getItem('appTheme');
       const savedBg = await AsyncStorage.getItem('homeBackground');
 
-      if (savedTheme) setTheme(getTheme(savedTheme));
+      if (savedTheme) {
+        /* theme handled by useAppTheme hook */
+      }
       if (savedBg) setSelectedBackground(savedBg);
     } catch (e) {
       console.error(e);

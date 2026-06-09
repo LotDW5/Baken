@@ -1,9 +1,9 @@
-import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
 import {
     Alert,
     Image,
@@ -16,12 +16,11 @@ import {
 } from 'react-native';
 
 const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
-  'Een warme douche nemen': 'Neem een warme douche om te ontspannen en je lichaam tot rust te laten komen',
-  'Een bad nemen': 'Neem een ontspannend bad om volledig tot rust te komen',
-  'Ontspanningsmuziek luisteren': 'Luister naar rustige muziek die je helpt ontspannen',
-  'Naar buiten gaan': 'Ga naar buiten en ervaar de natuur om je heen',
-  'In het zonlicht zitten': 'Zit in het zonlicht om energie en rust te ervaren',
+  'Een warme douche/ bad nemen': 'Neem een warme douche of een ontspannend bad om je lichaam tot rust te laten komen',
+  'Muziek luisteren': 'Luister naar rustige of favoriete muziek die je helpt ontspannen',
+  'Naar buiten gaan in de natuur': 'Ga naar buiten en ervaar de natuur om je heen',
   'Iemand knuffelen': 'Geef iemand een knuffel voor verbinding en troost',
+  'Een sigaret roken': 'Roken kan ontspanning lijken, maar let op: het is schadelijk voor je gezondheid',
   'Een boek lezen': 'Lees een boek om je gedachten af te leiden en te ontspannen',
   'Serie of film kijken': 'Kijk een serie of film om even uit je hoofd te zijn',
   'Podcast luisteren': 'Luister naar een interessante of ontspannende podcast',
@@ -40,6 +39,9 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Slapen': 'Ga even liggen om te rusten of te slapen',
   'Bellen met vrienden': 'Bel iemand die je vertrouwt voor een goed gesprek',
   'Samen iets drinken': 'Drink samen een kopje koffie of thee met iemand',
+    'Grapjes maken': 'Maak een grapje of lach samen om je stemming te verbeteren',
+    'Met dieren in contact komen': 'Breng tijd door met dieren om rust en verbinding te ervaren',
+    'Social media bekijken': 'Bekijk social media als dat je helpt afleiding te vinden',
   'Huisdier knuffelen': 'Knuffel of aai je huisdier voor troost',
   'Social media bekijken': 'Scroll door social media als dat je helpt afleiding te vinden',
   'Een game spelen': 'Speel een game om je gedachten te verzetten',
@@ -60,17 +62,11 @@ export default function ActivityDetailScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { mood, activity } = (route.params || {}) as { mood: string; activity: string };
-  const [theme, setTheme] = useState(getTheme());
+  const theme = useAppTheme();
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
 
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('appTheme');
-      if (savedTheme) setTheme(getTheme(savedTheme));
-    };
-    loadTheme();
-  }, []);
+  // theme managed by useAppTheme hook
 
   if (!selectedMood || !activity) {
     (navigation as any).goBack();

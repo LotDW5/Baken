@@ -1,21 +1,22 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const [theme] = useState(getTheme());
+  const theme = useAppTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   useEffect(() => {
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
     minWidth: 88,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#6B5CE7',
+    shadowColor: '#000',
     shadowOpacity: 0.12,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },

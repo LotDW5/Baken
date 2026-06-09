@@ -1,5 +1,6 @@
-import { COLORS } from '@/constants/colors';
-import { Ionicons } from '@expo/vector-icons';
+import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
+import useAppTheme from '@/hooks/use-app-theme';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
@@ -16,20 +17,21 @@ const FONT_SEMIBOLD = Platform.select({
   default: 'sans-serif',
 });
 
-const PRIMARY_COLOR = '#6B5CE7';
+// primary color is provided by the global app theme
 
-type OnboardingStep = 'welcome' | 'profile' | 'good' | 'okay' | 'bad' | 'crisis';
+type OnboardingStep = 'welcome' | 'profile' | 'good' | 'okay' | 'bad' | 'crisis' | 'avatar';
+// add theme selection step after avatar
+type OnboardingStepExtended = OnboardingStep | 'theme';
 
 const ACTIVITY_CATEGORIES = [
   {
     name: 'Zintuiglijke rust',
     activities: [
-      { name: 'Een warme douche nemen', icon: require('../assets/icons/Water.png') },
-      { name: 'Een bad nemen', icon: require('../assets/icons/Water.png') },
-      { name: 'Ontspanningsmuziek luisteren', icon: require('../assets/icons/Muziek.png') },
-      { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Natuur.png') },
-      { name: 'In het zonlicht zitten', icon: require('../assets/icons/Bos.png') },
-      { name: 'Iemand knuffelen', icon: require('../assets/icons/Hart.png') }
+      { name: 'Een warme douche/ bad nemen', icon: require('../assets/icons/Water.png') },
+      { name: 'Iemand knuffelen', icon: require('../assets/icons/Hart.png') },
+      { name: 'Naar buiten gaan in de natuur', icon: require('../assets/icons/Bos.png') },
+      { name: 'Muziek luisteren', icon: require('../assets/icons/Muziek.png') },
+      { name: 'Een sigaret roken', icon: require('../assets/icons/Icon.png') }
     ]
   },
   {
@@ -38,7 +40,7 @@ const ACTIVITY_CATEGORIES = [
       { name: 'Een boek lezen', icon: require('../assets/icons/Boek.png') },
       { name: 'Serie of film kijken', icon: require('../assets/icons/TV.png') },
       { name: 'Podcast luisteren', icon: require('../assets/icons/Muziek-1.png') },
-      { name: 'Mediteren', icon: require('../assets/icons/Tijd.png') },
+      { name: 'Mediteren', icon: require('../assets/icons/Sterren.png') },
       { name: 'Ademhalingsoefeningen', icon: require('../assets/icons/Wind.png') }
     ]
   },
@@ -69,15 +71,18 @@ const ACTIVITY_CATEGORIES = [
       { name: 'Contact opnemen met vrienden', icon: require('../assets/icons/Contacten.png') },
       { name: 'Bellen met een vriend(in)', icon: require('../assets/icons/Bellen.png') },
       { name: 'Samen iets drinken', icon: require('../assets/icons/Drinken.png') },
-      { name: 'Huisdier knuffelen', icon: require('../assets/icons/Huisdier.png') }
+      { name: 'Grapjes maken', icon: require('../assets/icons/Grappig.png') },
+      { name: 'Huisdier knuffelen', icon: require('../assets/icons/Huisdier.png') },
+      { name: 'Met dieren in contact komen', icon: require('../assets/icons/Dieren.png') },
+      { name: 'Social media bekijken', icon: require('../assets/icons/Socials.png') }
     ]
   },
   {
     name: 'Afleiding & plezier',
     activities: [
-      { name: 'Een game spelen', icon: require('../assets/icons/Spelen.png') },
-      { name: 'Opruimen', icon: require('../assets/icons/Schoonmaken.png') },
-      { name: 'Buiten zijn', icon: require('../assets/icons/Buiten.png') },
+      { name: 'Opruimen of schoonmaken', icon: require('../assets/icons/Schoonmaken.png') },
+      { name: 'Spelletjes spelen', icon: require('../assets/icons/Spelen.png') },
+      { name: 'Een buitenactiviteit doen', icon: require('../assets/icons/Buiten.png') },
       { name: 'Koken of bakken', icon: require('../assets/icons/Koken.png') }
     ]
   },
@@ -104,7 +109,8 @@ const MOOD_STEPS = [
   { id: 'good', title: 'Goed', color: '#4CAF93', bgColor: '#EAF8F0' },
   { id: 'okay', title: 'Minder goed', color: '#FFB84D', bgColor: '#FFF6EB' },
   { id: 'bad', title: 'Niet goed', color: '#9B8CE8', bgColor: '#F0EDF7' },
-  { id: 'crisis', title: 'Crisis', color: '#E85D75', bgColor: '#FFF0F2' }
+  { id: 'crisis', title: 'Crisis', color: '#E85D75', bgColor: '#FFF0F2' },
+  { id: 'avatar', title: 'Personage', color: '#7C6FE2', bgColor: '#F4F2FF' }
 ];
 
 const MOOD_ICONS: Record<string, any> = {
@@ -114,19 +120,37 @@ const MOOD_ICONS: Record<string, any> = {
   crisis: require('../assets/icons/Crisis.png'),
 };
 
+const ONBOARD_BACKGROUNDS = [
+  { id: 'butterfly', name: 'Vlinder', file: require('../assets/images/butterfly-wild.jpg') },
+  { id: 'grand-canyon', name: 'Grand Canyon', file: require('../assets/images/grand-canyon-nature-footage-arizona-usa.jpg') },
+  { id: 'trees-mountain', name: 'Bergbos', file: require('../assets/images/green-yellow-trees-near-mountain-white-clouds-daytime.jpg') },
+  { id: 'forest-path', name: 'Wandelpad', file: require('../assets/images/green-yellow-trees-near-mountain-white-clouds-daytime.jpg') },
+  { id: 'river-trees', name: 'Rivier', file: require('../assets/images/river-trees.jpg') },
+  { id: 'flowers-butterfly', name: 'Bloemen', file: require('../assets/images/spring-scene-with-flowers-butterfly.jpg') },
+  { id: 'lagoon', name: 'Lagune', file: require('../assets/images/vertical-shot-beautiful-lagoon-surrounded-by-mossy-rocks-forest-skrad-croatia.jpg') },
+  { id: 'mushroom', name: 'Paddenstoel', file: require('../assets/images/vertical-shot-mushroom-growing-nature.jpg') },
+  { id: 'narrow-path', name: 'Bospad', file: require('../assets/images/vertical-shot-narrow-pathway-forest-with-lot-tall-green-trees.jpg') },
+  { id: 'scotland-river', name: 'Schotland', file: require('../assets/images/vertical-shot-river-surrounded-by-mountains-meadows-scotland.jpg') },
+  { id: 'johnston-canyon', name: 'Canyon', file: require('../assets/images/vertical-shot-small-river-johnston-canyon-massive.jpg') },
+  { id: 'waterfall', name: 'Waterval', file: require('../assets/images/waterfall-chae-son-national-park-lampang-thailand.jpg') },
+];
+
 export default function OnboardingScreen() {
   const navigation = useNavigation();
   const route = useRoute<any>();
+  const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const GRID_GAP = 10;
   // subtract 24px left + 24px right to keep cards 24px from edges
   const cardWidth = (screenWidth - 48 - GRID_GAP) / 2;
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
+  const [currentStep, setCurrentStep] = useState<OnboardingStepExtended>('welcome');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('purple');
+  const [selectedBackground, setSelectedBackground] = useState('butterfly');
+  const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
   const [showCustomActivity, setShowCustomActivity] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isProfileFocused, setIsProfileFocused] = useState(false);
@@ -145,6 +169,114 @@ export default function OnboardingScreen() {
     bad: [],
     crisis: []
   });
+
+  // Avatar/personage assets
+  const HEADS = [
+    { name: 'Hoofd bruin', src: require('../assets/personage/hoofdbruin.png') },
+    { name: 'Hoofd donker', src: require('../assets/personage/hoofddonker.png') },
+    { name: 'Hoofd wit', src: require('../assets/personage/hoofdwit.png') },
+  ];
+  const SKIN_COLORS = ['#8B5F3C', '#5A3420', '#F0C8B3'];
+  const HAIRS = [
+    { name: 'Lang haar bruin', src: require('../assets/personage/langhaarbruin.png') },
+    { name: 'Lang haar donker', src: require('../assets/personage/langhaardonker.png') },
+    { name: 'Lang haar wit', src: require('../assets/personage/langhaarwit.png') },
+  ];
+  const TOPS = [
+    { name: 'Bovenstuk 1', src: require('../assets/personage/bovenstuk1.png') },
+    { name: 'Bovenstuk 2', src: require('../assets/personage/bovenstuk2.png') },
+    { name: 'Bovenstuk 3', src: require('../assets/personage/bovenstuk3.png') },
+  ];
+  const BOTTOMS = [
+    { name: 'Onderstuk 1', src: require('../assets/personage/onderstuk1.png') },
+  ];
+  const SHOES = [
+    { name: 'Schoenen 1', src: require('../assets/personage/schoenen1.png') },
+  ];
+
+  const [headIndex, setHeadIndex] = useState(0);
+  const [hairIndex, setHairIndex] = useState(0);
+  const [topIndex, setTopIndex] = useState(0);
+  const [bottomIndex, setBottomIndex] = useState(0);
+  const [shoesIndex, setShoesIndex] = useState(0);
+  const [activePart, setActivePart] = useState<string | null>(null);
+
+  const cycle = (idx: number, max: number, delta: number) => {
+    return (idx + delta + max) % max;
+  };
+
+  // Theme/background helpers (copied/adapted from profiel.tsx)
+  const handleThemeChange = async (id: string) => {
+    try {
+      setSelectedTheme(id);
+      await AsyncStorage.setItem('appTheme', id);
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleBackgroundChange = async (id: string) => {
+    try {
+      setSelectedBackground(id);
+      await AsyncStorage.setItem('homeBackground', id);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleAddBackground = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        alert('Fotokeuze is niet beschikbaar in de webversie.');
+        return;
+      }
+      // eslint-disable-next-line import/no-unresolved
+      const ImagePicker = await import('expo-image-picker');
+      const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
+      if (perm && perm.status !== 'granted') {
+        alert("Toegang tot je foto's is nodig om een achtergrond te kiezen.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      if (result && !(result as any).cancelled) {
+        const newId = `custom-${Date.now()}`;
+        // support both shapes
+        const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
+        const newEntry = { id: newId, uri };
+        const next = [newEntry, ...customBackgrounds];
+        setCustomBackgrounds(next);
+        await AsyncStorage.setItem('customBackgrounds', JSON.stringify(next));
+        // set selected to the new custom background
+        setSelectedBackground(newId);
+        await AsyncStorage.setItem('homeBackground', newId);
+      }
+    } catch (e) {
+      console.warn('[onboarding] image picker error', e);
+      alert('Kon de fotokeuze niet openen (image picker niet beschikbaar).');
+    }
+  };
+
+  // load saved theme/background/custom backgrounds when onboarding mounts
+  useEffect(() => {
+    (async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem('appTheme');
+        const savedBg = await AsyncStorage.getItem('homeBackground');
+        const savedCustom = await AsyncStorage.getItem('customBackgrounds');
+        if (savedTheme) setSelectedTheme(savedTheme);
+        if (savedBg) setSelectedBackground(savedBg);
+        if (savedCustom) {
+          try {
+            const parsed = JSON.parse(savedCustom);
+            setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
+          } catch { setCustomBackgrounds([]); }
+        }
+      } catch (err) {
+        console.warn('[onboarding] failed to load saved theme/background', err);
+      }
+    })();
+  }, []);
 
   const handleActivityToggle = (moodId: string, activityName: string) => {
     setSelectedActivities(prev => ({
@@ -223,22 +355,51 @@ export default function OnboardingScreen() {
     } else if (currentStep === 'bad') {
       setCurrentStep('crisis');
     } else if (currentStep === 'crisis') {
+      setCurrentStep('avatar');
+    } else if (currentStep === 'avatar') {
       try {
         const nameParts = fullName.trim().split(/\s+/);
+
+        // save selected avatar if any
+        const avatarData = {
+          head: HEADS?.[headIndex]?.name || null,
+          hair: HAIRS?.[hairIndex]?.name || null,
+          top: TOPS?.[topIndex]?.name || null,
+          bottom: BOTTOMS?.[bottomIndex]?.name || null,
+          shoes: SHOES?.[shoesIndex]?.name || null,
+        };
 
         await AsyncStorage.setItem('user_data', JSON.stringify({
           firstName: nameParts[0] || '',
           lastName: nameParts.slice(1).join(' '),
           phoneNumber: phoneNumber.trim(),
           email: email.trim(),
+          avatar: avatarData,
         }));
+        // persist theme and activities so profile picks them up
         await AsyncStorage.setItem('appTheme', selectedTheme);
+        try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
         await AsyncStorage.setItem('copingActivities', JSON.stringify(selectedActivities));
-        await AsyncStorage.setItem('onboarding_completed', 'true');
-        (navigation as any).reset({ index: 0, routes: [{ name: 'Main' }] });
+
+        // continue to theme selection step inside onboarding
+        setCurrentStep('theme');
       } catch (error) {
         Alert.alert('Error', 'Er is iets misgegaan');
       }
+    }
+  };
+
+  const finalizeOnboarding = async () => {
+    try {
+      await AsyncStorage.setItem('appTheme', selectedTheme);
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
+      await AsyncStorage.setItem('homeBackground', selectedBackground);
+      await AsyncStorage.setItem('customBackgrounds', JSON.stringify(customBackgrounds));
+      await AsyncStorage.setItem('onboarding_completed', 'true');
+      (navigation as any).reset({ index: 0, routes: [{ name: 'Main' }] });
+    } catch (e) {
+      console.error('Failed to finalize onboarding', e);
+      Alert.alert('Fout', 'Kon onboarding niet opslaan');
     }
   };
 
@@ -248,6 +409,27 @@ export default function OnboardingScreen() {
     else if (currentStep === 'okay') setCurrentStep('good');
     else if (currentStep === 'bad') setCurrentStep('okay');
     else if (currentStep === 'crisis') setCurrentStep('bad');
+    else if (currentStep === 'avatar') setCurrentStep('crisis');
+  };
+
+  const handleSkipAvatar = async () => {
+    try {
+      const nameParts = fullName.trim().split(/\s+/);
+      await AsyncStorage.setItem('user_data', JSON.stringify({
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' '),
+        phoneNumber: phoneNumber.trim(),
+        email: email.trim(),
+        avatar: null,
+      }));
+      await AsyncStorage.setItem('appTheme', selectedTheme);
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
+      await AsyncStorage.setItem('copingActivities', JSON.stringify(selectedActivities));
+      // move to theme selection so user can pick color/background
+      setCurrentStep('theme');
+    } catch (error) {
+      Alert.alert('Error', 'Er is iets misgegaan');
+    }
   };
 
   const currentMood = MOOD_STEPS.find(m => m.id === currentStep);
@@ -263,7 +445,7 @@ export default function OnboardingScreen() {
 
   useEffect(() => {
     const requested = (route.params as any)?.step as OnboardingStep | undefined;
-    if (requested && ['good', 'okay', 'bad', 'crisis', 'profile', 'welcome'].includes(requested)) {
+    if (requested && ['good', 'okay', 'bad', 'crisis', 'profile', 'welcome', 'avatar'].includes(requested)) {
       setCurrentStep(requested as OnboardingStep);
     }
 
@@ -338,7 +520,7 @@ export default function OnboardingScreen() {
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
         <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 60, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
-          <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: theme.color }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
         </View>
@@ -373,7 +555,7 @@ export default function OnboardingScreen() {
           </ScrollView>
           {!isKeyboardVisible && (
             <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: -2, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR }]} onPress={handleNext}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: theme.color }]} onPress={handleNext}>
                 <Text style={styles.buttonText}>Volgende</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white }]} onPress={handleBack}>
@@ -386,6 +568,227 @@ export default function OnboardingScreen() {
     );
   }
 
+      if (currentStep === 'avatar') {
+        return (
+          <SafeAreaView style={styles.safeArea}>
+            <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 0 }}>
+              <View style={styles.pageHeaderOnboarding}>
+                <View style={styles.titleWrapOnboarding}>
+                  <Text style={styles.pageTitleOnboarding}>Maak jouw personage</Text>
+                </View>
+              </View>
+
+              {/* footer buttons rendered in overlay to match other pages */}
+              <View pointerEvents="box-none" style={[overlayPosition, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 9999, elevation: 12 }]}> 
+                <View pointerEvents="box-none" style={{ width: '100%' }}>
+                  <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 16 }]} onPress={handleNext}>
+                      <Text style={styles.buttonText}>Opslaan</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={handleSkipAvatar}>
+                      <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Overslaan</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.avatarPreviewContainer}>
+                <View style={styles.avatarPreviewInner}>
+                  <Image source={BOTTOMS[bottomIndex].src} style={[styles.avatarBottomImage, { position: 'absolute' }]} resizeMode="contain" />
+                  <Image source={TOPS[topIndex].src} style={[styles.avatarTopImage, { position: 'absolute' }]} resizeMode="contain" />
+                  <View style={[styles.avatarSkinCircle, { backgroundColor: SKIN_COLORS[headIndex] }]} />
+                  <Image source={HEADS[headIndex].src} style={[styles.avatarHeadImage, { position: 'absolute' }]} resizeMode="contain" />
+                  <Image source={HAIRS[hairIndex].src} style={[styles.avatarHairImage, { position: 'absolute' }]} resizeMode="contain" />
+                  <Image source={SHOES[shoesIndex].src} style={[styles.avatarShoesImage, { position: 'absolute' }]} resizeMode="contain" />
+                  {/* chevrons around avatar parts */}
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'head' ? styles.arrowButtonActive : {}, { left: -24, top: 22 }]}
+                    onPress={() => {
+                      setHeadIndex(cycle(headIndex, HEADS.length, -1));
+                      setActivePart('head');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-back" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'head' ? styles.arrowButtonActive : {}, { right: -24, top: 22 }]}
+                    onPress={() => {
+                      setHeadIndex(cycle(headIndex, HEADS.length, 1));
+                      setActivePart('head');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-forward" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'top' ? styles.arrowButtonActive : {}, { left: -24, top: 160 }]}
+                    onPress={() => {
+                      setTopIndex(cycle(topIndex, TOPS.length, -1));
+                      setActivePart('top');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-back" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'top' ? styles.arrowButtonActive : {}, { right: -24, top: 160 }]}
+                    onPress={() => {
+                      setTopIndex(cycle(topIndex, TOPS.length, 1));
+                      setActivePart('top');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-forward" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'bottom' ? styles.arrowButtonActive : {}, { left: -24, top: 260 }]}
+                    onPress={() => {
+                      setBottomIndex(cycle(bottomIndex, BOTTOMS.length, -1));
+                      setActivePart('bottom');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-back" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'bottom' ? styles.arrowButtonActive : {}, { right: -24, top: 260 }]}
+                    onPress={() => {
+                      setBottomIndex(cycle(bottomIndex, BOTTOMS.length, 1));
+                      setActivePart('bottom');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-forward" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'shoes' ? styles.arrowButtonActive : {}, { left: -24, top: 340 }]}
+                    onPress={() => {
+                      setShoesIndex(cycle(shoesIndex, SHOES.length, -1));
+                      setActivePart('shoes');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-back" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.arrowButton, activePart === 'shoes' ? styles.arrowButtonActive : {}, { right: -24, top: 340 }]}
+                    onPress={() => {
+                      setShoesIndex(cycle(shoesIndex, SHOES.length, 1));
+                      setActivePart('shoes');
+                      setTimeout(() => setActivePart(null), 300);
+                    }}
+                  >
+                    <Ionicons name="chevron-forward" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* footer buttons rendered in overlay to match other pages */}
+            </View>
+          </SafeAreaView>
+        );
+      }
+
+    // THEME selection step (inline screen similar to profiel background/color picker)
+    if (currentStep === 'theme') {
+      // build display backgrounds (add + builtins + customs)
+      const removedBuiltInId = ONBOARD_BACKGROUNDS[2]?.id;
+      const builtInEntries = ONBOARD_BACKGROUNDS.filter(b => b.id !== removedBuiltInId).map(b => ({ id: b.id, file: b.file }));
+      const customEntries = customBackgrounds.map(c => ({ id: c.id, file: { uri: c.uri } }));
+      const displayBackgrounds = [ { id: 'add' }, ...builtInEntries, ...customEntries ];
+
+      return (
+        <SafeAreaView style={styles.safeArea}>
+          <View style={{ flex: 1 }}>
+            <View style={styles.pageHeaderOnboarding}>
+              <View style={styles.titleWrapOnboarding}>
+                <Text style={styles.pageTitleOnboarding}>Kies een kleur en achtergrond</Text>
+              </View>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+              <View style={styles.cardOption}>
+                <View style={styles.sectionCard}>
+                  <Text style={styles.sectionTitle}>App kleur</Text>
+                  <View style={styles.colorGrid}>
+                    {THEME_COLORS.map((t) => (
+                      <TouchableOpacity
+                        key={t.id}
+                        style={[
+                          styles.colorSwatch,
+                          { backgroundColor: t.bgColor },
+                          selectedTheme === t.id && styles.colorSwatchSelected,
+                        ]}
+                        onPress={() => handleThemeChange(t.id)}
+                      >
+                        <View style={[styles.colorDot, { backgroundColor: t.color }]} />
+                        {selectedTheme === t.id && (
+                          <View style={styles.colorCheckBadge}>
+                            <MaterialCommunityIcons name="check" size={18} color="#fff" />
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.cardOption}>
+                <View style={styles.sectionCard}>
+                  <Text style={styles.sectionTitle}>Achtergrond</Text>
+                  <View style={styles.bgGrid}>
+                    {displayBackgrounds.map((bg) => {
+                      if (bg.id === 'add') {
+                        return (
+                          <TouchableOpacity key="add" style={[styles.bgThumbWrapper, styles.addThumb]} onPress={handleAddBackground}>
+                            <View style={styles.addInner}>
+                              <Image source={require('../assets/icons/Plus.png')} style={styles.addIcon} />
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      }
+
+                      const isSelected = selectedBackground === bg.id;
+                      const source = (bg as any).file ?? ONBOARD_BACKGROUNDS[0].file;
+                      return (
+                        <TouchableOpacity key={bg.id} style={[styles.bgThumbWrapper, isSelected && styles.bgThumbWrapperSelected]} onPress={() => handleBackgroundChange(bg.id)}>
+                          <Image source={source} style={styles.bgThumbImage} />
+                          {isSelected && (
+                            <View style={styles.bgSelectedOverlay}>
+                              <View style={styles.bgSelectedCircle}>
+                                <Image source={require('../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: getTheme(selectedTheme).color }]} />
+                              </View>
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              </View>
+            </ScrollView>
+
+            <View pointerEvents="box-none" style={[overlayPosition, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 9999, elevation: 12 }]}> 
+              <View pointerEvents="box-none" style={{ width: '100%' }}>
+                <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
+                  <TouchableOpacity style={[styles.button, { backgroundColor: getTheme(selectedTheme).color, width: '100%', paddingVertical: 16 }]} onPress={finalizeOnboarding}>
+                    <Text style={styles.buttonText}>Opslaan</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={finalizeOnboarding}>
+                    <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Overslaan</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+        </SafeAreaView>
+      );
+    }
+
   if (currentMood && ['good', 'okay', 'bad', 'crisis'].includes(currentStep)) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -397,7 +800,7 @@ export default function OnboardingScreen() {
         <View style={styles.moodScreen}>
           <View style={[styles.progressBar, { paddingTop: insets.top + 56 }]}>
             {[1, 2, 3, 4].map((i) => (
-              <View key={i} style={[styles.progressDot, { backgroundColor: i <= progressStep ? PRIMARY_COLOR : '#E1DFE8' }]} />
+              <View key={i} style={[styles.progressDot, { backgroundColor: i <= progressStep ? theme.color : '#E1DFE8' }]} />
             ))}
           </View>
 
@@ -426,7 +829,7 @@ export default function OnboardingScreen() {
                           { width: cardWidth },
                           {
                             backgroundColor: isSelected ? '#F0EDF7' : COLORS.card,
-                            borderColor: isSelected ? PRIMARY_COLOR : COLORS.border,
+                            borderColor: isSelected ? theme.color : COLORS.border,
                           }
                         ]}
                         onPress={() => handleActivityToggle(currentMood.id, activity.name)}
@@ -435,16 +838,16 @@ export default function OnboardingScreen() {
                                 <Ionicons
                                   name={activity.icon as any}
                                   size={28}
-                                  color={isSelected ? PRIMARY_COLOR : COLORS.mutedForeground}
+                                  color={isSelected ? theme.color : COLORS.mutedForeground}
                                   style={styles.activityIcon}
                                 />
                               ) : (
-                                <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? PRIMARY_COLOR : COLORS.mutedForeground }]} />
+                                <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? theme.color : COLORS.mutedForeground }]} />
                               )}
                         <Text
                           style={[
                             styles.activityText,
-                            { color: isSelected ? PRIMARY_COLOR : COLORS.foreground }
+                            { color: isSelected ? theme.color : COLORS.foreground }
                           ]}
                         >
                           {activity.name}
@@ -460,9 +863,9 @@ export default function OnboardingScreen() {
               <View>
                 <View style={styles.categoryHeaderRow}>
                   <Text style={styles.categoryTitle}>Jouw activiteiten</Text>
-                  <TouchableOpacity onPress={() => setEditingCustom(!editingCustom)}>
-                    <Text style={styles.editButton}>{editingCustom ? 'Gereed' : 'Bewerken'}</Text>
-                  </TouchableOpacity>
+                      <TouchableOpacity onPress={() => setEditingCustom(!editingCustom)}>
+                        <Text style={[styles.editButton, { color: theme.color }]}>{editingCustom ? 'Gereed' : 'Bewerken'}</Text>
+                      </TouchableOpacity>
                 </View>
                 <View style={styles.customActivityGrid}>
                   {customActivities[currentMood.id].map((activityName) => {
@@ -475,7 +878,7 @@ export default function OnboardingScreen() {
                             styles.customActivityButton,
                             {
                               backgroundColor: isSelected ? '#F0EDF7' : COLORS.card,
-                              borderColor: isSelected ? PRIMARY_COLOR : COLORS.border,
+                              borderColor: isSelected ? theme.color : COLORS.border,
                             }
                           ]}
                           onPress={() => handleActivityToggle(currentMood.id, activityName)}
@@ -483,13 +886,13 @@ export default function OnboardingScreen() {
                           <Ionicons
                             name="add-circle-outline"
                             size={28}
-                            color={isSelected ? PRIMARY_COLOR : COLORS.mutedForeground}
+                            color={isSelected ? theme.color : COLORS.mutedForeground}
                             style={styles.activityIcon}
                           />
                           <Text
                             style={[
                               styles.activityText,
-                              { color: isSelected ? PRIMARY_COLOR : COLORS.foreground }
+                              { color: isSelected ? theme.color : COLORS.foreground }
                             ]}
                           >
                             {activityName}
@@ -515,7 +918,7 @@ export default function OnboardingScreen() {
                 <View style={styles.customActivityCard}>
                 <Text style={styles.customActivityLabel}>Nieuwe activiteit</Text>
                 <TextInput
-                  style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') && styles.profileInputFocus]}
+                  style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') ? { borderColor: theme.color, borderWidth: 1, outlineColor: theme.color as any, outlineWidth: 1 as any, outlineStyle: 'solid' as any } : null]}
                   value={customActivityName}
                   onChangeText={setCustomActivityName}
                   placeholder="Typ een activiteit"
@@ -529,7 +932,7 @@ export default function OnboardingScreen() {
                   <TouchableOpacity
                     style={[
                       styles.customActivityAddButton,
-                      canAddCustomActivity ? styles.customActivityAddButtonActive : styles.customActivityAddButtonDisabled,
+                      canAddCustomActivity ? { backgroundColor: theme.color } : { backgroundColor: 'rgba(107, 92, 231, 0.35)' },
                     ]}
                     onPress={handleAddCustomActivity}
                     disabled={!canAddCustomActivity}
@@ -537,7 +940,7 @@ export default function OnboardingScreen() {
                     <Text
                       style={[
                         styles.customActivityAddButtonText,
-                        canAddCustomActivity ? styles.customActivityAddButtonTextActive : styles.customActivityAddButtonTextDisabled,
+                        canAddCustomActivity ? { color: theme.color } : styles.customActivityAddButtonTextDisabled,
                       ]}
                     >
                       Toevoegen
@@ -551,8 +954,8 @@ export default function OnboardingScreen() {
             )}
 
             <TouchableOpacity style={styles.addActivityButton} onPress={() => setShowCustomActivity(true)}>
-              <Ionicons name="add" size={18} color={PRIMARY_COLOR} />
-              <Text style={styles.addActivityButtonText}>Voeg een activiteit toe</Text>
+              <Ionicons name="add" size={18} color={theme.color} />
+              <Text style={[styles.addActivityButtonText, { color: theme.color }]}>Voeg een activiteit toe</Text>
             </TouchableOpacity>
 
             {/* spacer removed — paddingBottom handles spacing for the fixed footer */}
@@ -562,7 +965,7 @@ export default function OnboardingScreen() {
           <View pointerEvents="box-none" style={[overlayPosition, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 9999, elevation: 12 }]}>
             <View pointerEvents="box-none" style={{ width: '100%' }}>
               <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
-                <TouchableOpacity style={[styles.button, { backgroundColor: PRIMARY_COLOR, width: '100%', paddingVertical: 16 }]} onPress={handleNext}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 16 }]} onPress={handleNext}>
                   <Text style={styles.buttonText}>Ga verder</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={handleBack}>
@@ -655,12 +1058,12 @@ const styles = StyleSheet.create({
   },
 
   profileInputFocus: {
-    borderColor: PRIMARY_COLOR,
+    borderColor: COLORS.border,
     borderWidth: 1,
     // web focus outline (cast to any to satisfy RN typings)
-    outlineColor: PRIMARY_COLOR as any,
-    outlineWidth: 1 as any,
-    outlineStyle: 'solid' as any,
+    outlineColor: 'transparent' as any,
+    outlineWidth: 0 as any,
+    outlineStyle: 'none' as any,
   },
   fullInput: {
     marginTop: 10,
@@ -736,7 +1139,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     fontSize: 14,
-    color: PRIMARY_COLOR,
+    color: COLORS.foreground,
     fontFamily: FONT_SEMIBOLD,
   },
   categoryTitle: {
@@ -829,7 +1232,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 17,
     alignItems: 'center',
-    shadowColor: '#6B5CE7',
+    shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -841,13 +1244,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: PRIMARY_COLOR,
+    borderColor: COLORS.border,
   },
   secondaryButtonText: {
     fontSize: 16,
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
-    color: PRIMARY_COLOR,
+    color: COLORS.foreground,
   },
   buttonText: {
     fontSize: 16,
@@ -859,7 +1262,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: PRIMARY_COLOR,
+    borderColor: COLORS.border,
     backgroundColor: COLORS.white,
     paddingVertical: 14,
     paddingHorizontal: 14,
@@ -872,7 +1275,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
-    color: PRIMARY_COLOR,
+    color: COLORS.foreground,
   },
   customActivityCard: {
     marginTop: 8,
@@ -911,10 +1314,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   customActivityAddButtonActive: {
-    backgroundColor: PRIMARY_COLOR,
+    backgroundColor: COLORS.background,
   },
   customActivityAddButtonDisabled: {
-    backgroundColor: 'rgba(107, 92, 231, 0.35)',
+    backgroundColor: 'rgba(0,0,0,0.06)',
   },
   customActivityAddButtonText: {
     fontSize: 14,
@@ -940,6 +1343,261 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
+    color: COLORS.foreground,
+  },
+  avatarPreviewContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  avatarPreviewInner: {
+    width: 120,
+    height: 420,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
+  },
+  avatarImage: {
+    width: 140,
+    height: 520,
+  },
+  avatarHeadImage: {
+    width: 110,
+    height: 110,
+    top: 6,
+    alignSelf: 'center',
+    zIndex: 6,
+  },
+  avatarHairImage: {
+    width: 120,
+    height: 110,
+    top: 2,
+    alignSelf: 'center',
+    zIndex: 7,
+  },
+  avatarTopImage: {
+    width: 120,
+    height: 100,
+    top: 120,
+    alignSelf: 'center',
+    zIndex: 4,
+  },
+  avatarBottomImage: {
+    width: 120,
+    height: 180,
+    top: 220,
+    alignSelf: 'center',
+    zIndex: 3,
+  },
+  avatarShoesImage: {
+    width: 120,
+    height: 80,
+    top: 360,
+    alignSelf: 'center',
+    zIndex: 8,
+  },
+  avatarSkinCircle: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    position: 'absolute',
+    top: 6,
+    alignSelf: 'center',
+    zIndex: 3,
+  },
+  pageHeaderOnboarding: {
+    marginTop: 144,
+    marginBottom: 24,
+    paddingHorizontal: 24,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
+  },
+  titleWrapOnboarding: { flex: 1, alignItems: 'flex-start' },
+  pageTitleOnboarding: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
+  sectionCard: {
+    marginBottom: 18,
+  },
+
+  cardOption: {
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 18,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
+  },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.foreground,
+    marginBottom: 12,
+  },
+
+  content: { 
+    paddingHorizontal: 24, 
+    paddingTop: 0,
+    paddingBottom: 160,
+  },
+
+  colorGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 14,
+    rowGap: 14,
+    alignItems: 'center',
+  },
+  colorSwatch: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#E6E8EE',
+    backgroundColor: '#F8F8FB',
+  },
+  colorSwatchSelected: {
+    borderWidth: 2.5,
+    borderColor: '#1F2230',
+    backgroundColor: '#FBFAFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  colorDot: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  colorCheckBadge: {
+    position: 'absolute',
+    top: -7,
+    right: -7,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#2D2D3A',
+    borderWidth: 2,
+    borderColor: '#F5F4FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  bgGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 14,
+  },
+
+  bgThumbWrapper: {
+    width: '32%',
+    aspectRatio: 0.7,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#C9CCD4',
+    overflow: 'hidden',
+    backgroundColor: COLORS.card,
+  },
+
+  addThumb: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  addInner: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 14,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addPlus: {},
+
+  bgThumbWrapperSelected: {
+    borderWidth: 1.5,
+    borderColor: '#1F2230',
+  },
+
+  bgThumbImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 14,
+    resizeMode: 'cover',
+  },
+
+  bgSelectedOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  bgSelectedCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bgCheckIcon: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
+  },
+  addIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+    tintColor: '#000',
+  },
+  arrowButton: {
+    position: 'absolute',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  arrowButtonActive: {
+    backgroundColor: COLORS.background,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  avatarControls: {
+    marginTop: 18,
+    gap: 14,
+  },
+  avatarControlRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  avatarPartLabel: {
+    fontSize: 16,
+    fontFamily: FONT_SEMIBOLD,
     color: COLORS.foreground,
   },
 });

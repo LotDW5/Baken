@@ -1,16 +1,17 @@
-import { COLORS, MOOD_OPTIONS, getTheme } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -21,8 +22,9 @@ const MOOD_ICON_SOURCES: Record<string, any> = {
 };
 const DEFAULT_BY_MOOD: Record<string, string[]> = {
   good: ['Dansen', 'Wandelen', 'Muziek maken', 'Een boek lezen'],
-  okay: ['Wandelen', 'Ademhalingsoefeningen doen', 'Ontspanningsmuziek luisteren', 'Mediteren'],
-  bad: ['Ademhalingsoefeningen doen', 'Mediteren', 'Bellen met vrienden', 'Naar buiten gaan'],
+  okay: ['Wandelen', 'Ademhalingsoefeningen doen', 'Muziek luisteren', 'Mediteren'],
+  bad: ['Ademhalingsoefeningen doen', 'Mediteren', 'Bellen met vrienden', 'Naar buiten gaan in de natuur'],
+
   crisis: ['Bellen met vrienden', 'Huisdier knuffelen', 'Slapen', 'Bidden'],
 };
 
@@ -35,10 +37,16 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Muziek maken': 'Speel een instrument of zing om je stemming te verlichten',
   'Een boek lezen': 'Lees een boek om even te ontspannen en je gedachten te verzetten',
   'Ademhalingsoefeningen doen': 'Doe rustige ademhalingsoefeningen om te kalmeren',
-  'Ontspanningsmuziek luisteren': 'Luister naar rustige muziek om te ontspannen',
+  'Muziek luisteren': 'Luister naar rustige of favoriete muziek om te ontspannen',
   'Mediteren': 'Neem een paar minuten om te mediteren en je aandacht te herstellen',
   'Bellen met vrienden': 'Bel een vriend(in) of familielid voor een praatje',
-  'Naar buiten gaan': 'Ga naar buiten en ervaar de natuur om je heen',
+  'Bellen met een vriend(in)': 'Bel een vriend(in) of familielid voor een praatje',
+  'Naar buiten gaan in de natuur': 'Ga naar buiten en ervaar de natuur om je heen',
+  'Samen iets drinken': 'Ga even samen iets drinken en praat bij',
+  'Grapjes maken': 'Maak een grapje of lach samen om je stemming te verbeteren',
+  'Met dieren in contact komen': 'Breng tijd door met dieren om rust en verbinding te ervaren',
+  'Social media bekijken': 'Bekijk social media als dat je helpt afleiding te vinden',
+  'Een sigaret roken': 'Roken kan ontspanning lijken, maar let op: het is schadelijk voor je gezondheid',
   'Huisdier knuffelen': 'Knuffel of aai je huisdier voor troost',
   'Slapen': 'Ga even liggen om te rusten of te slapen',
   'Bidden': 'Neem even de tijd om te bidden',
@@ -48,20 +56,14 @@ export default function ActivitiesScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { mood } = (route.params || {}) as { mood: string };
-  const [theme, setTheme] = useState(getTheme());
+  const theme = useAppTheme();
   const [activities, setActivities] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
 
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('appTheme');
-      if (savedTheme) setTheme(getTheme(savedTheme));
-    };
-    loadTheme();
-  }, []);
+  // theme handled by useAppTheme
 
   useEffect(() => {
     const loadActivities = async () => {

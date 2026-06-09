@@ -1,18 +1,19 @@
 import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
  
 import applyShadow from '@/utils/shadow';
@@ -41,11 +42,13 @@ const BACKGROUNDS = [
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const [theme, setTheme] = useState(getTheme());
+  const globalTheme = useAppTheme();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
+
+  const uiTheme = selectedTheme ? getTheme(selectedTheme) : globalTheme;
 
   useEffect(() => {
     loadPreferences();
@@ -62,7 +65,6 @@ export default function ProfileScreen() {
 
       if (savedTheme) {
         setSelectedTheme(savedTheme);
-        setTheme(getTheme(savedTheme));
       }
       if (savedBg) setSelectedBackground(savedBg);
       if (savedCustom) {
@@ -79,8 +81,8 @@ export default function ProfileScreen() {
   const handleThemeChange = async (id: string) => {
     try {
       setSelectedTheme(id);
-      setTheme(getTheme(id));
       await AsyncStorage.setItem('appTheme', id);
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
     } catch (e) {
       console.error(e);
     }
@@ -146,12 +148,12 @@ export default function ProfileScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-                <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+                <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: uiTheme.color }]} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: uiTheme.color }]} />
           </View>
         </TouchableOpacity>
       </View>
@@ -168,7 +170,7 @@ export default function ProfileScreen() {
         <View style={styles.cardProfile}>
           <View style={styles.profileSectionCard}>
             <View style={styles.avatarContainer}>
-              <View style={[styles.avatarCircle, { backgroundColor: theme.color }]}>
+              <View style={[styles.avatarCircle, { backgroundColor: uiTheme.color }]}>
                 <Image source={require('../../assets/icons/Profiel.png')} style={styles.avatarImage} />
               </View>
             </View>
@@ -239,7 +241,7 @@ export default function ProfileScreen() {
                     {isSelected && (
                       <View style={styles.bgSelectedOverlay}>
                         <View style={styles.bgSelectedCircle}>
-                          <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: theme.color }]} />
+                                <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: uiTheme.color }]} />
                         </View>
                       </View>
                     )}

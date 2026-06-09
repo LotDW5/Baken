@@ -1,19 +1,20 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // DateTimePicker is dynamically imported on native platforms to avoid web bundling issues
+import useAppTheme from '@/hooks/use-app-theme';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Image,
-  Linking, Platform, SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Image,
+    Linking, Platform, SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePickerShim from './DateTimePickerShim';
@@ -23,7 +24,7 @@ const STORAGE_KEY = 'calendar_events';
 
 export default function NieuweAfspraak() {
   const navigation = useNavigation<any>();
-  const theme = useMemo(() => getTheme(), []);
+  const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const route = useRoute<any>();
 
@@ -271,7 +272,7 @@ export default function NieuweAfspraak() {
       >
           <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Titel</Text>
-          <View style={[styles.inputWrapper, focusedField === 'title' ? { borderColor: '#6B5CE7' } : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'title' ? { borderColor: theme.color } : null]}>
             <TextInput
               style={styles.input}
               placeholder="Wat voor afspraak?"
@@ -287,7 +288,7 @@ export default function NieuweAfspraak() {
         <View style={styles.rowInline}>
           <View style={[{ flex: 1 }, styles.inputGroup]}>
             <Text style={styles.inputLabel}>Datum</Text>
-            <View style={[styles.inputWrapper, focusedField === 'date' ? { borderColor: '#6B5CE7' } : null]}>
+            <View style={[styles.inputWrapper, focusedField === 'date' ? { borderColor: theme.color } : null]}>
               <TextInput
                 style={styles.input}
                 value={date}
@@ -302,7 +303,7 @@ export default function NieuweAfspraak() {
 
           <View style={[{ width: 140 }, styles.inputGroup]}>
             <Text style={styles.inputLabel}>Tijd</Text>
-            <View style={[styles.inputWrapper, focusedField === 'time' ? { borderColor: '#6B5CE7' } : null]}>
+            <View style={[styles.inputWrapper, focusedField === 'time' ? { borderColor: theme.color } : null]}>
               <TouchableOpacity activeOpacity={0.8} onPress={async () => {
                 // parse existing time if present
                 if (time && /^(\d{1,2}):(\d{2})$/.test(time)) {
@@ -348,7 +349,7 @@ export default function NieuweAfspraak() {
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Locatie</Text>
-          <View style={[styles.inputWrapper, focusedField === 'location' ? { borderColor: '#6B5CE7' } : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'location' ? { borderColor: theme.color } : null]}>
             <TextInput
               style={styles.input}
               value={location}
@@ -363,7 +364,7 @@ export default function NieuweAfspraak() {
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Notities</Text>
-          <View style={[styles.inputWrapper, focusedField === 'notes' ? { borderColor: '#6B5CE7' } : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'notes' ? { borderColor: theme.color } : null]}>
             <TextInput
               style={[styles.input, styles.multiline]}
               value={notes}
@@ -400,7 +401,7 @@ export default function NieuweAfspraak() {
         <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + themeConstants.sizes.tabBarHeight + 24 }} pointerEvents="box-none">
           <View style={styles.formFooter} pointerEvents="auto" onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color }]} onPress={save}>
+              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } }]} onPress={save}>
                 <Text style={styles.modalPrimaryText}>Opslaan</Text>
               </TouchableOpacity>
 
@@ -499,7 +500,7 @@ const styles = StyleSheet.create<any>({
     elevation: 12,
   },
   buttonRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7', width: 160, justifyContent: 'center', alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: COLORS.card, width: 160, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
   modalSecondaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', width: 160, justifyContent: 'center', alignItems: 'center' },
   modalSecondaryText: { textAlign: 'center', fontWeight: '600', color: '#2D2D3A', fontSize: 16 },

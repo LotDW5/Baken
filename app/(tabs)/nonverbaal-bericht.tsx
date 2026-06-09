@@ -1,8 +1,9 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,7 +12,7 @@ const STORAGE_KEY = 'nonverbal_messages';
 export default function NonverbaalMessage() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const theme = useMemo(() => getTheme(), []);
+  const theme = useAppTheme();
 
   useEffect(() => {
     // Keep bottom tab bar visible on this screen
@@ -120,7 +121,7 @@ export default function NonverbaalMessage() {
       </View>
 
         <ScrollView scrollEnabled={false} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + THEME.sizes.tabBarHeight + 220, flexGrow: 1 }]} keyboardShouldPersistTaps="handled">
-          <View style={[styles.textAreaWrap, focused ? styles.textAreaWrapFocused : null, { marginBottom: insets.bottom + THEME.sizes.tabBarHeight + 284 }]}>
+          <View style={[styles.textAreaWrap, focused ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.12, shadowRadius: 12 } : null, { marginBottom: insets.bottom + THEME.sizes.tabBarHeight + 284 }]}>
           <TextInput
             multiline
             placeholder="Typ hier je bericht..."
@@ -137,7 +138,7 @@ export default function NonverbaalMessage() {
 
       <View style={[styles.formFooter, { position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight + 24 }]}> 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color }]} onPress={save}>
+          <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } }]} onPress={save}>
             <Text style={styles.modalPrimaryText}>Opslaan</Text>
           </TouchableOpacity>
 
@@ -182,7 +183,7 @@ const styles = StyleSheet.create<any>({
   },
   iconImage: { width: 20, height: 20, resizeMode: 'contain' },
   pageHeader: {
-    marginTop: 112,
+    marginTop: 144,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
@@ -195,12 +196,23 @@ const styles = StyleSheet.create<any>({
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left', flexShrink: 1 },
   pageSubtitle: { marginTop: 8, color: COLORS.mutedForeground },
   content: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 24 },
-  textAreaWrap: { flex: 1, backgroundColor: COLORS.inputBackground, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(107,92,231,0.06)', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
-  textAreaWrapFocused: { borderColor: '#6B5CE7', shadowColor: '#6B5CE7', shadowOpacity: 0.08, shadowRadius: 8 },
-  textArea: { flex: 1, minHeight: 320, backgroundColor: 'transparent', borderRadius: 20, borderWidth: 0, paddingHorizontal: 0, paddingVertical: 8, textAlignVertical: 'top', fontSize: 16, color: COLORS.foreground, outlineWidth: 0, outlineColor: 'transparent', boxShadow: 'none' },
+  textAreaWrap: { flex: 1, backgroundColor: COLORS.inputBackground, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(107,92,231,0.06)', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, overflow: 'hidden' },
+  textAreaWrapFocused: { borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8 },
+  textArea: { flex: 1, minHeight: 320, backgroundColor: COLORS.inputBackground, borderRadius: 20, borderWidth: 0, paddingHorizontal: 8, paddingVertical: 8, textAlignVertical: 'top', fontSize: 16, color: COLORS.foreground,
+    ...Platform.select({
+      web: {
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        outlineStyle: 'none',
+        boxShadow: 'none',
+        WebkitBoxShadow: 'none',
+        WebkitTapHighlightColor: 'transparent',
+      },
+    }),
+  },
   formFooter: { paddingHorizontal: 24, paddingBottom: 24, paddingTop: 12, gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: 'transparent' },
   buttonRow: { flexDirection: 'row', alignItems: 'center' },
-  modalPrimaryButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: '#6B5CE7', flex: 1 },
+  modalPrimaryButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: COLORS.card, flex: 1 },
   modalPrimaryButtonFixed: { width: 160 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
   modalSecondaryButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', flex: 1 },

@@ -1,7 +1,5 @@
-import { getTheme } from '@/constants/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import useAppTheme from '@/hooks/use-app-theme';
 // expo-router removed — use App.tsx with react-navigation instead
-import { useEffect, useState } from 'react';
 
 const TAB_ICON_SIZE = 24;
 const TAB_ICON_SOURCES: Record<string, any> = {
@@ -12,17 +10,7 @@ const TAB_ICON_SOURCES: Record<string, any> = {
 };
 
 export default function Layout() {
-  const [theme, setTheme] = useState(getTheme());
-
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('appTheme');
-      if (savedTheme) {
-        setTheme(getTheme(savedTheme));
-      }
-    };
-    loadTheme();
-  }, []);
+  const theme = useAppTheme();
 
   // App now uses App.tsx for navigation. Keep a harmless fallback to avoid build errors.
   return null;

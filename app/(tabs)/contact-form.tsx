@@ -1,9 +1,10 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Alert,
     Image, Platform, SafeAreaView,
@@ -22,7 +23,7 @@ export default function ContactForm() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const insets = useSafeAreaInsets();
-  const theme = useMemo(() => getTheme(), []);
+  const theme = useAppTheme();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -139,7 +140,7 @@ export default function ContactForm() {
       <ScrollView contentContainerStyle={styles.formContent} keyboardShouldPersistTaps="handled">
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Naam</Text>
-          <View style={[styles.inputWrapper, focusedField === 'name' ? styles.inputWrapperFocused : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'name' ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.08, shadowRadius: 8 } : null]}>
             <TextInput
               style={styles.input}
               placeholder="Naam van contact"
@@ -154,7 +155,7 @@ export default function ContactForm() {
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Telefoon</Text>
-          <View style={[styles.inputWrapper, focusedField === 'phone' ? styles.inputWrapperFocused : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'phone' ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.08, shadowRadius: 8 } : null]}>
             <TextInput
               style={styles.input}
               placeholder="Telefoonnummer"
@@ -170,7 +171,7 @@ export default function ContactForm() {
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Relatie</Text>
-          <View style={[styles.inputWrapper, focusedField === 'relation' ? styles.inputWrapperFocused : null]}>
+          <View style={[styles.inputWrapper, focusedField === 'relation' ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.08, shadowRadius: 8 } : null]}>
             <TextInput
               style={styles.input}
               placeholder="Bijv. Familie, Vriend, Begeleider…"
@@ -283,7 +284,7 @@ const styles = StyleSheet.create<any>({
   inputLabel: { fontSize: 14, fontWeight: '600', color: COLORS.foreground },
   input: { backgroundColor: 'transparent', borderRadius: 20, borderWidth: 0, paddingHorizontal: 0, paddingVertical: 8, outlineWidth: 0, outlineColor: 'transparent', boxShadow: 'none', fontSize: 16, color: COLORS.foreground },
   inputWrapper: { backgroundColor: COLORS.inputBackground, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(107,92,231,0.06)', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
-  inputWrapperFocused: { borderColor: '#6B5CE7', shadowColor: '#6B5CE7', shadowOpacity: 0.08, shadowRadius: 8 },
+  inputWrapperFocused: { borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8 },
   multiline: { minHeight: 90, textAlignVertical: 'top' },
   rowInline: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   favoriteRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 },
@@ -293,7 +294,7 @@ const styles = StyleSheet.create<any>({
   webSwitchThumb: { width: 18, height: 18, borderRadius: 9, backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
   formFooter: { paddingHorizontal: 24, paddingBottom: 24, paddingTop: 12, gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: 'transparent' },
   buttonRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7' },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: COLORS.card },
   modalPrimaryButtonFixed: { width: 160 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
   modalSecondaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0' },

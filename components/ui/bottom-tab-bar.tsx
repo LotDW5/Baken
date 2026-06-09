@@ -1,12 +1,13 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
-  const theme = getTheme();
+  const theme = useAppTheme();
   // Always render the bottom tab bar for every route
   // navigation fills full width; internal padding keeps buttons away from edges
 
@@ -18,26 +19,32 @@ export default function BottomTabBar(props: BottomTabBarProps) {
         const focusedRoute = state.routes[state.index];
         const nested = focusedRoute.state as any;
         const nestedActiveName = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index].name : null;
-        // Show Ga verder on Stemming, and an Overslaan white FAB on Activiteiten
-        if (focusedRoute.name === 'Check-in' && (nestedActiveName === 'Stemming' || nestedActiveName === 'Activiteiten')) {
+        // Show Ga verder on the mood check-in (Stemming) and an Overslaan white FAB on Activiteiten
+        const isStemmingRoute = nestedActiveName === 'Stemming' || nestedActiveName === '[mood]' || (nestedActiveName && nestedActiveName.toLowerCase().includes('mood')) || (nestedActiveName && nestedActiveName.toLowerCase().includes('stemming'));
+        const isActiviteitenRoute = nestedActiveName === 'Activiteiten' || (nestedActiveName && nestedActiveName.toLowerCase().includes('activiteiten'));
+
+        if (focusedRoute.name === 'Check-in' && (isStemmingRoute || isActiviteitenRoute)) {
           const currentNestedRoute = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index] : null;
           const moodParam = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
 
-          if (nestedActiveName === 'Stemming') {
+          if (isStemmingRoute) {
             const onPress = () => {
               (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { mood: moodParam } });
             };
 
+            const selectedMood = MOOD_OPTIONS.find(m => m.id === moodParam);
+            const bgColor = selectedMood ? selectedMood.color : theme.color;
+
             return (
               <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={styles.fabButtonLarge} onPress={onPress}>
+                <TouchableOpacity style={[styles.fabButtonLarge, { backgroundColor: bgColor }]} onPress={onPress}>
                   <Text style={[styles.fabText, { color: COLORS.white }]}>Ga verder</Text>
                 </TouchableOpacity>
               </View>
             );
           }
 
-          if (nestedActiveName === 'Activiteiten') {
+          if (isActiviteitenRoute) {
             const onPress = () => {
               // Try to emit a custom event to the nested Activiteiten route (listener based)
               console.log('[bottom-tab-bar] Overslaan FAB pressed');

@@ -1,10 +1,10 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -27,22 +27,14 @@ const FAVORITE_ACTIVITIES = [
 
 export default function StatistiekenScreen() {
   const navigation = useNavigation<any>();
-  const [theme, setTheme] = useState(getTheme());
+  const theme = useAppTheme();
   const [selectedPeriod] = useState(PERIOD_OPTIONS[0]);
 
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('appTheme');
-      if (savedTheme) {
-        setTheme(getTheme(savedTheme));
-      }
-    };
-
-    loadTheme();
-  }, []);
 
   const maxBarHeight = 120;
   const maxValue = useMemo(() => Math.max(...STATISTICS_BARS.map((bar) => bar.value)), []);
+
+  const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,7 +80,7 @@ export default function StatistiekenScreen() {
                       styles.bar,
                       {
                         height: barHeight,
-                        backgroundColor: isPrimary ? theme.color : '#B6AEEE',
+                        backgroundColor: isPrimary ? theme.color : withAlpha(theme.color, '44'),
                       },
                     ]}
                   />
@@ -103,7 +95,7 @@ export default function StatistiekenScreen() {
         <View style={styles.activityList}>
           {FAVORITE_ACTIVITIES.map((activity, index) => {
             const isPrimary = index === 0;
-            const iconColor = isPrimary ? theme.color : '#6C60E6';
+            const iconColor = isPrimary ? theme.color : withAlpha(theme.color, 'AA');
 
             return (
               <TouchableOpacity
