@@ -6,13 +6,12 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
     Image,
-    Platform,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -523,14 +522,32 @@ const styles: any = StyleSheet.create({
   },
   modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, width: 160 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
-  button: {
-    borderRadius: 20,
-    paddingVertical: 14,
+  secondaryButton: {
+    borderRadius: 18,
+    paddingVertical: 15,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  secondaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.foreground,
+  },
+  button: {
+    borderRadius: 18,
+    paddingVertical: 17,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
+    color: COLORS.white,
   },
 });
