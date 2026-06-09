@@ -201,7 +201,7 @@ export default function ActivitiesScreen() {
         <View style={styles.headerInner} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: THEME.sizes.tabBarHeight + 160 }]} showsVerticalScrollIndicator={false}>
         {/* mood card sits directly under header (no extra page title) */}
 
         {/* Mood Card styled like Contacten's empty card */}
@@ -253,9 +253,9 @@ export default function ActivitiesScreen() {
       </ScrollView>
 
       {/* Footer overlay — match MoodCheckIn layout exactly */}
-      <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}> 
+      <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10050, elevation: 50 }]}> 
         <View pointerEvents="box-none" style={{ width: '100%' }}>
-          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 8, zIndex: 10006, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: -56 }]}> 
+          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 50, zIndex: 10060, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: 0 }]}> 
             <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
               <TouchableOpacity
                 style={[
@@ -275,9 +275,9 @@ export default function ActivitiesScreen() {
                     elevation: 20,
                   },
                 ]}
-                onPress={() => handleContinue()}
+                onPress={() => handleSkip()}
               >
-                <Text style={styles.modalPrimaryText}>Ga verder</Text>
+                <Text style={styles.modalPrimaryText}>Overslaan</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -519,7 +519,7 @@ export default function ActivitiesScreen() {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight - 8,
+    bottom: THEME.sizes.tabBarHeight + 8,
     alignItems: 'stretch',
     zIndex: 999999,
   },
@@ -530,10 +530,10 @@ export default function ActivitiesScreen() {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight - 8,
+    bottom: THEME.sizes.tabBarHeight + 8,
     alignItems: 'center',
-    zIndex: 9999,
-    elevation: 30,
+    zIndex: 10050,
+    elevation: 50,
   },
   footerCard: {
     width: '100%',
