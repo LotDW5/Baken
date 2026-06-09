@@ -145,19 +145,16 @@ export default function MoodCheckInScreen() {
           
         </ScrollView>
 
-        {/* Footer button (fixed above tab bar) - hide on web because BottomTabBar shows a FAB there */}
-        {Platform.OS !== 'web' && (
-          <View style={[styles.fixedFooterWrap, { left: 24, right: 24, bottom: insets.bottom + THEME.sizes.tabBarHeight + 48 }]} pointerEvents="box-none">
-            <View style={[styles.footerCard, { zIndex: 99999, elevation: 30 }]}> 
-              <TouchableOpacity
-                style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center' }]}
-                onPress={handleSave}
-              >
+        {/* Footer button (fixed above tab bar) - render on web and native so the page footer matches onboarding */}
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0 }]}>
+          <View pointerEvents="box-none" style={{ width: '100%' }}>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
+              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]} onPress={handleSave}>
                 <Text style={styles.modalPrimaryText}>Ga verder</Text>
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
