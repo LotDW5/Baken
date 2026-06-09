@@ -965,7 +965,7 @@ export default function OnboardingScreen() {
           <View pointerEvents="box-none" style={[overlayPosition, { paddingHorizontal: 0, alignItems: 'stretch', zIndex: 9999, elevation: 12 }]}>
             <View pointerEvents="box-none" style={{ width: '100%' }}>
               <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 16 }]} onPress={handleNext}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 16, borderRadius: 24 }]} onPress={handleNext}>
                   <Text style={styles.buttonText}>Ga verder</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14 }]} onPress={handleBack}>
