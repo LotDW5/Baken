@@ -156,9 +156,20 @@ export default function MoodCheckInScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+        {/* Floating pill button (restored) */}
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}
+        >
+          <View pointerEvents="box-none" style={{ width: '100%' }}>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 18, paddingBottom: 8, gap: 12, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: -8 }, elevation: 20, zIndex: 10006 }]} />
+            <TouchableOpacity style={[styles.floatingButton, { backgroundColor: theme.color || selectedMood.color || '#6B5CE7', left: 24, right: 24, maxWidth: CARD_MAX_WIDTH, top: -110 }]} onPress={handleSave}>
+              <Text style={styles.modalPrimaryText}>Ga verder</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
     </SafeAreaView>
   );
 }
+// Note: floating pill restored below
 
 const styles = StyleSheet.create({
   container: {
@@ -205,20 +216,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.foreground,
-    flex: 1,
-    textAlign: 'left',
-    marginLeft: 8,
-  },
-
-  /* CONTENT */
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    backgroundColor: COLORS.white,
-    paddingTop: 144,
-    paddingBottom: FOOTER_BOTTOM,
-  },
-
+    floatingButton: {
+      position: 'absolute',
+      borderRadius: 28,
+      paddingVertical: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 0.18,
+      shadowRadius: 20,
+      shadowOffset: { width: 0, height: 10 },
+      elevation: 22,
+      zIndex: 10010,
+      alignSelf: 'center',
+    },
   moodCard: {
     borderRadius: 24,
     paddingVertical: 16,
