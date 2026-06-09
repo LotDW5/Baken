@@ -309,45 +309,35 @@ export default function ActivitiesScreen() {
             <Text style={styles.activitiesSectionTitle}>Kies een activiteit die je kan helpen</Text>
           </View>
 
-          {/* Show activities in a two-column grid like onboarding */}
-          <View style={styles.activityGrid}>
-            {suggestions.slice(0, 4).map((activity) => {
-              const isSelected = selectedActivity === activity;
-              return (
-                <View key={`sug-${activity}`} style={{ width: cardWidth }}>
-                  <TouchableOpacity
-                    style={[
-                      styles.activityButton,
-                      {
-                        width: cardWidth,
-                        backgroundColor: isSelected ? '#F0EDF7' : COLORS.white,
-                        borderColor: isSelected ? selectedMood.color : '#E6E6EA',
-                      }
-                    ]}
-                    onPress={() => setSelectedActivity(activity)}
-                  >
+          {/* Show exactly 4 activities chosen from onboarding (or defaults filled) */}
+          {suggestions.slice(0, 4).map((activity, idx) => (
+            <View key={`sug-${idx}`}>
+              <TouchableOpacity
+                  style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
+                  onPress={() => setSelectedActivity(activity)}
+              >
+                  <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
                     <Image
                       source={ACTIVITY_ICON_SOURCES[activity] || getMoodIconSource(selectedMood.id)}
-                      style={{ width: 28, height: 28, marginBottom: 8, tintColor: isSelected ? selectedMood.color : COLORS.mutedForeground }}
+                      style={{ width: 24, height: 24, tintColor: COLORS.white }}
                       resizeMode="contain"
                     />
-                    <Text style={[styles.activityText, { color: isSelected ? selectedMood.color : COLORS.foreground }]}>{activity}</Text>
-                  </TouchableOpacity>
+                  </View>
+                <Text style={styles.activityTitle}>{activity}</Text>
+              </TouchableOpacity>
 
-                  {isSelected && (
-                    <View style={styles.expandedCardWrapper}>
-                      <View style={styles.expandedCard}>
-                        <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
-                        <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleDoActivity(activity)}>
-                          <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  )}
+              {selectedActivity === activity && (
+                <View style={styles.expandedCardWrapper}>
+                  <View style={styles.expandedCard}>
+                    <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
+                    <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleDoActivity(activity)}>
+                      <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              );
-            })}
-          </View>
+              )}
+            </View>
+          ))}
         </View>
       </ScrollView>
 
