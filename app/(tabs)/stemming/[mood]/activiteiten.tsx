@@ -4,6 +4,7 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import {
     Alert,
     Image,
@@ -120,6 +121,9 @@ export default function ActivitiesScreen() {
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
 
   // theme handled by useAppTheme
+  const { width: screenWidth } = useWindowDimensions();
+  const GRID_GAP = 10;
+  const cardWidth = Math.min(CARD_MAX_WIDTH, (screenWidth - 48 - GRID_GAP) / 2);
 
   useEffect(() => {
     const loadActivities = async () => {
@@ -305,35 +309,45 @@ export default function ActivitiesScreen() {
             <Text style={styles.activitiesSectionTitle}>Kies een activiteit die je kan helpen</Text>
           </View>
 
-          {/* Show exactly 4 activities chosen from onboarding (or defaults filled) */}
-          {suggestions.slice(0, 4).map((activity, idx) => (
-            <View key={`sug-${idx}`}>
-              <TouchableOpacity
-                  style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
-                  onPress={() => setSelectedActivity(activity)}
-              >
-                  <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
+          {/* Show activities in a two-column grid like onboarding */}
+          <View style={styles.activityGrid}>
+            {suggestions.slice(0, 4).map((activity) => {
+              const isSelected = selectedActivity === activity;
+              return (
+                <View key={`sug-${activity}`} style={{ width: cardWidth }}>
+                  <TouchableOpacity
+                    style={[
+                      styles.activityButton,
+                      {
+                        width: cardWidth,
+                        backgroundColor: isSelected ? '#F0EDF7' : COLORS.white,
+                        borderColor: isSelected ? selectedMood.color : '#E6E6EA',
+                      }
+                    ]}
+                    onPress={() => setSelectedActivity(activity)}
+                  >
                     <Image
                       source={ACTIVITY_ICON_SOURCES[activity] || getMoodIconSource(selectedMood.id)}
-                      style={{ width: 24, height: 24, tintColor: COLORS.white }}
+                      style={{ width: 28, height: 28, marginBottom: 8, tintColor: isSelected ? selectedMood.color : COLORS.mutedForeground }}
                       resizeMode="contain"
                     />
-                  </View>
-                <Text style={styles.activityTitle}>{activity}</Text>
-              </TouchableOpacity>
+                    <Text style={[styles.activityText, { color: isSelected ? selectedMood.color : COLORS.foreground }]}>{activity}</Text>
+                  </TouchableOpacity>
 
-              {selectedActivity === activity && (
-                <View style={styles.expandedCardWrapper}>
-                  <View style={styles.expandedCard}>
-                    <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
-                    <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleDoActivity(activity)}>
-                      <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {isSelected && (
+                    <View style={styles.expandedCardWrapper}>
+                      <View style={styles.expandedCard}>
+                        <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
+                        <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleDoActivity(activity)}>
+                          <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
-          ))}
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
 
