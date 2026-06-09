@@ -146,13 +146,13 @@ export default function MoodCheckInScreen() {
         </ScrollView>
 
         {/* Footer button (fixed above tab bar) - render on web and native so the page footer matches onboarding */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}
-        >
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0 }]}>
           <View pointerEvents="box-none" style={{ width: '100%' }}>
-            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 18, paddingBottom: 8, gap: 12, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: -8 }, elevation: 20, zIndex: 10006 }]} />
-            <TouchableOpacity style={[styles.floatingButton, { backgroundColor: selectedMood.color || '#6B5CE7', left: 24, right: 24, maxWidth: CARD_MAX_WIDTH, top: -110 }]} onPress={handleSave}>
-              <Text style={styles.modalPrimaryText}>Ga verder</Text>
-            </TouchableOpacity>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
+              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]} onPress={handleSave}>
+                <Text style={styles.modalPrimaryText}>Ga verder</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight - 28,
+    bottom: THEME.sizes.tabBarHeight - 8,
     alignItems: 'center',
     zIndex: 9999,
     elevation: 30,
@@ -328,20 +328,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingTop: 12,
   },
-  modalPrimaryButton: { paddingVertical: 14, borderRadius: 28, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 18 },
-  floatingButton: {
-    position: 'absolute',
-    borderRadius: 28,
-    paddingVertical: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 22,
-    zIndex: 10010,
-    alignSelf: 'center',
-  },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#6B5CE7', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, width: 160 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
 });
