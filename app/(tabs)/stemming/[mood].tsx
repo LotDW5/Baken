@@ -150,7 +150,7 @@ export default function MoodCheckInScreen() {
         >
           <View pointerEvents="box-none" style={{ width: '100%' }}>
             <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 18, paddingBottom: 8, gap: 12, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: -8 }, elevation: 20, zIndex: 10006 }]} />
-            <TouchableOpacity style={[styles.floatingButton, { backgroundColor: selectedMood.color || '#6B5CE7' }]} onPress={handleSave}>
+            <TouchableOpacity style={[styles.floatingButton, { backgroundColor: selectedMood.color || '#6B5CE7', width: CARD_MAX_WIDTH, maxWidth: '100%', top: -110 }]} onPress={handleSave}>
               <Text style={styles.modalPrimaryText}>Ga verder</Text>
             </TouchableOpacity>
           </View>
@@ -331,9 +331,6 @@ const styles = StyleSheet.create({
   modalPrimaryButton: { paddingVertical: 14, borderRadius: 28, backgroundColor: '#6B5CE7', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 18 },
   floatingButton: {
     position: 'absolute',
-    left: '4%',
-    right: '4%',
-    top: -36,
     borderRadius: 28,
     paddingVertical: 16,
     justifyContent: 'center',
@@ -344,6 +341,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     elevation: 22,
     zIndex: 10010,
+    alignSelf: 'center',
   },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
 });
