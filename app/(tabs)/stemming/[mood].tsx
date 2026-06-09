@@ -150,7 +150,7 @@ export default function MoodCheckInScreen() {
         >
           <View pointerEvents="box-none" style={{ width: '100%' }}>
             <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 18, paddingBottom: 8, gap: 12, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: -8 }, elevation: 20, zIndex: 10006 }]}> 
-              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center', width: '92%', maxWidth: CARD_MAX_WIDTH, paddingVertical: 16 }]} onPress={handleSave}>
+              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center', width: '92%', maxWidth: CARD_MAX_WIDTH, paddingVertical: 16, marginTop: -36, zIndex: 10007, elevation: 22 }]} onPress={handleSave}>
                 <Text style={styles.modalPrimaryText}>Ga verder</Text>
               </TouchableOpacity>
             </View>
