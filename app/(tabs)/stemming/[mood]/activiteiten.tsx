@@ -5,14 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Platform,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -32,6 +31,7 @@ const DEFAULT_BY_MOOD: Record<string, string[]> = {
 // Layout constants
 const CARD_MAX_WIDTH = 393;
 const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
+const FOOTER_BOTTOM = 80;
 
 const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Dansen': 'Dans op muziek die je fijn vindt',
@@ -202,7 +202,7 @@ export default function ActivitiesScreen() {
         <View style={styles.headerInner} />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: THEME.sizes.tabBarHeight + 160 }]} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: FOOTER_BOTTOM }]} showsVerticalScrollIndicator={false}>
         {/* mood card sits directly under header (no extra page title) */}
 
         {/* Mood Card styled like Contacten's empty card */}
@@ -254,30 +254,17 @@ export default function ActivitiesScreen() {
       </ScrollView>
 
       {/* Footer overlay — simplified and anchored to bottom */}
-      {/* Footer overlay positioned above the tab bar (absolute/fixed) */}
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 16, alignItems: 'center', zIndex: 100000, elevation: 100 }}> 
-        <View style={[styles.footerCard, { maxWidth: CARD_MAX_WIDTH, width: '100%', alignItems: 'center', backgroundColor: COLORS.white }]}> 
-          <TouchableOpacity
-            style={[
-              styles.modalPrimaryButton,
-              {
-                backgroundColor: selectedMood.color || theme.color || '#F8B34A',
-                width: CARD_CONTENT_WIDTH - 32,
-                paddingVertical: 16,
-                borderRadius: 28,
-                shadowColor: theme.color || selectedMood.color || '#F8B34A',
-                shadowOpacity: 0.14,
-                shadowRadius: 18,
-                shadowOffset: { width: 0, height: 6 },
-                elevation: 20,
-                alignSelf: 'center',
-              },
-            ]}
-            onPress={() => handleSkip()}
-          >
-            <Text style={styles.modalPrimaryText}>Overslaan</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Inline footer like MoodCheckIn so button sits at same vertical position */}
+      <View style={[styles.footer, { paddingBottom: 24 }]}> 
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { backgroundColor: selectedMood.color || theme.color || '#F8B34A' },
+          ]}
+          onPress={() => handleSkip()}
+        >
+          <Text style={styles.buttonText}>Overslaan</Text>
+        </TouchableOpacity>
       </View>
       </SafeAreaView>
       );
@@ -561,7 +548,7 @@ export default function ActivitiesScreen() {
     color: COLORS.foreground,
   },
   button: {
-    borderRadius: 18,
+    borderRadius: 20,
     paddingVertical: 17,
     alignItems: 'center',
     shadowColor: '#000',
