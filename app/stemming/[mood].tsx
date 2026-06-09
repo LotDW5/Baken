@@ -121,12 +121,12 @@ export default function MoodCheckInScreen() {
                     </View>
                 </ScrollView>
 
-                <View style={styles.footer}>
+                <View style={[styles.footer, { paddingBottom: THEME.sizes.tabBarHeight, borderTopWidth: 1, borderColor: '#E0E0E0', backgroundColor: COLORS.white }]}>
                     <TouchableOpacity
                         style={[styles.button, styles.ctaButton]}
                         onPress={handleSave}
                     >
-                        <Text style={styles.buttonText}>Ga verder</Text>
+                        <Text style={[styles.buttonText, { color: '#000' }]}>Ga verder</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
