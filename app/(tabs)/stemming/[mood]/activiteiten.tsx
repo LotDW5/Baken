@@ -5,13 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -244,22 +245,24 @@ export default function ActivitiesScreen() {
       </ScrollView>
 
       {/* Floating footer card with outlined button (sits over activities) */}
-      <View style={styles.fixedFooterWrap} pointerEvents="box-none">
-        <View style={styles.footerCard}>
-          <TouchableOpacity
-            style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', alignSelf: 'center' }]}
-            onPress={() => {
-              if (selectedActivity) {
-                handleDoActivity(selectedActivity);
-              } else {
-                handleSkip();
-              }
-            }}
-          >
-            <Text style={styles.modalPrimaryText}>Ga verder</Text>
-          </TouchableOpacity>
+      {Platform.OS !== 'web' && (
+        <View style={styles.fixedFooterWrap} pointerEvents="box-none">
+          <View style={[styles.footerCard, { zIndex: 99999, elevation: 30 }]}> 
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]}
+              onPress={() => {
+                if (selectedActivity) {
+                  handleDoActivity(selectedActivity);
+                } else {
+                  handleSkip();
+                }
+              }}
+            >
+              <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Ga verder</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -318,7 +321,7 @@ const styles: any = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 144,
-    paddingBottom: THEME.sizes.tabBarHeight + 140,
+    paddingBottom: THEME.sizes.tabBarHeight + 48,
   },
   moodCard: {
     borderRadius: 24,
