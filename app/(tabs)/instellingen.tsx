@@ -47,10 +47,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
-      {/* DEBUG: show current theme color */}
-      <View style={{ position: 'absolute', top: 24, left: 24, zIndex: 9999 }}>
-        <Text style={{ color: theme.color, fontSize: 12 }}>theme.color: {theme.color}</Text>
-      </View>
+      
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
