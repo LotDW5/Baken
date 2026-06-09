@@ -4,16 +4,14 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
 import {
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -114,9 +112,12 @@ export default function ActivitiesScreen() {
   const route = useRoute();
   const { mood } = (route.params || {}) as { mood: string };
   const theme = useAppTheme();
+  let router: any = null;
+  try { router = require('expo-router').useRouter(); } catch (e) { /* expo-router not available at type-check time */ }
   const [activities, setActivities] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  // completed view is a separate page now
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
 
@@ -143,12 +144,12 @@ export default function ActivitiesScreen() {
 
         let chosen: string[] = [];
         if ((moodSuggestions || []).length > 0) {
-          chosen = pickRandom(moodSuggestions, 4);
+          chosen = pickRandom(moodSuggestions, 3);
         }
         // fill with defaults if less than 4
         const defaults = DEFAULT_BY_MOOD[mood as string] || [];
         let fillIdx = 0;
-        while (chosen.length < 4 && fillIdx < defaults.length) {
+        while (chosen.length < 3 && fillIdx < defaults.length) {
           const candidate = defaults[fillIdx++];
           if (!chosen.includes(candidate)) chosen.push(candidate);
         }
@@ -212,12 +213,77 @@ export default function ActivitiesScreen() {
     }
   };
 
+  const handleCompleteActivity = async (activity: string) => {
+    try {
+      const moodNote = await AsyncStorage.getItem('tempMoodNote');
+
+      const moodData = {
+        mood: selectedMood.id,
+        activity,
+        note: moodNote || '',
+        timestamp: new Date().toISOString(),
+      };
+
+      const existingMoods = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
+      const moods = JSON.parse(existingMoods);
+      moods.push(moodData);
+      await AsyncStorage.setItem('moodCheckIns', JSON.stringify(moods));
+
+      const today = new Date().toDateString();
+      await AsyncStorage.setItem('lastMoodCheckIn', today);
+
+      await AsyncStorage.removeItem('tempMoodNote');
+
+      // navigate to a dedicated completion page
+      try {
+        // Navigate using Expo Router if available, otherwise try requiring it at runtime,
+        // and finally fall back to react-navigation. Log the attempted path for debugging.
+        const path = `/stemming/${selectedMood?.id}/activity-complete?activity=${encodeURIComponent(activity)}`;
+        console.log('Attempting to navigate to', path);
+        if (router && typeof router.push === 'function') {
+          router.push(path);
+          return;
+        }
+
+        try {
+          const xr = require('expo-router');
+          if (typeof xr.push === 'function') {
+            xr.push(path);
+            return;
+          }
+          if (typeof xr.useRouter === 'function') {
+            const r = xr.useRouter();
+            if (r && typeof r.push === 'function') {
+              r.push(path);
+              return;
+            }
+          }
+        } catch (xrErr) {
+          console.warn('expo-router require/push failed', xrErr);
+        }
+
+        if ((navigation as any).navigate) {
+          (navigation as any).navigate('ActivityComplete', { mood: selectedMood?.id, activity });
+          return;
+        }
+
+        console.warn('No navigation method available to open ActivityComplete');
+      } catch (navErr) {
+        console.error('Navigation to ActivityComplete failed', navErr);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleActivityClick = async (activity: string) => {
-    // Store the selected activity
-    await AsyncStorage.setItem('selectedActivity', activity);
-    
-    // Navigate to activity details page
-    (navigation as any).navigate('ActivityDetail', { mood: selectedMood.id, activity });
+    // Store the selected activity and toggle inline expansion (do not navigate away)
+    try {
+      await AsyncStorage.setItem('selectedActivity', activity);
+    } catch (e) {
+      console.error('Failed to persist selectedActivity', e);
+    }
+    setSelectedActivity((prev) => (prev === activity ? null : activity));
   };
 
   const handleSkip = async () => {
@@ -309,13 +375,13 @@ export default function ActivitiesScreen() {
             <Text style={styles.activitiesSectionTitle}>Kies een activiteit die je kan helpen</Text>
           </View>
 
-          {/* Show exactly 4 activities chosen from onboarding (or defaults filled) */}
-          {suggestions.slice(0, 4).map((activity, idx) => (
+          {/* Show exactly 3 activities chosen from onboarding (or defaults filled) */}
+          {suggestions.slice(0, 3).map((activity, idx) => (
             <View key={`sug-${idx}`}>
-              <TouchableOpacity
+                <TouchableOpacity
                   style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
-                  onPress={() => setSelectedActivity(activity)}
-              >
+                  onPress={() => setSelectedActivity((prev) => (prev === activity ? null : activity))}
+                >
                   <View style={[styles.activityIcon, { backgroundColor: selectedMood.color }]}> 
                     <Image
                       source={ACTIVITY_ICON_SOURCES[activity] || getMoodIconSource(selectedMood.id)}
@@ -330,7 +396,7 @@ export default function ActivitiesScreen() {
                 <View style={styles.expandedCardWrapper}>
                   <View style={styles.expandedCard}>
                     <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
-                    <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleDoActivity(activity)}>
+                    <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleCompleteActivity(activity)}>
                       <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
                     </TouchableOpacity>
                   </View>
@@ -341,42 +407,47 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
+      {/* Local completion view shown after pressing 'Ik ga dit doen' */}
+      {/* completion handled on a dedicated page */}
+
       {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn */}
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 2000 }}>
-        <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
-          <TouchableOpacity
-            style={{
-              width: '100%',
-              maxWidth: CARD_MAX_WIDTH,
-              backgroundColor: COLORS.white,
-              paddingVertical: 18,
-              borderRadius: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-              borderWidth: 1,
-              borderColor: '#E0E0E0',
-              shadowColor: '#000',
-              shadowOpacity: 0.04,
-              shadowRadius: 12,
-              shadowOffset: { width: 0, height: 6 },
-              elevation: 2,
-            }}
-            onPress={async () => {
-              try {
-                Alert.alert('Debug', 'Overslaan pressed');
-                // small console log for web devtools
-                console.log('Overslaan pressed');
-                await handleSkip();
-              } catch (e) {
-                console.error('handleSkip failed', e);
-              }
-            }}
-          >
-            <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
-          </TouchableOpacity>
+      {!selectedActivity && (
+        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 2000 }}>
+          <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
+            <TouchableOpacity
+              style={{
+                width: '100%',
+                maxWidth: CARD_MAX_WIDTH,
+                backgroundColor: COLORS.white,
+                paddingVertical: 18,
+                borderRadius: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf: 'center',
+                borderWidth: 1,
+                borderColor: '#E0E0E0',
+                shadowColor: '#000',
+                shadowOpacity: 0.04,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 6 },
+                elevation: 2,
+              }}
+              onPress={async () => {
+                try {
+                  Alert.alert('Debug', 'Overslaan pressed');
+                  // small console log for web devtools
+                  console.log('Overslaan pressed');
+                  await handleSkip();
+                } catch (e) {
+                  console.error('handleSkip failed', e);
+                }
+              }}
+            >
+              <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
       </SafeAreaView>
       );
     }
@@ -567,7 +638,7 @@ export default function ActivitiesScreen() {
     marginBottom: 12,
   },
   expandedCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.inputBackground,
     borderRadius: 14,
     padding: 12,
     marginTop: 8,
@@ -594,6 +665,30 @@ export default function ActivitiesScreen() {
     color: COLORS.white,
     fontWeight: '700',
   },
+  completionWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 80,
+    alignItems: 'center',
+    zIndex: 3000,
+  },
+  completionBubble: {
+    backgroundColor: COLORS.white,
+    padding: 18,
+    borderRadius: 12,
+    maxWidth: CARD_MAX_WIDTH,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 4,
+    marginBottom: 8,
+  },
+  completionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
+  completionText: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
+  completionAvatar: { width: 200, height: 200, marginTop: 8 },
+  completionClose: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 18, borderRadius: 20, backgroundColor: COLORS.card },
   emptyStateContainer: {
     alignItems: 'center',
     justifyContent: 'center',

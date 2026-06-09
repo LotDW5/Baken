@@ -202,6 +202,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MoodCheckInScreen from './stemming/[mood]';
 import ActivityDetail from './stemming/[mood]/[activity]';
 import ActivitiesScreen from './stemming/[mood]/activiteiten';
+import ActivityComplete from './stemming/[mood]/activity-complete';
 
 const Stack = createStackNavigator();
 
@@ -212,6 +213,7 @@ export default function CheckInStack() {
       <Stack.Screen name="Stemming" component={MoodCheckInScreen} />
       <Stack.Screen name="Activiteiten" component={ActivitiesScreen} />
       <Stack.Screen name="ActivityDetail" component={ActivityDetail} />
+      <Stack.Screen name="ActivityComplete" component={ActivityComplete} />
     </Stack.Navigator>
   );
 }
