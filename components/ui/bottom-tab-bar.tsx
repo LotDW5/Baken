@@ -41,9 +41,11 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
             return (
               <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={[styles.fabButtonLarge, { backgroundColor: bgColor }]} onPress={onPress}>
-                  <Text style={[styles.fabText, { color: COLORS.white }]}>Ga verder</Text>
-                </TouchableOpacity>
+                <View style={styles.fabOverlay} pointerEvents="box-none">
+                  <TouchableOpacity style={[styles.button, { backgroundColor: bgColor, width: '100%', paddingVertical: 14, borderRadius: 20 }]} onPress={onPress}>
+                    <Text style={[styles.buttonText, { color: COLORS.white }]}>Ga verder</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           }
@@ -59,9 +61,11 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
             return (
               <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={[styles.fabButtonLarge, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.border }]} onPress={onPress}>
-                  <Text style={[styles.fabText, { color: theme.color }]}>Overslaan</Text>
-                </TouchableOpacity>
+                <View style={styles.fabOverlay} pointerEvents="box-none">
+                  <TouchableOpacity style={[styles.secondaryButton, { width: '100%', paddingVertical: 14 }]} onPress={onPress}>
+                    <Text style={[styles.secondaryButtonText, { color: theme.color }]}>Overslaan</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           }
@@ -192,6 +196,21 @@ const styles = StyleSheet.create({
     bottom: THEME.sizes.tabBarHeight + 48,
     alignItems: 'center',
     zIndex: 9999,
+  },
+  fabOverlay: {
+    width: '100%',
+    maxWidth: 520,
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: COLORS.white,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -6 },
+    elevation: 12,
+    alignItems: 'center',
   },
   fabButton: {
     width: '100%',
