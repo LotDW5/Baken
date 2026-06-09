@@ -163,7 +163,7 @@ export default function MoodCheckInScreen() {
                       backgroundColor: selectedMood.color || theme.color || '#F8B34A',
                       width: CARD_CONTENT_WIDTH - 32,
                       paddingVertical: 16,
-                      borderRadius: 28,
+                      borderRadius: 24,
                       shadowColor: theme.color || selectedMood.color || '#F8B34A',
                       shadowOpacity: 0.14,
                       shadowRadius: 18,
