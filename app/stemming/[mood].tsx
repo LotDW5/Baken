@@ -122,11 +122,12 @@ export default function MoodCheckInScreen() {
                     </View>
                 </ScrollView>
 
-                <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 8, alignItems: 'center', zIndex: 200000, elevation: 200 }}>
-                    <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 12, paddingBottom: 12, alignItems: 'center' }}>
+                <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 200000, elevation: 200 }}>
+                    <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
                         <TouchableOpacity
                             style={{
-                                width: CARD_CONTENT_WIDTH - 32,
+                                width: '100%',
+                                maxWidth: CARD_MAX_WIDTH,
                                 backgroundColor: '#FF3366',
                                 paddingVertical: 12,
                                 borderRadius: 20,

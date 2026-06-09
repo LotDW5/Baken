@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
+    Alert,
     Image,
     SafeAreaView,
     ScrollView,
@@ -132,8 +133,23 @@ export default function ActivitiesScreen() {
 
       await AsyncStorage.removeItem('tempMoodNote');
 
-      // Navigate back to main tabs (check-in)
-      (navigation as any).navigate('Main');
+      // Navigate back to Check-in tab (try parent/tab navigator, then fallbacks)
+      try {
+        const parent = (navigation as any).getParent?.();
+        const grandParent = parent && typeof (parent.getParent) === 'function' ? parent.getParent() : null;
+        if (grandParent && typeof grandParent.navigate === 'function') {
+          grandParent.navigate('Check-in', { screen: 'Home' });
+        } else if (parent && typeof parent.navigate === 'function') {
+          parent.navigate('Check-in', { screen: 'Home' });
+        } else if ((navigation as any).navigate) {
+          (navigation as any).navigate('Check-in', { screen: 'Home' });
+        } else if ((navigation as any).goBack) {
+          (navigation as any).goBack();
+        }
+      } catch (navErr) {
+        console.error('Navigation fallback failed', navErr);
+        try { (navigation as any).goBack?.(); } catch (e) { /* ignore */ }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -168,7 +184,22 @@ export default function ActivitiesScreen() {
       // Clean up temp data
       await AsyncStorage.removeItem('tempMoodNote');
 
-      (navigation as any).navigate('Main');
+      try {
+        const parent = (navigation as any).getParent?.();
+        const grandParent = parent && typeof (parent.getParent) === 'function' ? parent.getParent() : null;
+        if (grandParent && typeof grandParent.navigate === 'function') {
+          grandParent.navigate('Check-in', { screen: 'Home' });
+        } else if (parent && typeof parent.navigate === 'function') {
+          parent.navigate('Check-in', { screen: 'Home' });
+        } else if ((navigation as any).navigate) {
+          (navigation as any).navigate('Check-in', { screen: 'Home' });
+        } else if ((navigation as any).goBack) {
+          (navigation as any).goBack();
+        }
+      } catch (navErr) {
+        console.error('Navigation fallback failed', navErr);
+        try { (navigation as any).goBack?.(); } catch (e) { /* ignore */ }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -253,18 +284,41 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Footer overlay — simplified and anchored to bottom */}
-      {/* Inline footer like MoodCheckIn so button sits at same vertical position */}
-      <View style={[styles.footer, { paddingBottom: 24 }]}> 
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: selectedMood.color || theme.color || '#F8B34A' },
-          ]}
-          onPress={() => handleSkip()}
-        >
-          <Text style={styles.buttonText}>Overslaan</Text>
-        </TouchableOpacity>
+      {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 2000 }}>
+        <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
+          <TouchableOpacity
+            style={{
+              width: '100%',
+              maxWidth: CARD_MAX_WIDTH,
+              backgroundColor: COLORS.white,
+              paddingVertical: 18,
+              borderRadius: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+              borderWidth: 1,
+              borderColor: '#E0E0E0',
+              shadowColor: '#000',
+              shadowOpacity: 0.04,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 2,
+            }}
+            onPress={async () => {
+              try {
+                Alert.alert('Debug', 'Overslaan pressed');
+                // small console log for web devtools
+                console.log('Overslaan pressed');
+                await handleSkip();
+              } catch (e) {
+                console.error('handleSkip failed', e);
+              }
+            }}
+          >
+            <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       </SafeAreaView>
       );

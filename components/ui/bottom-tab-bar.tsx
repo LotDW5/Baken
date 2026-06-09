@@ -2,6 +2,9 @@ import { COLORS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// Layout constants matching app tokens
+const CARD_MAX_WIDTH = 393;
+const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
 
@@ -18,51 +21,35 @@ export default function BottomTabBar(props: BottomTabBarProps) {
         const nested = focusedRoute.state as any;
         const nestedActiveName = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index].name : null;
         // Show Ga verder on Stemming, and an Overslaan white FAB on Activiteiten
-        if (focusedRoute.name === 'Check-in' && (nestedActiveName === 'Stemming' || nestedActiveName === 'Activiteiten')) {
+        if (focusedRoute.name === 'Check-in' && nestedActiveName === 'Stemming') {
           const currentNestedRoute = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index] : null;
           const moodParam = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
 
-          if (nestedActiveName === 'Stemming') {
-            const onPress = () => {
-              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { mood: moodParam } } as any);
-            };
-
-            return (
-              <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={styles.fabButtonLarge} onPress={onPress}>
-                  <Text style={[styles.fabText, { color: COLORS.white }]}>Ga verder</Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }
-
-          if (nestedActiveName === 'Activiteiten') {
-            const onPress = () => {
-              // Try to emit a custom event to the nested Activiteiten route (listener based)
-              console.log('[bottom-tab-bar] Overslaan FAB pressed');
-              // Navigate with a changing param to ensure the screen reacts when focused
-              console.log('[bottom-tab-bar] navigating to Activiteiten with __overslaan param');
-              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } } as any);
-            };
-
-            return (
-              <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={styles.fabButton} onPress={onPress}>
-                  <Text style={[styles.fabText, { color: COLORS.foreground }]}>Overslaan</Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }
+          
+          
         }
         return null;
       })()}
       <View style={styles.container}>
       {state.routes.map((route, index) => {
+        // Only render the four main tabs
+        const VISIBLE_TABS = ['Check-in', 'Contacten', 'Agenda', 'Statistieken'];
+        if (!VISIBLE_TABS.includes(route.name)) return null;
         // Determine whether this tab is focused
-        const focused = state.index === index;
+        let focused = state.index === index;
+        // If the Check-in tab contains a nested stack, only mark it focused
+        // when its nested stack is on the Home route (so nested screens
+        // like Stemming / Activiteiten do NOT keep the tab highlighted).
+        if (route.name === 'Check-in') {
+          const nested = route.state as any;
+          const nestedActiveName = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index].name : null;
+          if (nestedActiveName && nestedActiveName !== 'Home') {
+            focused = false;
+          }
+        }
         const descriptor = descriptors[route.key];
         // Allow screens to hide their tab via `options.tabBarVisible === false`
-        if (descriptor && descriptor.options && descriptor.options.tabBarVisible === false) {
+        if (descriptor && descriptor.options && (descriptor.options as any).tabBarVisible === false) {
           return null;
         }
         const label = descriptor.options.title ?? route.name;
@@ -150,7 +137,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: THEME.spacing.s,
     right: THEME.spacing.s,
-    bottom: THEME.sizes.tabBarHeight + 48,
+    bottom: THEME.sizes.tabBarHeight + 24,
     alignItems: 'center',
     zIndex: 9999,
   },
@@ -175,8 +162,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     backgroundColor: '#3CA98A',
-    borderRadius: 20,
-    paddingVertical: 14,
+    borderRadius: 24,
+    paddingVertical: 16,
     paddingHorizontal: THEME.spacing.m,
     alignItems: 'center',
     justifyContent: 'center',
