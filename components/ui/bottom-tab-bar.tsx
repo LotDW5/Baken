@@ -58,13 +58,13 @@ export default function BottomTabBar(props: BottomTabBarProps) {
                         await AsyncStorage.setItem('moodCheckIns', JSON.stringify(arr));
                         await AsyncStorage.setItem('lastMoodCheckIn', new Date().toDateString());
                         await AsyncStorage.removeItem('tempMoodNote');
-                        navigation.navigate('Main');
+                        navigation.navigate('Check-in');
                       } catch (e) {
                         console.error(e);
                       }
                     }}
                   >
-                    <Text style={[styles.fabText, { color: '#fff' }]}>Overslaan</Text>
+                    <Text style={styles.fabText}>Overslaan</Text>
                   </TouchableOpacity>
                 </View>
               </View>
