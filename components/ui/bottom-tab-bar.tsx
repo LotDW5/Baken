@@ -12,12 +12,23 @@ const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
   const theme = useAppTheme();
+  const wrapperShadow = Platform.OS === 'web'
+    ? { boxShadow: '0 -18px 30px rgba(0,0,0,0.14)' }
+    : applyShadow({ opacity: 0.14, radius: 18, offsetX: 0, offsetY: -8, elevation: 16 });
   // Always render the bottom tab bar for every route
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
-    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, applyShadow({ opacity: 0.14, radius: 18, offsetX: 0, offsetY: -8, elevation: 16 })]}>
-      <View style={styles.separator} />
+    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, wrapperShadow]}>
+        {Platform.OS === 'web' && (
+          <View style={{ position: 'absolute', left: 0, right: 0, top: -28, height: 28, zIndex: 3, backgroundImage: 'linear-gradient(rgba(0,0,0,0.14), rgba(0,0,0,0))' } as any} />
+        )}
+        {Platform.OS !== 'web' && (
+          <View style={styles.nativeTopShadowWrapper} pointerEvents="none">
+            <View style={[styles.nativeTopShadow, applyShadow({ opacity: 0.14, radius: 12, offsetX: 0, offsetY: 4, elevation: 10 })]} />
+          </View>
+        )}
+        <View style={styles.separator} />
       {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
       {Platform.OS === 'web' && (() => {
         const focusedRoute = state.routes[state.index];
@@ -143,6 +154,22 @@ const styles = StyleSheet.create({
     height: 0.666667,
     backgroundColor: 'rgba(0,0,0,0.04)',
     zIndex: 2,
+  },
+  nativeTopShadowWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: THEME.sizes.tabBarHeight,
+    height: 28,
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  nativeTopShadow: {
+    width: '100%',
+    maxWidth: CARD_CONTENT_WIDTH + 48,
+    height: 20,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
   },
   
   container: {
