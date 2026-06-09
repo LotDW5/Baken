@@ -1,4 +1,4 @@
-import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
@@ -34,26 +34,8 @@ export default function BottomTabBar(props: BottomTabBarProps) {
           // Only render the overlay FAB for the Activiteiten nested route on web.
 
           if (isActiviteitenRoute) {
-            const onPress = () => {
-              // Try to emit a custom event to the nested Activiteiten route (listener based)
-              console.log('[bottom-tab-bar] Overslaan FAB pressed');
-              // Navigate with a changing param to ensure the screen reacts when focused
-              console.log('[bottom-tab-bar] navigating to Activiteiten with __overslaan param');
-              (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } });
-            };
-
-            return (
-              <View style={styles.fabWrap} pointerEvents="box-none">
-                <View style={styles.fabOverlay} pointerEvents="box-none">
-                  <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, width: '100%', paddingVertical: 14, borderRadius: 20 }]} onPress={() => (navigation as any).navigate('Check-in', { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } })}>
-                    <Text style={[styles.buttonText, { color: COLORS.white }]}>Ga verder</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.secondaryButton, { width: '100%', marginTop: 12 }]} onPress={() => (navigation as any).navigate('Check-in', { screen: 'Stemming', params: { mood: moodParam } })}>
-                    <Text style={[styles.secondaryButtonText, { color: theme.color }]}>Terug</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
+            // Do not render the web overlay FAB for Activiteiten; use the page's own button instead
+            return null;
           }
         }
         return null;
@@ -233,5 +215,36 @@ const styles = StyleSheet.create({
     color: COLORS.foreground,
     fontWeight: '600',
     fontSize: 15,
+  },
+  button: {
+    width: '100%',
+    alignSelf: 'center',
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingHorizontal: THEME.spacing.m,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  secondaryButton: {
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  secondaryButtonText: {
+    color: COLORS.foreground,
+    fontWeight: '600',
+    fontSize: 14,
   },
 });

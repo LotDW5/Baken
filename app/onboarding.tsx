@@ -918,7 +918,7 @@ export default function OnboardingScreen() {
                 <View style={styles.customActivityCard}>
                 <Text style={styles.customActivityLabel}>Nieuwe activiteit</Text>
                 <TextInput
-                  style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') ? { borderColor: theme.color, borderWidth: 1, outlineColor: theme.color as any, outlineWidth: 1 as any, outlineStyle: 'solid' as any } : null]}
+                  style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') ? ({ borderColor: theme.color, borderWidth: 1, outlineColor: theme.color as any, outlineWidth: 1 as any, outlineStyle: 'solid' as any } as any) : null]}
                   value={customActivityName}
                   onChangeText={setCustomActivityName}
                   placeholder="Typ een activiteit"

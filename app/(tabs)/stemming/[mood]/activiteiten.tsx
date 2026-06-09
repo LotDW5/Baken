@@ -30,6 +30,7 @@ const DEFAULT_BY_MOOD: Record<string, string[]> = {
 
 // Layout constants
 const CARD_MAX_WIDTH = 393;
+const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
 
 const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Dansen': 'Dans op muziek die je fijn vindt',
@@ -246,34 +247,38 @@ export default function ActivitiesScreen() {
       {/* Overlay footer: white background spans full width to edges and bottom nav; inner content centered to CARD_MAX_WIDTH so buttons match cards above */}
       <View style={[styles.overlayFooterWrap, { zIndex: 99999, elevation: 30 }]} pointerEvents="box-none">
         <View pointerEvents="box-none" style={{ width: '100%' }}>
-          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingTop: 14, paddingBottom: 14, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12 }]}> 
+          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingTop: 12, paddingBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12 }]}> 
             <View style={{ width: '100%', alignItems: 'center' }}>
               <View style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, paddingHorizontal: 24 }}>
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]}
-                  onPress={() => {
-                    if (selectedActivity) {
-                      handleDoActivity(selectedActivity);
-                    } else {
-                      handleSkip();
-                    }
+                  style={{
+                    backgroundColor: selectedMood.color || '#F8B34A',
+                    width: CARD_CONTENT_WIDTH,
+                    alignSelf: 'center',
+                    paddingVertical: 16,
+                    borderRadius: 28,
+                    shadowColor: selectedMood.color || '#F8B34A',
+                    shadowOpacity: 0.14,
+                    shadowRadius: 18,
+                    shadowOffset: { width: 0, height: 6 },
+                    elevation: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
+                  onPress={() => handleSkip()}
                 >
-                  <Text style={styles.primaryActionText}>Ga verder</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white, width: '100%', paddingVertical: 14, marginTop: 12 }]} onPress={() => (navigation as any).navigate('Stemming', { mood: selectedMood.id })}>
-                  <Text style={styles.secondaryButtonText}>Terug</Text>
+                  <Text style={[styles.primaryActionText, { color: COLORS.white }]}>Overslaan</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </View>
       </View>
-    </SafeAreaView>
-  );
-}
+      </SafeAreaView>
+      );
+    }
 
-const styles: any = StyleSheet.create({
+  const styles: any = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,

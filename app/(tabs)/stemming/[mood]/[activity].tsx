@@ -43,7 +43,6 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
     'Met dieren in contact komen': 'Breng tijd door met dieren om rust en verbinding te ervaren',
     'Social media bekijken': 'Bekijk social media als dat je helpt afleiding te vinden',
   'Huisdier knuffelen': 'Knuffel of aai je huisdier voor troost',
-  'Social media bekijken': 'Scroll door social media als dat je helpt afleiding te vinden',
   'Een game spelen': 'Speel een game om je gedachten te verzetten',
   'Opruimen': 'Ruim je ruimte op om structuur te creëren',
   'Iets leuks kopen': 'Koop iets kleins dat je blij maakt',

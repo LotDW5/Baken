@@ -28,6 +28,7 @@ const MOOD_ICON_SOURCES: Record<string, any> = {
 // Layout constants
 const HEADER_HEIGHT = 120;
 const CARD_MAX_WIDTH = 393;
+const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48; // account for moodCard paddingHorizontal (24 * 2)
 const FOOTER_BOTTOM = 140;
 
 // previous constants removed to avoid redeclaration
@@ -138,32 +139,44 @@ export default function MoodCheckInScreen() {
               style={[
                 styles.noteInput,
                 (isNoteFocused || moodNote.trim() !== '') ? styles.noteInputFocus : null,
-                { minHeight: Platform.OS === 'web' ? 320 : 120, marginBottom: 8 },
+                  { minHeight: Platform.OS === 'web' ? 320 : 120, marginBottom: 8, width: CARD_CONTENT_WIDTH - 32, alignSelf: 'center' },
               ]}
             />
           </View>
           
         </ScrollView>
 
-        {/* Footer button (fixed above tab bar) - render on web and native so the page footer matches onboarding */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0 }]}>
-          <View pointerEvents="box-none" style={{ width: '100%' }}>
-            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 14, paddingBottom: 14, gap: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: -6 }, elevation: 12, zIndex: 9999 }]}> 
-              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: selectedMood.color || '#6B5CE7', width: '100%', paddingVertical: 16 }]} onPress={handleSave}>
-                <Text style={styles.modalPrimaryText}>Ga verder</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        
       </KeyboardAvoidingView>
-        {/* Floating pill button (restored) */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}
-        >
+        {/* Footer overlay (single, matches onboarding) */}
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}> 
           <View pointerEvents="box-none" style={{ width: '100%' }}>
-            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 12, borderTopRightRadius: 12, paddingHorizontal: 24, paddingTop: 18, paddingBottom: 8, gap: 12, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: -8 }, elevation: 20, zIndex: 10006 }]} />
-            <TouchableOpacity style={[styles.floatingButton, { backgroundColor: theme.color || selectedMood.color || '#6B5CE7', left: 24, right: 24, maxWidth: CARD_MAX_WIDTH, top: -110 }]} onPress={handleSave}>
-              <Text style={styles.modalPrimaryText}>Ga verder</Text>
-            </TouchableOpacity>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 8, zIndex: 10006, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: -56 }]}>
+              <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={[
+                    styles.modalPrimaryButton,
+                    {
+                      position: 'absolute',
+                      left: '50%',
+                      transform: [{ translateX: -((CARD_CONTENT_WIDTH - 32) / 2) }],
+                      backgroundColor: selectedMood.color || theme.color || '#F8B34A',
+                      width: CARD_CONTENT_WIDTH - 32,
+                      paddingVertical: 16,
+                      borderRadius: 28,
+                      shadowColor: theme.color || selectedMood.color || '#F8B34A',
+                      shadowOpacity: 0.14,
+                      shadowRadius: 18,
+                      shadowOffset: { width: 0, height: 6 },
+                      elevation: 20,
+                    },
+                  ]}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.modalPrimaryText}>Ga verder</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
     </SafeAreaView>
@@ -216,20 +229,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.foreground,
-    floatingButton: {
-      position: 'absolute',
-      borderRadius: 28,
-      paddingVertical: 16,
-      justifyContent: 'center',
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOpacity: 0.18,
-      shadowRadius: 20,
-      shadowOffset: { width: 0, height: 10 },
-      elevation: 22,
-      zIndex: 10010,
-      alignSelf: 'center',
-    },
+  },
+  floatingButton: {
+    position: 'absolute',
+    borderRadius: 28,
+    paddingVertical: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 22,
+    zIndex: 10010,
+    alignSelf: 'center',
+  },
   moodCard: {
     borderRadius: 24,
     paddingVertical: 16,
@@ -259,7 +273,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight - 8,
+    bottom: THEME.sizes.tabBarHeight + 80,
     alignItems: 'center',
     zIndex: 9999,
     elevation: 30,
@@ -274,6 +288,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: THEME.spacing.s,
     zIndex: 20,
+  },
+
+  scrollContent: {
+    paddingTop: HEADER_HEIGHT + 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
   },
 
   topBar: {
