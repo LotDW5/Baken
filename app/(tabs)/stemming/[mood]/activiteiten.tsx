@@ -4,13 +4,16 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import {
+    Alert,
     Image,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity, useWindowDimensions, View
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
@@ -338,12 +341,37 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn (fixed) */}
-      <View pointerEvents="box-none" style={styles.fixedFooterWrap}>
-        <View style={[styles.footerCard, { backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 18, paddingBottom: 18, alignItems: 'center' }]}>
+      {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 2000 }}>
+        <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
           <TouchableOpacity
-            style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, paddingVertical: 18, borderRadius: 24, alignItems: 'center', justifyContent: 'center' }}
-            onPress={handleSkip}
+            style={{
+              width: '100%',
+              maxWidth: CARD_MAX_WIDTH,
+              backgroundColor: COLORS.white,
+              paddingVertical: 18,
+              borderRadius: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+              borderWidth: 1,
+              borderColor: '#E0E0E0',
+              shadowColor: '#000',
+              shadowOpacity: 0.04,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 2,
+            }}
+            onPress={async () => {
+              try {
+                Alert.alert('Debug', 'Overslaan pressed');
+                // small console log for web devtools
+                console.log('Overslaan pressed');
+                await handleSkip();
+              } catch (e) {
+                console.error('handleSkip failed', e);
+              }
+            }}
           >
             <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
           </TouchableOpacity>
