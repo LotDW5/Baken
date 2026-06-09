@@ -1,47 +1,145 @@
-import { COLORS } from '@/constants/colors';
+import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import useAppTheme from '@/hooks/use-app-theme';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 export default function ActivityComplete() {
+  const navigation = useNavigation<any>();
+  const theme = useAppTheme();
   let router: any = null;
-  let params: any = {};
+  let activityParam: string | undefined;
   try {
     const xr = require('expo-router');
     router = xr.useRouter();
-    params = xr.useSearchParams();
+    const params = xr.useSearchParams();
+    activityParam = params?.activity;
   } catch (e) {
-    // fallback: try react-navigation route params
-    params = ({} as any);
+    // ignore
   }
-  const { activity } = (params || {}) as { activity?: string };
+
+  const route = useRoute<any>();
+  if (!activityParam) {
+    activityParam = route?.params?.activity;
+  }
+  const activity = activityParam ? decodeURIComponent(String(activityParam)) : 'activiteit';
+
+  // determine mood color for the filling bar
+  let moodColor = '#4CAF93';
+  let moodBgColor = '#E8F5F1';
+  try {
+    const moodParam = route?.params?.mood || undefined;
+    const moodObj = MOOD_OPTIONS.find((m) => m.id === moodParam);
+    if (moodObj) moodColor = moodObj.color;
+    if (moodObj) moodBgColor = moodObj.bgColor || moodBgColor;
+  } catch (e) { /* ignore */ }
+
+  const [progress, setProgress] = useState(0);
+  const [running, setRunning] = useState(false);
+  const timerRef = useRef<number | null>(null);
+  const { width: screenWidth } = useWindowDimensions();
+  const [showButton, setShowButton] = useState(true);
+  const fillAnim = useRef(new Animated.Value(0)).current; // 0..1
+  const [buttonWidth, setButtonWidth] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current as any);
+    };
+  }, []);
+
+  useEffect(() => {
+    // auto-start fill immediately on mount; animation lasts 10s
+    setRunning(true);
+    fillAnim.setValue(0);
+    Animated.timing(fillAnim, { toValue: 1, duration: 10000, useNativeDriver: false }).start(() => {
+      setProgress(1);
+      setRunning(false);
+    });
+    return () => {};
+  }, []);
+
+  const startProgress = () => {
+    if (running) return;
+    setRunning(true);
+    setProgress(0);
+    // start animated fill over 10s
+    Animated.timing(fillAnim, { toValue: 1, duration: 10000, useNativeDriver: false }).start(() => {
+      setProgress(1);
+      setRunning(false);
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.topBar}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+          </View>
+        </TouchableOpacity>
+      </View>
       <View style={styles.bubbleWrap}>
-        <View style={styles.bubble}>
+        <View style={[styles.bubble, { width: Math.max(0, screenWidth - 48) }]}>
           <Text style={styles.title}>Veel plezier!</Text>
           <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
+          <View style={styles.bubbleTail} />
         </View>
         <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatar} resizeMode="contain" />
       </View>
 
       <View style={styles.footer}> 
-        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
-          <Text style={styles.closeText}>Terug</Text>
-        </TouchableOpacity>
+        {showButton && (
+          <View style={styles.fillButtonWrap}>
+            <TouchableOpacity activeOpacity={0.95} onPress={startProgress} disabled={progress >= 1} style={{ width: '100%' }}>
+              <View style={[styles.fillButtonBg, { backgroundColor: moodBgColor, shadowColor: '#6B5CE7' }]} onLayout={(e) => setButtonWidth(e.nativeEvent.layout.width)}>
+                <Animated.View
+                  style={[
+                    styles.fillButtonFill,
+                    { backgroundColor: moodColor, width: buttonWidth ? fillAnim.interpolate({ inputRange: [0, 1], outputRange: [0, buttonWidth] }) : 0 },
+                  ]}
+                />
+                {progress < 1 && <Text style={[styles.fillButtonText, { color: 'rgba(0,0,0,0.0)' }]}> </Text>}
+                {progress >= 1 && <Text style={styles.fillButtonText}>Ik ben klaar</Text>}
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.white, alignItems: 'center' },
-  bubbleWrap: { marginTop: 36, alignItems: 'center', flex: 1, justifyContent: 'center' },
-  bubble: { backgroundColor: COLORS.white, padding: 18, borderRadius: 12, maxWidth: 393, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, elevation: 4, marginBottom: 12 },
+  container: { flex: 1, backgroundColor: COLORS.white, alignItems: 'center', paddingHorizontal: 24 },
+  bubbleWrap: { marginTop: 0, alignItems: 'center', flex: 1, justifyContent: 'center' },
+  bubble: { backgroundColor: COLORS.white, padding: 22, borderRadius: 20, alignSelf: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 16, marginBottom: 6, zIndex: 2 },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
-  avatar: { width: 220, height: 220, marginTop: 8 },
-  footer: { width: '100%', padding: 24, paddingBottom: THEME.sizes.tabBarHeight + 12, alignItems: 'center' },
-  closeButton: { backgroundColor: COLORS.card, paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20 },
-  closeText: { color: COLORS.foreground, fontWeight: '700' },
+  avatar: { width: 280, height: 280, marginTop: 0 },
+  topBar: {
+    position: 'absolute',
+    top: 56,
+    left: 24,
+    right: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  iconButton: { padding: 4 },
+  iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', justifyContent: 'center', alignItems: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
+  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  footer: { position: 'absolute', left: 24, right: 24, bottom: THEME.sizes.tabBarHeight + 48, alignItems: 'center' },
+  fillButtonWrap: { width: '100%', alignSelf: 'stretch', alignItems: 'center' },
+  fillButtonBg: { width: '100%', height: 56, borderRadius: 20, overflow: 'hidden', justifyContent: 'center', shadowOpacity: 0.18, shadowRadius: 24, elevation: 12 },
+  fillButtonFill: { position: 'absolute', left: 0, top: 0, bottom: 0, height: '100%', borderTopLeftRadius: 20, borderBottomLeftRadius: 20, width: '0%' },
+  fillButtonText: { position: 'absolute', alignSelf: 'center', color: '#ffffff', fontWeight: '700' },
+  bubbleTail: { position: 'absolute', left: '50%', marginLeft: -11, bottom: -11, width: 22, height: 22, backgroundColor: COLORS.white, transform: [{ rotate: '45deg' }], shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 8, zIndex: 1 },
 });
