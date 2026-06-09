@@ -25,7 +25,11 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
         if (focusedRoute.name === 'Check-in' && (isStemmingRoute || isActiviteitenRoute)) {
           const currentNestedRoute = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index] : null;
-          const moodParam = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
+          // Attempt to locate the mood id from several places (nested params, focusedRoute params, or route name)
+          const moodParamFromNested = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
+          const moodParamFromFocused = (focusedRoute && (focusedRoute as any).params) ? (focusedRoute as any).params.mood : undefined;
+          const moodIdFromName = currentNestedRoute && typeof currentNestedRoute.name === 'string' ? currentNestedRoute.name : undefined;
+          const moodParam = moodParamFromNested || moodParamFromFocused || moodIdFromName;
 
           if (isStemmingRoute) {
             const onPress = () => {
@@ -55,8 +59,8 @@ export default function BottomTabBar(props: BottomTabBarProps) {
 
             return (
               <View style={styles.fabWrap} pointerEvents="box-none">
-                <TouchableOpacity style={styles.fabButton} onPress={onPress}>
-                  <Text style={[styles.fabText, { color: COLORS.foreground }]}>Overslaan</Text>
+                <TouchableOpacity style={[styles.fabButtonLarge, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.border }]} onPress={onPress}>
+                  <Text style={[styles.fabText, { color: theme.color }]}>Overslaan</Text>
                 </TouchableOpacity>
               </View>
             );
