@@ -252,36 +252,26 @@ export default function ActivitiesScreen() {
         </View>
       </ScrollView>
 
-      {/* Footer overlay — match MoodCheckIn layout exactly */}
-      <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10050, elevation: 50 }]}> 
-        <View pointerEvents="box-none" style={{ width: '100%' }}>
-          <View pointerEvents="box-none" style={[styles.footerFullWidth, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 50, zIndex: 10060, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: 0 }]}> 
-            <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
-              <TouchableOpacity
-                style={[
-                  styles.modalPrimaryButton,
-                  {
-                    position: 'absolute',
-                    left: '50%',
-                    transform: [{ translateX: -((CARD_CONTENT_WIDTH - 32) / 2) }],
-                    backgroundColor: selectedMood.color || '#F8B34A',
-                    width: CARD_CONTENT_WIDTH - 32,
-                    paddingVertical: 16,
-                    borderRadius: 28,
-                    shadowColor: selectedMood.color || '#F8B34A',
-                    shadowOpacity: 0.14,
-                    shadowRadius: 18,
-                    shadowOffset: { width: 0, height: 6 },
-                    elevation: 20,
-                  },
-                ]}
-                onPress={() => handleSkip()}
-              >
-                <Text style={styles.modalPrimaryText}>Overslaan</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+      {/* Fixed primary button above the tab bar (always visible) */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 12, alignItems: 'center', zIndex: 10060, elevation: 60 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: selectedMood?.color || '#F8B34A',
+            width: CARD_CONTENT_WIDTH - 32,
+            paddingVertical: 16,
+            borderRadius: 28,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: selectedMood?.color || '#F8B34A',
+            shadowOpacity: 0.14,
+            shadowRadius: 18,
+            shadowOffset: { width: 0, height: 6 },
+            elevation: 20,
+          }}
+          onPress={() => handleSkip()}
+        >
+          <Text style={styles.modalPrimaryText}>Overslaan</Text>
+        </TouchableOpacity>
       </View>
       </SafeAreaView>
       );
