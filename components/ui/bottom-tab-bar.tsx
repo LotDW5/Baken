@@ -1,83 +1,55 @@
-import { COLORS } from '@/constants/colors';
+import { COLORS, getTheme } from '@/constants/colors';
 import THEME from '@/constants/theme';
-import useAppTheme from '@/hooks/use-app-theme';
-import applyShadow from '@/utils/shadow';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// Layout constants matching app tokens
-const CARD_MAX_WIDTH = 393;
-const CARD_CONTENT_WIDTH = CARD_MAX_WIDTH - 48;
+// eslint-disable-next-line import/no-named-as-default
+import applyShadow from '@/utils/shadow';
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
-  const theme = useAppTheme();
-  const wrapperShadow = Platform.OS === 'web'
-    ? { boxShadow: '0 -18px 30px rgba(0,0,0,0.14)' }
-    : applyShadow({ opacity: 0.14, radius: 18, offsetX: 0, offsetY: -8, elevation: 16 });
-  // Always render the bottom tab bar for every route
+  const theme = getTheme();
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
-    <View testID="bottom-tab-bar-wrapper" style={[styles.wrapper, wrapperShadow]}>
-        {Platform.OS === 'web' && (
-          <View style={{ position: 'absolute', left: 0, right: 0, top: -28, height: 28, zIndex: 3, backgroundImage: 'linear-gradient(rgba(0,0,0,0.14), rgba(0,0,0,0))' } as any} />
-        )}
-        {Platform.OS !== 'web' && (
-          <View style={styles.nativeTopShadowWrapper} pointerEvents="none">
-            <View style={[styles.nativeTopShadow, applyShadow({ opacity: 0.14, radius: 12, offsetX: 0, offsetY: 4, elevation: 10 })]} />
-          </View>
-        )}
-        <View style={styles.separator} />
+    <View style={[styles.wrapper, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]}>
       {/* Web-specific floating action for nested Check-in -> Activiteiten (keeps button above nav) */}
       {Platform.OS === 'web' && (() => {
         const focusedRoute = state.routes[state.index];
         const nested = focusedRoute.state as any;
         const nestedActiveName = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index].name : null;
-        // Show Ga verder on the mood check-in (Stemming) and an Overslaan white FAB on Activiteiten
-        const isStemmingRoute = nestedActiveName === 'Stemming' || nestedActiveName === '[mood]' || (nestedActiveName && nestedActiveName.toLowerCase().includes('mood')) || (nestedActiveName && nestedActiveName.toLowerCase().includes('stemming'));
-        const isActiviteitenRoute = nestedActiveName === 'Activiteiten' || (nestedActiveName && nestedActiveName.toLowerCase().includes('activiteiten'));
-
-        if (focusedRoute.name === 'Check-in' && (isStemmingRoute || isActiviteitenRoute)) {
+        // Show Ga verder on Stemming, and an Overslaan white FAB on Activiteiten
+        if (focusedRoute.name === 'Check-in' && (nestedActiveName === 'Stemming' || nestedActiveName === 'Activiteiten')) {
           const currentNestedRoute = nested && nested.routes && nested.routes.length > 0 ? nested.routes[nested.index] : null;
-          // Attempt to locate the mood id from several places (nested params, focusedRoute params, or route name)
-          const moodParamFromNested = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
-          const moodParamFromFocused = (focusedRoute && (focusedRoute as any).params) ? (focusedRoute as any).params.mood : undefined;
-          const moodIdFromName = currentNestedRoute && typeof currentNestedRoute.name === 'string' ? currentNestedRoute.name : undefined;
-          const moodParam = moodParamFromNested || moodParamFromFocused || moodIdFromName;
+          const moodParam = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
 
-          // Only render the overlay FAB for the Activiteiten nested route on web.
+          if (nestedActiveName === 'Stemming') {
+            const onPress = () => {
+              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { mood: moodParam } } as any);
+            };
 
-          if (isActiviteitenRoute) {
-            // Render a floating "Overslaan" button above the tab bar for Activiteiten
             return (
-              <View key="fab-activiteiten" style={styles.fabWrap}>
-                <View style={styles.fabOverlay}>
-                  <TouchableOpacity
-                    style={styles.fabButtonLarge}
-                    onPress={async () => {
-                      try {
-                        const moodParamFromNested = currentNestedRoute && currentNestedRoute.params ? (currentNestedRoute.params as any).mood : undefined;
-                        const moodParamFromFocused = (focusedRoute && (focusedRoute as any).params) ? (focusedRoute as any).params.mood : undefined;
-                        const moodId = moodParamFromNested || moodParamFromFocused || 'okay';
+              <View style={styles.fabWrap} pointerEvents="box-none">
+                <TouchableOpacity style={styles.fabButtonLarge} onPress={onPress}>
+                  <Text style={[styles.fabText, { color: COLORS.white }]}>Ga verder</Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }
 
-                        const moodNote = await AsyncStorage.getItem('tempMoodNote');
-                        const moodData = { mood: moodId, note: moodNote || '', timestamp: new Date().toISOString() };
-                        const existing = await AsyncStorage.getItem('moodCheckIns') || '[]';
-                        const arr = JSON.parse(existing);
-                        arr.push(moodData);
-                        await AsyncStorage.setItem('moodCheckIns', JSON.stringify(arr));
-                        await AsyncStorage.setItem('lastMoodCheckIn', new Date().toDateString());
-                        await AsyncStorage.removeItem('tempMoodNote');
-                        navigation.navigate('Check-in');
-                      } catch (e) {
-                        console.error(e);
-                      }
-                    }}
-                  >
-                    <Text style={styles.fabText}>Overslaan</Text>
-                  </TouchableOpacity>
-                </View>
+          if (nestedActiveName === 'Activiteiten') {
+            const onPress = () => {
+              // Try to emit a custom event to the nested Activiteiten route (listener based)
+              console.log('[bottom-tab-bar] Overslaan FAB pressed');
+              // Navigate with a changing param to ensure the screen reacts when focused
+              console.log('[bottom-tab-bar] navigating to Activiteiten with __overslaan param');
+              navigation.navigate('Check-in' as never, { screen: 'Activiteiten', params: { __overslaan: Date.now(), mood: moodParam } } as any);
+            };
+
+            return (
+              <View style={styles.fabWrap} pointerEvents="box-none">
+                <TouchableOpacity style={styles.fabButton} onPress={onPress}>
+                  <Text style={[styles.fabText, { color: COLORS.foreground }]}>Overslaan</Text>
+                </TouchableOpacity>
               </View>
             );
           }
@@ -86,17 +58,12 @@ export default function BottomTabBar(props: BottomTabBarProps) {
       })()}
       <View style={styles.container}>
       {state.routes.map((route, index) => {
-        // Don't render tab buttons for hidden helper routes
-        if (route.name === 'Nonverbaal' || route.name === 'NonverbaalMessage') return null;
         // Determine whether this tab is focused
         const focused = state.index === index;
         const descriptor = descriptors[route.key];
-        // Allow screens to hide their tab via `options.tabBarVisible === false` or `options.tabBarStyle.display === 'none'`
-        if (descriptor && descriptor.options) {
-          const opts: any = descriptor.options as any;
-          if (opts.tabBarVisible === false || (opts.tabBarStyle && (opts.tabBarStyle as any).display === 'none')) {
-            return null;
-          }
+        // Allow screens to hide their tab via `options.tabBarVisible === false`
+        if (descriptor && descriptor.options && descriptor.options.tabBarVisible === false) {
+          return null;
         }
         const label = descriptor.options.title ?? route.name;
         const icons: Record<string, any> = {
@@ -142,36 +109,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'stretch',
     backgroundColor: '#FFF',
-    borderTopWidth: 0.666667,
-    borderTopColor: 'rgba(0,0,0,0.04)',
-    zIndex: 9999,
   },
-  separator: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 0.666667,
-    backgroundColor: 'rgba(0,0,0,0.04)',
-    zIndex: 2,
-  },
-  nativeTopShadowWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: THEME.sizes.tabBarHeight,
-    height: 28,
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  nativeTopShadow: {
-    width: '100%',
-    maxWidth: CARD_CONTENT_WIDTH + 48,
-    height: 20,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-  },
-  
   container: {
     width: '100%',
     minHeight: THEME.sizes.tabBarHeight,
@@ -208,34 +146,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '500',
   },
-  wrapperContacten: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'stretch',
-    backgroundColor: 'transparent',
-    borderTopWidth: 0,
-  },
   fabWrap: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: THEME.sizes.tabBarHeight,
+    left: THEME.spacing.s,
+    right: THEME.spacing.s,
+    bottom: THEME.sizes.tabBarHeight + 48,
     alignItems: 'center',
-    zIndex: 99999,
-  },
-  fabOverlay: {
-    width: '100%',
-    borderRadius: 0,
-    paddingHorizontal: 0,
-    paddingTop: 32,
-    paddingBottom: 32,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopWidth: 1,
-    borderColor: '#E0E0E0',
+    zIndex: 9999,
   },
   fabButton: {
     width: '100%',
@@ -255,53 +172,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
   },
   fabButtonLarge: {
-    width: CARD_CONTENT_WIDTH - 32,
+    width: '100%',
     alignSelf: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#3CA98A',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
     paddingVertical: 14,
     paddingHorizontal: THEME.spacing.m,
-    marginHorizontal: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 0,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
   },
   fabText: {
-    color: '#000000',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  button: {
-    width: '100%',
-    alignSelf: 'center',
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: THEME.spacing.m,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  secondaryButton: {
-    width: '100%',
-    alignSelf: 'center',
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  secondaryButtonText: {
     color: COLORS.foreground,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 15,
   },
 });
