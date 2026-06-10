@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -35,8 +35,12 @@ export default function StatistiekenScreen() {
 
 
   const maxBarHeight = 120;
-  const barsToShow = STATISTICS_BARS.slice(0, 6);
-  const maxValue = useMemo(() => Math.max(...barsToShow.map((bar) => bar.value)), []);
+  const barsToShow = useMemo(() => {
+    const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
+    const sortedByCount = done.slice().sort((a, b) => b.count - a.count);
+    return sortedByCount.slice(0, 6).map(a => ({ label: a.label, value: a.count }));
+  }, [activityStats]);
+  const maxValue = useMemo(() => (barsToShow && barsToShow.length > 0 ? Math.max(...barsToShow.map((bar) => bar.value)) : 1), [barsToShow]);
 
   const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
 
@@ -120,24 +124,31 @@ export default function StatistiekenScreen() {
 
         <View style={styles.chartCard}>
           <View style={styles.chartArea}>
-            {barsToShow.map((bar, index) => {
-              const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 34);
-              const isPrimary = index === 0;
+            {barsToShow && barsToShow.length > 0 ? (
+              barsToShow.map((bar, index) => {
+                const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 34);
+                const isPrimary = index === 0;
 
-              return (
-                <View key={bar.label} style={styles.barColumn}>
-                  <View
-                    style={[
-                      styles.bar,
-                      {
-                        height: barHeight,
-                        backgroundColor: isPrimary ? theme.color : withAlpha(theme.color, '44'),
-                      },
-                    ]}
-                  />
-                </View>
-              );
-            })}
+                return (
+                  <TouchableOpacity key={bar.label} style={styles.barColumn} activeOpacity={0.8} onPress={() => setExpandedActivity(expandedActivity === bar.label ? null : bar.label)}>
+                    <View
+                      style={[
+                        styles.bar,
+                        {
+                          height: barHeight,
+                          backgroundColor: isPrimary ? theme.color : withAlpha(theme.color, '44'),
+                        },
+                      ]}
+                    />
+                    <Text style={styles.barLabel} numberOfLines={1}>{bar.label}</Text>
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                <Text style={{color: COLORS.mutedForeground}}>Nog geen activiteiten</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -283,6 +294,12 @@ const styles = StyleSheet.create<any>({
   bar: {
     width: '100%',
     borderRadius: 12,
+  },
+  barLabel: {
+    marginTop: 8,
+    fontSize: 12,
+    color: COLORS.foreground,
+    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 20,
