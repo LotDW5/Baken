@@ -391,7 +391,7 @@ const styles = StyleSheet.create<any>({
   },
   bar: {
     width: 46,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   pill: {
     width: '100%',
