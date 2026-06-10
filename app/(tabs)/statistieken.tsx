@@ -1,12 +1,12 @@
 import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import applyShadow from '@/utils/shadow';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useMemo, useState, useEffect, useCallback } from 'react';
 import { onDataChange } from '@/utils/data-events';
+import applyShadow from '@/utils/shadow';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -200,7 +200,6 @@ export default function StatistiekenScreen() {
               {Array.from({ length: 6 }).map((_, i) => {
                 const bar = barsToShow && barsToShow[i];
                 if (bar) {
-                  const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 28);
                   const isSelected = selectedBar === bar.label;
                   const anySelected = !!selectedBar;
                   const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
@@ -208,31 +207,22 @@ export default function StatistiekenScreen() {
                     <TouchableOpacity
                       key={bar.label}
                       style={styles.barColumn}
-                      activeOpacity={0.8}
+                      activeOpacity={0.85}
                       onPress={() => {
                         const next = expandedActivity === bar.label ? null : bar.label;
                         setExpandedActivity(next);
                         setSelectedBar(next);
                       }}
                     >
-                      <View
-                        style={[
-                          styles.bar,
-                          {
-                            height: barHeight,
-                            backgroundColor: bg,
-                          },
-                        ]}
-                      />
-                      {/* label intentionally removed to keep bars fixed and uncluttered */}
+                      <View style={[styles.pill, { backgroundColor: bg }]} />
                     </TouchableOpacity>
                   );
                 }
 
-                // preview column
+                // preview pill
                 return (
                   <View key={`preview-${i}`} style={styles.barColumn}>
-                    <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
+                    <View style={[styles.pill, { backgroundColor: withAlpha(theme.color, '22') }]} />
                   </View>
                 );
               })}
@@ -380,21 +370,34 @@ const styles = StyleSheet.create<any>({
   chartCard: {
     paddingTop: 8,
     marginBottom: 22,
+    paddingHorizontal: 24,
   },
   chartArea: {
     height: 170,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 8,
+    gap: 12,
+    justifyContent: 'center',
   },
   barColumn: {
-    flex: 1,
+    width: 96,
+    alignItems: 'center',
     height: '100%',
     justifyContent: 'flex-end',
   },
   bar: {
-    width: '100%',
+    width: 46,
     borderRadius: 12,
+  },
+  pill: {
+    width: 80,
+    height: 36,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   barLabel: {
     marginTop: 8,
