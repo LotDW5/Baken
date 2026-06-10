@@ -26,6 +26,7 @@ jobs:
       - name: Run EAS build (Android APK)
         env:
           EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           eas whoami || true
           # Run EAS build and capture JSON output
