@@ -20,11 +20,47 @@ const STATISTICS_BARS = [
   { label: 'Wk 7', value: 38 },
 ];
 
-const FAVORITE_ACTIVITIES = [
-  { label: 'Dansen', icon: 'music-note', iconFamily: 'Ionicons' as const },
-  { label: 'Naar buiten gaan in de natuur', icon: 'pine-tree', iconFamily: 'MaterialCommunityIcons' as const },
-  { label: 'Opruimen of schoonmaken', icon: 'sparkles', iconFamily: 'MaterialCommunityIcons' as const },
-];
+const ACTIVITY_ICON_MAP: Record<string, any> = {
+  'Een warme douche/ bad nemen': require('../../assets/icons/Water.png'),
+  'Iemand knuffelen': require('../../assets/icons/Hart.png'),
+  'Naar buiten gaan in de natuur': require('../../assets/icons/Bos.png'),
+  'Muziek luisteren': require('../../assets/icons/Muziek.png'),
+  'Een sigaret roken': require('../../assets/icons/Icon.png'),
+  'Een boek lezen': require('../../assets/icons/Boek.png'),
+  'Serie of film kijken': require('../../assets/icons/TV.png'),
+  'Podcast luisteren': require('../../assets/icons/Muziek-1.png'),
+  'Mediteren': require('../../assets/icons/Sterren.png'),
+  'Ademhalingsoefeningen': require('../../assets/icons/Wind.png'),
+  'Tekenen of schilderen': require('../../assets/icons/Schilderen.png'),
+  'Iets opschrijven': require('../../assets/icons/Schrijven.png'),
+  'Muziek maken': require('../../assets/icons/Muziek.png'),
+  'Breien of haken': require('../../assets/icons/Breien.png'),
+  'Knutselen': require('../../assets/icons/Knutselen.png'),
+  'Wandelen': require('../../assets/icons/Wandelen.png'),
+  'Sporten': require('../../assets/icons/Sporten.png'),
+  'Yoga doen': require('../../assets/icons/Yoga.png'),
+  'Slapen of een dutje doen': require('../../assets/icons/Slapen.png'),
+  'Dansen': require('../../assets/icons/Dansen.png'),
+  'Tuinieren': require('../../assets/icons/Tuinieren.png'),
+  'Contact opnemen met vrienden': require('../../assets/icons/Contacten.png'),
+  'Bellen met een vriend(in)': require('../../assets/icons/Bellen.png'),
+  'Samen iets drinken': require('../../assets/icons/Drinken.png'),
+  'Grapjes maken': require('../../assets/icons/Grappig.png'),
+  'Huisdier knuffelen': require('../../assets/icons/Huisdier.png'),
+  'Met dieren in contact komen': require('../../assets/icons/Dieren.png'),
+  'Social media bekijken': require('../../assets/icons/Socials.png'),
+  'Opruimen of schoonmaken': require('../../assets/icons/Schoonmaken.png'),
+  'Spelletjes spelen': require('../../assets/icons/Spelen.png'),
+  'Een buitenactiviteit doen': require('../../assets/icons/Buiten.png'),
+  'Koken of bakken': require('../../assets/icons/Koken.png'),
+  'To-do lijst maken': require('../../assets/icons/To-do.png'),
+  'Planning maken': require('../../assets/icons/Planning.png'),
+  'Je routine volgen': require('../../assets/icons/Routine.png'),
+  'Dagboek schrijven': require('../../assets/icons/Dagboek.png'),
+  'Bidden': require('../../assets/icons/Bidden.png'),
+  'Naar de kerk gaan': require('../../assets/icons/Kerk.png'),
+  'In de natuur zijn': require('../../assets/icons/Natuur.png'),
+};
 
 export default function StatistiekenScreen() {
   const navigation = useNavigation<any>();
@@ -162,11 +198,8 @@ export default function StatistiekenScreen() {
         <View style={styles.activityList}>
           {topActivities && topActivities.length > 0 ? (
             topActivities.map((activity, index) => {
-            const fav = FAVORITE_ACTIVITIES.find(f => f.label === activity.label);
             const isPrimary = index === 0;
-            const iconColor = isPrimary ? theme.color : withAlpha(theme.color, 'AA');
-            const IconComp = fav && fav.iconFamily === 'Ionicons' ? Ionicons : MaterialCommunityIcons;
-            const iconName = fav ? fav.icon : 'star-outline';
+            const iconAsset = ACTIVITY_ICON_MAP[activity.label];
 
             return (
               <View key={activity.label}>
@@ -179,7 +212,11 @@ export default function StatistiekenScreen() {
                   onPress={() => setExpandedActivity(expandedActivity === activity.label ? null : activity.label)}
                 >
                   <View style={[styles.activityIconCircle, { backgroundColor: `${theme.color}18` }]}>
-                    <IconComp name={iconName as any} size={22} color={iconColor} />
+                    {iconAsset ? (
+                      <Image source={iconAsset} style={styles.activityIcon} />
+                    ) : (
+                      <Ionicons name="star-outline" size={22} color={isPrimary ? theme.color : withAlpha(theme.color, 'AA')} />
+                    )}
                   </View>
 
                   <Text style={styles.activityLabel}>{activity.label}</Text>
@@ -361,6 +398,11 @@ const styles = StyleSheet.create<any>({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  activityIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   activityLabel: {
     flex: 1,
