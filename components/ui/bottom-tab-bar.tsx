@@ -1,5 +1,6 @@
-import { COLORS, getTheme } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
+import useAppTheme from '@/hooks/use-app-theme';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Layout constants matching app tokens
@@ -10,7 +11,7 @@ import applyShadow from '@/utils/shadow';
 
 export default function BottomTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
-  const theme = getTheme();
+  const theme = useAppTheme();
   // navigation fills full width; internal padding keeps buttons away from edges
 
   return (
