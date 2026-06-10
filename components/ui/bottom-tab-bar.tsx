@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
+    transform: [{ translateY: -4 }],
   },
   icon: {
     width: 22,
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
   
   label: {
     marginTop: 0,
+    transform: [{ translateY: -4 }],
     fontSize: 11,
     fontWeight: '500',
   },
