@@ -34,11 +34,11 @@ jobs:
           eas login --token "$EXPO_TOKEN" || true
           eas whoami || true
           # Try to initialize the EAS project non-interactively if missing
-          echo "Attempting eas init --non-interactive"
+          echo "Attempting eas init non-interactive with owner and slug"
           set -e
           if [ ! -f ".eas/config.json" ]; then
             set +e
-            eas init --non-interactive --yes || true
+            eas init --non-interactive --yes --owner lotdw --slug baken || true
             set -e
           else
             echo ".eas/config.json already present"
