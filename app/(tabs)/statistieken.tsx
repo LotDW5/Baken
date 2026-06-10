@@ -204,7 +204,8 @@ export default function StatistiekenScreen() {
                   const isSelected = selectedBar === bar.label;
                   const anySelected = !!selectedBar;
                   const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
-                  const barHeight = Math.max((bar.value / MAX_RATING) * maxBarHeight, 34);
+                  const MIN_BAR_HEIGHT = 8;
+                  const barHeight = Math.max((bar.value / MAX_RATING) * maxBarHeight, MIN_BAR_HEIGHT);
                   return (
                     <TouchableOpacity
                       key={bar.label}
@@ -224,7 +225,7 @@ export default function StatistiekenScreen() {
                 // preview column
                 return (
                   <View key={`preview-${i}`} style={styles.barColumn}>
-                    <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
+                      <View style={[styles.bar, { height: 8, backgroundColor: withAlpha(theme.color, '22') }]} />
                   </View>
                 );
               })}
