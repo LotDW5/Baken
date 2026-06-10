@@ -425,7 +425,7 @@ const styles = StyleSheet.create<any>({
   },
   activityList: {
     gap: 12,
-    marginTop: 24,
+    marginTop: 8,
   },
   
   activityDetail: {
