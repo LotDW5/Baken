@@ -4,8 +4,8 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useMemo, useState, useEffect } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -37,53 +37,55 @@ export default function StatistiekenScreen() {
   const maxBarHeight = 120;
   const barsToShow = useMemo(() => {
     const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
-    const sortedByCount = done.slice().sort((a, b) => b.count - a.count);
-    return sortedByCount.slice(0, 6).map(a => ({ label: a.label, value: a.count }));
+    // Sort primarily by average rating (desc), then by count (desc)
+    const sorted = done.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
+    return sorted.slice(0, 6).map(a => ({ label: a.label, value: a.count }));
   }, [activityStats]);
   const maxValue = useMemo(() => (barsToShow && barsToShow.length > 0 ? Math.max(...barsToShow.map((bar) => bar.value)) : 1), [barsToShow]);
 
   const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
 
-  useEffect(() => {
-    let mounted = true;
-    const loadStats = async () => {
-      try {
-        const raw = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
-        const checks = JSON.parse(raw);
+  const loadStats = useCallback(async () => {
+    try {
+      const raw = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
+      const checks = JSON.parse(raw);
 
-        const map: Record<string, { count: number; sum: number }> = {};
-        (checks || []).forEach((c: any) => {
-          const label = c.activity || c.selectedActivity || c.name || 'Onbekend';
-          const rating = typeof c.rating === 'number' ? c.rating : (typeof c.value === 'number' ? c.value : NaN);
-          if (!map[label]) map[label] = { count: 0, sum: 0 };
-          map[label].count += 1;
-          if (!isNaN(rating)) map[label].sum += rating;
-        });
+      const map: Record<string, { count: number; sum: number }> = {};
+      (checks || []).forEach((c: any) => {
+        const label = c.activity || c.selectedActivity || c.name || 'Onbekend';
+        const rating = typeof c.rating === 'number' ? c.rating : (typeof c.value === 'number' ? c.value : NaN);
+        if (!map[label]) map[label] = { count: 0, sum: 0 };
+        map[label].count += 1;
+        if (!isNaN(rating)) map[label].sum += rating;
+      });
 
-        const rawCA = (await AsyncStorage.getItem('copingActivities')) || '[]';
-        const coping = JSON.parse(rawCA);
-        (coping || []).forEach((a: any) => {
-          const label = a.label || a.name || a;
-          if (!map[label]) map[label] = { count: 0, sum: 0 };
-        });
+      const rawCA = (await AsyncStorage.getItem('copingActivities')) || '[]';
+      const coping = JSON.parse(rawCA);
+      (coping || []).forEach((a: any) => {
+        const label = a.label || a.name || a;
+        if (!map[label]) map[label] = { count: 0, sum: 0 };
+      });
 
-        const stats = Object.keys(map).map((label) => {
-          const { count, sum } = map[label];
-          return { label, count, avg: count > 0 ? Math.round((sum / count) * 10) / 10 : 0 };
-        });
+      const stats = Object.keys(map).map((label) => {
+        const { count, sum } = map[label];
+        return { label, count, avg: count > 0 ? Math.round((sum / count) * 10) / 10 : 0 };
+      });
 
-        if (!mounted) return;
-        setActivityStats(stats);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    loadStats();
-    return () => {
-      mounted = false;
-    };
+      setActivityStats(stats);
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadStats();
+    }, [loadStats])
+  );
 
   const topActivities = useMemo(() => {
     if (!activityStats || activityStats.length === 0) return FAVORITE_ACTIVITIES.map(a => ({ label: a.label, count: 0, avg: 0 }));
@@ -333,7 +335,7 @@ const styles = StyleSheet.create<any>({
     borderRadius: 18,
     backgroundColor: COLORS.white,
     borderWidth: 1.5,
-    borderColor: COLORS.border,
+    borderColor: '#F2F2F6',
     ...applyShadow({ opacity: 0.05, radius: 10, offsetX: 0, offsetY: 2, elevation: 2 }),
   },
   activityIconCircle: {
