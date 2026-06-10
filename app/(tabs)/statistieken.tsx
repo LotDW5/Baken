@@ -6,6 +6,7 @@ import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useMemo, useState, useEffect, useCallback } from 'react';
+import { onDataChange } from '@/utils/data-events';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -125,18 +126,8 @@ export default function StatistiekenScreen() {
 
   // subscribe to data events so stats update immediately when moodCheckIns change
   useEffect(() => {
-    let unsub: (() => void) | null = null;
-    (async () => {
-      try {
-        const mod = await import('@/utils/data-events');
-        unsub = mod.onDataChange(() => {
-          loadStats();
-        });
-      } catch (e) {
-        /* ignore */
-      }
-    })();
-    return () => { if (unsub) unsub(); };
+    const unsub = onDataChange(() => loadStats());
+    return () => unsub();
   }, [loadStats]);
 
   const topActivities = useMemo(() => {
@@ -406,7 +397,8 @@ const styles = StyleSheet.create<any>({
     paddingVertical: 44,
     paddingHorizontal: 28,
     width: '100%',
-    alignSelf: 'stretch',
+    maxWidth: 393,
+    alignSelf: 'center',
     alignItems: 'center',
     gap: 8,
     marginBottom: 24,
