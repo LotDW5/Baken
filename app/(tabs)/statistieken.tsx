@@ -9,7 +9,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const PERIOD_OPTIONS = ['Laatste week', 'Laatste maand', 'Dit jaar'];
+const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
 
 const STATISTICS_BARS = [
   { label: 'Wk 1', value: 92 },
@@ -363,7 +363,7 @@ const styles = StyleSheet.create<any>({
     overflow: 'hidden',
   },
   pageHeader: {
-    marginTop: 144,
+    marginTop: 120,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
