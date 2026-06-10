@@ -224,7 +224,7 @@ export default function StatistiekenScreen() {
                           },
                         ]}
                       />
-                      <Text style={styles.barLabel} numberOfLines={1}>{bar.label}</Text>
+                      {/* label intentionally removed to keep bars fixed and uncluttered */}
                     </TouchableOpacity>
                   );
                 }
