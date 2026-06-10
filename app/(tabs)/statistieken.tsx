@@ -6,7 +6,7 @@ import applyShadow from '@/utils/shadow';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
@@ -70,6 +70,9 @@ export default function StatistiekenScreen() {
   const [activityStats, setActivityStats] = useState<Array<{ label: string; count: number; avg: number }>>([]);
   const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
   const [selectedBar, setSelectedBar] = useState<string | null>(null);
+
+  const scrollRef = useRef<ScrollView | null>(null as any);
+  const activityPositions = useRef<Record<string, number>>({});
 
 
   const maxBarHeight = 120;
@@ -212,10 +215,17 @@ export default function StatistiekenScreen() {
                       style={styles.barColumn}
                       activeOpacity={0.85}
                       onPress={() => {
-                        const next = expandedActivity === bar.label ? null : bar.label;
-                        setExpandedActivity(next);
-                        setSelectedBar(next);
-                      }}
+                          const next = expandedActivity === bar.label ? null : bar.label;
+                          setExpandedActivity(next);
+                          setSelectedBar(next);
+                          // scroll the corresponding activity into view (if we have its layout)
+                          if (next && activityPositions.current[next] != null && scrollRef.current) {
+                            const y = activityPositions.current[next];
+                            // small offset so card sits nicely below header
+                            const offset = Math.max(0, y - 8);
+                            try { scrollRef.current.scrollTo({ y: offset, animated: true }); } catch (e) {}
+                          }
+                        }}
                     >
                       <View style={[styles.bar, { height: barHeight, backgroundColor: bg }]} />
                     </TouchableOpacity>
@@ -233,17 +243,19 @@ export default function StatistiekenScreen() {
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
+        <View style={styles.content}>
+          <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
+        </View>
+
+        <ScrollView ref={r => (scrollRef.current = r)} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.activityList}>
           {topActivities && topActivities.length > 0 ? (
             topActivities.map((activity: any, index: number) => {
             const isSelected = expandedActivity === activity.label;
             const iconAsset = ACTIVITY_ICON_MAP[activity.label];
-
             return (
-              <View key={activity.label}>
+              <View key={activity.label} onLayout={(e) => { activityPositions.current[activity.label] = e.nativeEvent.layout.y; }}>
                 <TouchableOpacity
                   style={[
                     styles.activityCard,
