@@ -345,7 +345,7 @@ const styles = StyleSheet.create<any>({
     overflow: 'hidden',
   },
   pageHeader: {
-    marginTop: 120,
+    marginTop: 96,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create<any>({
   },
   activityList: {
     gap: 12,
-    marginTop: 8,
+    marginTop: 0,
   },
   
   activityDetail: {
