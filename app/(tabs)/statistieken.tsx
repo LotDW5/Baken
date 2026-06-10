@@ -69,6 +69,7 @@ export default function StatistiekenScreen() {
   const [selectedPeriod] = useState(PERIOD_OPTIONS[0]);
   const [activityStats, setActivityStats] = useState<Array<{ label: string; count: number; avg: number }>>([]);
   const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
+  const [selectedBar, setSelectedBar] = useState<string | null>(null);
 
 
   const maxBarHeight = 120;
@@ -101,11 +102,33 @@ export default function StatistiekenScreen() {
       });
 
       const rawCA = (await AsyncStorage.getItem('copingActivities')) || '[]';
-      const coping = JSON.parse(rawCA);
-      (coping || []).forEach((a: any) => {
-        const label = a.label || a.name || a;
-        if (!map[label]) map[label] = { count: 0, sum: 0 };
-      });
+      let coping: any = [];
+      try {
+        coping = JSON.parse(rawCA);
+      } catch (e) {
+        coping = [];
+      }
+
+      if (Array.isArray(coping)) {
+        coping.forEach((a: any) => {
+          const label = a && (a.label || a.name) || a;
+          if (!map[label]) map[label] = { count: 0, sum: 0 };
+        });
+      } else if (coping && typeof coping === 'object') {
+        // support shape: { moodId: [labels...] } or { label: {...} }
+        Object.keys(coping).forEach((k) => {
+          const v = coping[k];
+          if (Array.isArray(v)) {
+            v.forEach((a: any) => {
+              const label = a && (a.label || a.name) || a;
+              if (!map[label]) map[label] = { count: 0, sum: 0 };
+            });
+          } else {
+            const label = (v && (v.label || v.name)) || k;
+            if (!map[label]) map[label] = { count: 0, sum: 0 };
+          }
+        });
+      }
 
       const stats = Object.keys(map).map((label) => {
         const { count, sum } = map[label];
@@ -164,53 +187,66 @@ export default function StatistiekenScreen() {
       </View>
 
       <View style={styles.pageContent}>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.filterRow}>
-          <TouchableOpacity style={styles.periodButton} activeOpacity={0.8}>
-            <Text style={styles.periodText}>{selectedPeriod}</Text>
-            <Ionicons name="chevron-down" size={16} color={COLORS.foreground} />
-          </TouchableOpacity>
-        </View>
+        <View>
+          <View style={styles.filterRow}>
+            <TouchableOpacity style={styles.periodButton} activeOpacity={0.8}>
+              <Text style={styles.periodText}>{selectedPeriod}</Text>
+              <Ionicons name="chevron-down" size={16} color={COLORS.foreground} />
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.chartCard}>
-          <View style={styles.chartArea}>
-            {Array.from({ length: 6 }).map((_, i) => {
-              const bar = barsToShow && barsToShow[i];
-              if (bar) {
-                const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 28);
-                const isPrimary = i === 0;
+          <View style={styles.chartCard}>
+            <View style={styles.chartArea}>
+              {Array.from({ length: 6 }).map((_, i) => {
+                const bar = barsToShow && barsToShow[i];
+                if (bar) {
+                  const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 28);
+                  const isSelected = selectedBar === bar.label;
+                  const anySelected = !!selectedBar;
+                  const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
+                  return (
+                    <TouchableOpacity
+                      key={bar.label}
+                      style={styles.barColumn}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        const next = expandedActivity === bar.label ? null : bar.label;
+                        setExpandedActivity(next);
+                        setSelectedBar(next);
+                      }}
+                    >
+                      <View
+                        style={[
+                          styles.bar,
+                          {
+                            height: barHeight,
+                            backgroundColor: bg,
+                          },
+                        ]}
+                      />
+                      <Text style={styles.barLabel} numberOfLines={1}>{bar.label}</Text>
+                    </TouchableOpacity>
+                  );
+                }
+
+                // preview column
                 return (
-                  <TouchableOpacity key={bar.label} style={styles.barColumn} activeOpacity={0.8} onPress={() => setExpandedActivity(expandedActivity === bar.label ? null : bar.label)}>
-                    <View
-                      style={[
-                        styles.bar,
-                        {
-                          height: barHeight,
-                          backgroundColor: isPrimary ? theme.color : withAlpha(theme.color, '44'),
-                        },
-                      ]}
-                    />
-                    <Text style={styles.barLabel} numberOfLines={1}>{bar.label}</Text>
-                  </TouchableOpacity>
+                  <View key={`preview-${i}`} style={styles.barColumn}>
+                    <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
+                  </View>
                 );
-              }
-
-              // preview column
-              return (
-                <View key={`preview-${i}`} style={styles.barColumn}>
-                  <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
-                </View>
-              );
-            })}
+              })}
+            </View>
           </View>
         </View>
 
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
 
         <View style={styles.activityList}>
           {topActivities && topActivities.length > 0 ? (
             topActivities.map((activity: any, index: number) => {
-            const isPrimary = index === 0;
+            const isSelected = expandedActivity === activity.label;
             const iconAsset = ACTIVITY_ICON_MAP[activity.label];
 
             return (
@@ -218,16 +254,20 @@ export default function StatistiekenScreen() {
                 <TouchableOpacity
                   style={[
                     styles.activityCard,
-                    isPrimary && { borderColor: theme.color },
+                    isSelected ? { borderColor: theme.color } : {},
                   ]}
                   activeOpacity={0.9}
-                  onPress={() => setExpandedActivity(expandedActivity === activity.label ? null : activity.label)}
+                  onPress={() => {
+                    const next = expandedActivity === activity.label ? null : activity.label;
+                    setExpandedActivity(next);
+                    setSelectedBar(next);
+                  }}
                 >
-                  <View style={[styles.activityIconCircle, { backgroundColor: `${theme.color}18` }]}>
+                  <View style={[styles.activityIconCircle, { backgroundColor: isSelected ? `${theme.color}18` : `${theme.color}10` }]}>
                     {iconAsset ? (
-                      <Image source={iconAsset} style={styles.activityIcon} />
+                      <Image source={iconAsset} style={[styles.activityIcon, { tintColor: theme.color }]} />
                     ) : (
-                      <Ionicons name="star-outline" size={22} color={isPrimary ? theme.color : withAlpha(theme.color, 'AA')} />
+                      <Ionicons name="star-outline" size={22} color={isSelected ? theme.color : withAlpha(theme.color, 'AA')} />
                     )}
                   </View>
 
@@ -235,9 +275,9 @@ export default function StatistiekenScreen() {
                 </TouchableOpacity>
 
                 {expandedActivity === activity.label ? (
-                  <View style={styles.activityDetail}>
+                  <View style={[styles.activityDetail, { marginLeft: 0, width: '100%' }] }>
                     <Text style={styles.activityDetailText}>
-                      {`Je hebt dit ${activity.count} keer gedaan en een gemiddelde van ${activity.avg} sterren`}
+                      {`Je hebt dit ${activity.count} keer gedaan en een gemiddelde van ${activity.avg === 1 ? '1 ster' : activity.avg + ' sterren'}`}
                     </Text>
                   </View>
                 ) : null}
@@ -255,8 +295,6 @@ export default function StatistiekenScreen() {
         </View>
         </ScrollView>
       </View>
-
-      <View style={styles.bottomSpacer} />
     </SafeAreaView>
   );
 }
@@ -373,6 +411,7 @@ const styles = StyleSheet.create<any>({
   activityList: {
     gap: 12,
   },
+  
   activityDetail: {
     marginTop: 8,
     marginBottom: 6,
