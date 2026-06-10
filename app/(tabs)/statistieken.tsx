@@ -74,6 +74,7 @@ export default function StatistiekenScreen() {
 
   const maxBarHeight = 120;
   const MAX_RATING = 5;
+  const maxPillHeight = 36;
   const barsToShow = useMemo(() => {
     const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
     // Sort primarily by average rating (desc), then by count (desc)
@@ -203,6 +204,7 @@ export default function StatistiekenScreen() {
                   const isSelected = selectedBar === bar.label;
                   const anySelected = !!selectedBar;
                   const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
+                  const pillHeight = Math.max((bar.value / MAX_RATING) * maxPillHeight, 12);
                   return (
                     <TouchableOpacity
                       key={bar.label}
@@ -214,7 +216,7 @@ export default function StatistiekenScreen() {
                         setSelectedBar(next);
                       }}
                     >
-                      <View style={[styles.pill, { backgroundColor: bg }]} />
+                      <View style={[styles.pill, { backgroundColor: bg, height: pillHeight, borderRadius: Math.round(pillHeight / 2) }]} />
                     </TouchableOpacity>
                   );
                 }
@@ -222,7 +224,7 @@ export default function StatistiekenScreen() {
                 // preview pill
                 return (
                   <View key={`preview-${i}`} style={styles.barColumn}>
-                    <View style={[styles.pill, { backgroundColor: withAlpha(theme.color, '22') }]} />
+                    <View style={[styles.pill, { backgroundColor: withAlpha(theme.color, '22'), height: 12, borderRadius: 8 }]} />
                   </View>
                 );
               })}
@@ -377,10 +379,11 @@ const styles = StyleSheet.create<any>({
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: 12,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   barColumn: {
-    width: 96,
+    flex: 1,
+    paddingHorizontal: 6,
     alignItems: 'center',
     height: '100%',
     justifyContent: 'flex-end',
@@ -390,9 +393,9 @@ const styles = StyleSheet.create<any>({
     borderRadius: 12,
   },
   pill: {
-    width: 80,
-    height: 36,
-    borderRadius: 18,
+    width: '100%',
+    height: 34,
+    borderRadius: 17,
     shadowColor: '#000',
     shadowOpacity: 0.03,
     shadowRadius: 8,
