@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "BAKEN",
-    "slug": "Final-Project-App",
+    "slug": "baken",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/Profiel.png",
@@ -16,7 +16,7 @@
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/icons/Profiel.png"
       },
-      "package": "com.anonymous.FinalProjectApp"
+      "package": "com.baken.baken"
     },
     "web": {
       "output": "single",
