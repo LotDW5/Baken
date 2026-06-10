@@ -1,6 +1,7 @@
 import { COLORS } from '@/constants/colors';
 import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import applyShadow from '@/utils/shadow';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -29,12 +30,62 @@ export default function StatistiekenScreen() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
   const [selectedPeriod] = useState(PERIOD_OPTIONS[0]);
+  const [activityStats, setActivityStats] = useState<Array<{ label: string; count: number; avg: number }>>([]);
+  const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
 
 
   const maxBarHeight = 120;
-  const maxValue = useMemo(() => Math.max(...STATISTICS_BARS.map((bar) => bar.value)), []);
+  const barsToShow = STATISTICS_BARS.slice(0, 6);
+  const maxValue = useMemo(() => Math.max(...barsToShow.map((bar) => bar.value)), []);
 
   const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadStats = async () => {
+      try {
+        const raw = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
+        const checks = JSON.parse(raw);
+
+        const map: Record<string, { count: number; sum: number }> = {};
+        (checks || []).forEach((c: any) => {
+          const label = c.activity || c.selectedActivity || c.name || 'Onbekend';
+          const rating = typeof c.rating === 'number' ? c.rating : (typeof c.value === 'number' ? c.value : NaN);
+          if (!map[label]) map[label] = { count: 0, sum: 0 };
+          map[label].count += 1;
+          if (!isNaN(rating)) map[label].sum += rating;
+        });
+
+        const rawCA = (await AsyncStorage.getItem('copingActivities')) || '[]';
+        const coping = JSON.parse(rawCA);
+        (coping || []).forEach((a: any) => {
+          const label = a.label || a.name || a;
+          if (!map[label]) map[label] = { count: 0, sum: 0 };
+        });
+
+        const stats = Object.keys(map).map((label) => {
+          const { count, sum } = map[label];
+          return { label, count, avg: count > 0 ? Math.round((sum / count) * 10) / 10 : 0 };
+        });
+
+        if (!mounted) return;
+        setActivityStats(stats);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    loadStats();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const topActivities = useMemo(() => {
+    if (!activityStats || activityStats.length === 0) return FAVORITE_ACTIVITIES.map(a => ({ label: a.label, count: 0, avg: 0 }));
+    const sorted = activityStats.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
+    return sorted.slice(0, 6);
+  }, [activityStats]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,7 +120,7 @@ export default function StatistiekenScreen() {
 
         <View style={styles.chartCard}>
           <View style={styles.chartArea}>
-            {STATISTICS_BARS.map((bar, index) => {
+            {barsToShow.map((bar, index) => {
               const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 34);
               const isPrimary = index === 0;
 
@@ -93,29 +144,38 @@ export default function StatistiekenScreen() {
         <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
 
         <View style={styles.activityList}>
-          {FAVORITE_ACTIVITIES.map((activity, index) => {
+          {topActivities.map((activity, index) => {
+            const fav = FAVORITE_ACTIVITIES.find(f => f.label === activity.label);
             const isPrimary = index === 0;
             const iconColor = isPrimary ? theme.color : withAlpha(theme.color, 'AA');
+            const IconComp = fav && fav.iconFamily === 'Ionicons' ? Ionicons : MaterialCommunityIcons;
+            const iconName = fav ? fav.icon : 'star-outline';
 
             return (
-              <TouchableOpacity
-                key={activity.label}
-                style={[
-                  styles.activityCard,
-                  isPrimary && { borderColor: theme.color },
-                ]}
-                activeOpacity={0.9}
-              >
-                <View style={[styles.activityIconCircle, { backgroundColor: `${theme.color}18` }]}>
-                  {activity.iconFamily === 'Ionicons' ? (
-                    <Ionicons name={activity.icon as any} size={22} color={iconColor} />
-                  ) : (
-                    <MaterialCommunityIcons name={activity.icon as any} size={22} color={iconColor} />
-                  )}
-                </View>
+              <View key={activity.label}>
+                <TouchableOpacity
+                  style={[
+                    styles.activityCard,
+                    isPrimary && { borderColor: theme.color },
+                  ]}
+                  activeOpacity={0.9}
+                  onPress={() => setExpandedActivity(expandedActivity === activity.label ? null : activity.label)}
+                >
+                  <View style={[styles.activityIconCircle, { backgroundColor: `${theme.color}18` }]}>
+                    <IconComp name={iconName as any} size={22} color={iconColor} />
+                  </View>
 
-                <Text style={styles.activityLabel}>{activity.label}</Text>
-              </TouchableOpacity>
+                  <Text style={styles.activityLabel}>{activity.label}</Text>
+                </TouchableOpacity>
+
+                {expandedActivity === activity.label ? (
+                  <View style={styles.activityDetail}>
+                    <Text style={styles.activityDetailText}>
+                      {`Je hebt dit ${activity.count} keer gedaan en een gemiddelde van ${activity.avg} sterren`}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
             );
           })}
         </View>
@@ -232,6 +292,19 @@ const styles = StyleSheet.create<any>({
   },
   activityList: {
     gap: 12,
+  },
+  activityDetail: {
+    marginTop: 8,
+    marginBottom: 6,
+    marginLeft: 68,
+    padding: 12,
+    backgroundColor: '#F6F5FA',
+    borderRadius: 12,
+  },
+  activityDetailText: {
+    fontSize: 13,
+    color: COLORS.foreground,
+    lineHeight: 18,
   },
   activityCard: {
     minHeight: 78,
