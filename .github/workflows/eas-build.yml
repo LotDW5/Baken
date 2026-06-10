@@ -28,7 +28,28 @@ jobs:
           EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           eas whoami || true
-          eas build -p android --profile release --non-interactive --wait
+          # Run EAS build and capture JSON output
+          BUILD_JSON=$(eas build -p android --profile release --non-interactive --wait --json)
+          echo "$BUILD_JSON" > build.json
+          # Try to locate an APK URL in the JSON and download it
+          APK_URL=$(echo "$BUILD_JSON" | grep -oE 'https?://[^\" ]+\.apk' | head -n1 || true)
+          if [ -n "$APK_URL" ]; then
+            echo "Found APK: $APK_URL"
+            curl -L "$APK_URL" -o app-release.apk
+            mkdir -p artifacts
+            mv app-release.apk artifacts/
+          else
+            echo "APK URL not found in build output. The build may be an AAB or failed to produce a direct APK URL. See build.json for details." >&2
+            echo "--- build.json ---"
+            cat build.json
+            exit 1
+          fi
 
       - name: Note
-        run: echo "If the build succeeded, download the APK from the EAS dashboard or use the EAS CLI locally to fetch artifacts."
+        run: echo "If the build succeeded, the APK is downloaded and uploaded as a workflow artifact."
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: artifacts/app-release.apk
