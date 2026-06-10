@@ -204,7 +204,7 @@ export default function StatistiekenScreen() {
                   const isSelected = selectedBar === bar.label;
                   const anySelected = !!selectedBar;
                   const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
-                  const pillHeight = Math.max((bar.value / MAX_RATING) * maxPillHeight, 12);
+                  const barHeight = Math.max((bar.value / MAX_RATING) * maxBarHeight, 34);
                   return (
                     <TouchableOpacity
                       key={bar.label}
@@ -216,15 +216,15 @@ export default function StatistiekenScreen() {
                         setSelectedBar(next);
                       }}
                     >
-                      <View style={[styles.pill, { backgroundColor: bg, height: pillHeight, borderRadius: Math.round(pillHeight / 2) }]} />
+                      <View style={[styles.bar, { height: barHeight, backgroundColor: bg }]} />
                     </TouchableOpacity>
                   );
                 }
 
-                // preview pill
+                // preview column
                 return (
                   <View key={`preview-${i}`} style={styles.barColumn}>
-                    <View style={[styles.pill, { backgroundColor: withAlpha(theme.color, '22'), height: 12, borderRadius: 8 }]} />
+                    <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
                   </View>
                 );
               })}
