@@ -107,6 +107,8 @@ const ACTIVITY_ICON_SOURCES: Record<string, any> = {
   'In de natuur zijn': require('../../../../assets/icons/Natuur.png'),
 };
 
+
+
 export default function ActivitiesScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
@@ -117,6 +119,7 @@ export default function ActivitiesScreen() {
   const [activities, setActivities] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string } | null>(null);
   // completed view is a separate page now
 
   const selectedMood = MOOD_OPTIONS.find((m) => m.id === mood);
@@ -162,6 +165,27 @@ export default function ActivitiesScreen() {
     };
     loadActivities();
   }, [mood]);
+
+  useEffect(() => {
+    const onFocus = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('recentCompletion');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setRecentCompletion(parsed);
+          // remove the flag so it doesn't persist across future visits
+          await AsyncStorage.removeItem('recentCompletion');
+        }
+      } catch (e) {
+        console.error('Failed to read recentCompletion', e);
+      }
+    };
+    // attempt immediate read
+    onFocus();
+    // also read when coming back to screen
+    const unsubscribe = (navigation as any).addListener?.('focus', onFocus);
+    return () => unsubscribe && unsubscribe();
+  }, [navigation]);
 
   if (!selectedMood) {
     (navigation as any).goBack();
@@ -353,7 +377,19 @@ export default function ActivitiesScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.headerInner} />
+        <View style={styles.headerInner}>
+          {recentCompletion ? (
+            <View style={styles.completionRow}>
+              <View style={styles.avatarCircle}>
+                <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatarHead} />
+              </View>
+              <View style={styles.completionBubble}>
+                <Text style={styles.completionTitle}>Goed gedaan!</Text>
+                <Text style={styles.completionText}>Je hebt net {recentCompletion.activity.toLowerCase()} gedaan.</Text>
+              </View>
+            </View>
+          ) : null}
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: FOOTER_BOTTOM }]} showsVerticalScrollIndicator={false}>
@@ -538,6 +574,9 @@ export default function ActivitiesScreen() {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  completionRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  avatarCircle: { width: 48, height: 48, borderRadius: 24, overflow: 'hidden', backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', marginRight: 8, marginLeft: 0 },
+  avatarHead: { width: 48, height: 48, resizeMode: 'cover' },
   moodIconCircle: {
     width: 56,
     height: 56,

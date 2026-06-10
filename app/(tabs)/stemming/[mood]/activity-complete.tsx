@@ -1,7 +1,8 @@
 import { COLORS, MOOD_OPTIONS } from '@/constants/colors';
 import THEME from '@/constants/theme';
-import { useRoute, useNavigation } from '@react-navigation/native';
 import useAppTheme from '@/hooks/use-app-theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
@@ -97,7 +98,37 @@ export default function ActivityComplete() {
       <View style={styles.footer}> 
         {showButton && (
           <View style={styles.fillButtonWrap}>
-            <TouchableOpacity activeOpacity={0.95} onPress={startProgress} disabled={progress >= 1} style={{ width: '100%' }}>
+            <TouchableOpacity
+              activeOpacity={0.95}
+              onPress={async () => {
+                if (progress >= 1) {
+                  try {
+                    await AsyncStorage.setItem('recentCompletion', JSON.stringify({ activity: activity, timestamp: new Date().toISOString() }));
+                  } catch (e) {
+                    console.error('Failed to persist recentCompletion', e);
+                  }
+                  try {
+                    const parent = (navigation as any).getParent?.();
+                    const grandParent = parent && typeof (parent.getParent) === 'function' ? parent.getParent() : null;
+                    if (grandParent && typeof grandParent.navigate === 'function') {
+                      grandParent.navigate('Check-in', { screen: 'Home' });
+                    } else if (parent && typeof parent.navigate === 'function') {
+                      parent.navigate('Check-in', { screen: 'Home' });
+                    } else if ((navigation as any).navigate) {
+                      (navigation as any).navigate('Check-in', { screen: 'Home' });
+                    } else if ((navigation as any).goBack) {
+                      (navigation as any).goBack();
+                    }
+                  } catch (navErr) {
+                    console.error('Navigation fallback failed', navErr);
+                    try { (navigation as any).goBack?.(); } catch (e) { /* ignore */ }
+                  }
+                } else {
+                  startProgress();
+                }
+              }}
+              style={{ width: '100%' }}
+            >
               <View style={[styles.fillButtonBg, { backgroundColor: moodBgColor, shadowColor: '#6B5CE7' }]} onLayout={(e) => setButtonWidth(e.nativeEvent.layout.width)}>
                 <Animated.View
                   style={[

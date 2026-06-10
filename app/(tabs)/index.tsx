@@ -4,7 +4,7 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
 
@@ -24,6 +24,9 @@ const BACKGROUND_IMAGES: Record<string, any> = {
   'waterfall': require('@/assets/images/waterfall-chae-son-national-park-lampang-thailand.jpg'),
 };
 
+// Layout constants (match ActivitiesScreen)
+const CARD_MAX_WIDTH = 393;
+
 function HomeContent() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
@@ -31,6 +34,8 @@ function HomeContent() {
   const [bgLoaded, setBgLoaded] = useState(false);
   const [weekChecks, setWeekChecks] = useState<Record<string, boolean>>({});
   const [weekCount, setWeekCount] = useState(0);
+  const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string } | null>(null);
+  const [recentRating, setRecentRating] = useState<number>(0);
 
   const loadPreferences = async () => {
     try {
@@ -89,6 +94,20 @@ function HomeContent() {
     };
     loadWeekChecks();
 
+    const loadRecent = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('recentCompletion');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setRecentCompletion(parsed);
+          await AsyncStorage.removeItem('recentCompletion');
+        }
+      } catch (e) {
+        console.error('Failed to read recentCompletion', e);
+      }
+    };
+    loadRecent();
+
     // listen for focus events from navigation
     const unsubscribe = (navigation as any)?.addListener?.('focus', loadPreferences);
 
@@ -106,10 +125,32 @@ function HomeContent() {
     crisis: require('../../assets/icons/Crisis.png'),
   };
 
+  const { width: screenWidth } = useWindowDimensions();
+
   useEffect(() => {
     // reset loaded flag when background changes so we show placeholder until loaded
     setBgLoaded(false);
   }, [selectedBackground]);
+
+  useEffect(() => {
+    // also refresh recentCompletion when navigating back to this screen
+    const unsubscribe = (navigation as any)?.addListener?.('focus', async () => {
+      try {
+        const raw = await AsyncStorage.getItem('recentCompletion');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setRecentCompletion(parsed);
+          await AsyncStorage.removeItem('recentCompletion');
+        }
+      } catch (e) { console.error(e); }
+    });
+    return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
+  }, [navigation]);
+
+  useEffect(() => {
+    // reset rating when a new recentCompletion appears/disappears
+    setRecentRating(0);
+  }, [recentCompletion]);
 
   return (
     <ImageBackground 
@@ -143,33 +184,73 @@ function HomeContent() {
         </View>
 
         {/* Week tracker (positioned above card) */}
-        <View style={[styles.weekTrackerWrapper, { backgroundColor: COLORS.white, ...applyShadow({ opacity: 0.06, radius: 8, offsetX:0, offsetY:4, elevation:4 }) }]}> 
-          <View style={styles.weekHeader}>
-            <Text style={styles.weekTitle}>Deze week</Text>
-            <Text style={styles.weekCount}>{weekCount}/7 dagen</Text>
+        {recentCompletion ? (
+          <View style={styles.recentWrapper}>
+            <View style={styles.recentRow}>
+              <View style={styles.recentAvatarWrap}>
+                <Image source={require('../../assets/personage/Personage.png')} style={styles.recentAvatar} />
+              </View>
+              <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
+                <View style={styles.recentTail} />
+                <Text style={styles.recentTitle}>Hoe goed heeft {String(recentCompletion.activity).toLowerCase()} je geholpen?</Text>
+                <View style={styles.starRow}>
+                  {[1,2,3,4,5].map((n) => (
+                    <TouchableOpacity key={n} onPress={() => setRecentRating(n)} activeOpacity={0.8}>
+                      <Image
+                        source={n <= recentRating ? require('../../assets/icons/Gevulde ster.png') : require('../../assets/icons/Ster.png')}
+                        style={[styles.starIcon, n <= recentRating ? { tintColor: '#FFB84D' } : null]}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <View style={styles.recentActionsRow}>
+                  <TouchableOpacity style={styles.recentSecondary} onPress={() => { setRecentCompletion(null); setRecentRating(0); }}>
+                    <Text style={styles.recentSecondaryText}>Overslaan</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity disabled={recentRating === 0} style={[styles.recentPrimary, recentRating === 0 ? styles.recentPrimaryDisabled : null]} onPress={async () => {
+                    if (recentRating === 0) return;
+                    try {
+                      // persist a lightweight rating record for now
+                      await AsyncStorage.setItem('recentCompletionRating', JSON.stringify({ activity: recentCompletion.activity, rating: recentRating, timestamp: new Date().toISOString() }));
+                    } catch (e) { console.error('Failed to persist rating', e); }
+                    setRecentCompletion(null);
+                    setRecentRating(0);
+                  }}>
+                    <Text style={[styles.recentPrimaryText, recentRating === 0 ? styles.recentPrimaryTextDisabled : null]}>Opslaan</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </View>
-          <View style={styles.weekDots}> 
-            {Object.keys(weekChecks).length === 0 ? (
-              <View style={{height: 32}} />
-            ) : (
-              // ensure we always render 7 days left-to-right
-              ['Ma','Di','Wo','Do','Vr','Za','Zo'].map((short, i) => {
-                const d = Object.keys(weekChecks)[i];
-                const checked = !!weekChecks[d];
-                  return (
-                    <View key={d} style={[styles.weekDayItem, i < 6 ? { marginRight: THEME.spacing.s } : null]}>
-                    <View style={[styles.weekDot, checked ? { borderColor: theme.color, backgroundColor: theme.bgColor } : null]}>
-                      {checked && (
-                        <Image source={require('../../assets/icons/Check.png')} style={[styles.checkIcon, { tintColor: theme.color }]} resizeMode="contain" />
-                      )}
+        ) : (
+          <View style={[styles.weekTrackerWrapper, { backgroundColor: COLORS.white, ...applyShadow({ opacity: 0.06, radius: 8, offsetX:0, offsetY:4, elevation:4 }) }]}> 
+            <View style={styles.weekHeader}>
+              <Text style={styles.weekTitle}>Deze week</Text>
+              <Text style={styles.weekCount}>{weekCount}/7 dagen</Text>
+            </View>
+            <View style={styles.weekDots}> 
+              {Object.keys(weekChecks).length === 0 ? (
+                <View style={{height: 32}} />
+              ) : (
+                // ensure we always render 7 days left-to-right
+                ['Ma','Di','Wo','Do','Vr','Za','Zo'].map((short, i) => {
+                  const d = Object.keys(weekChecks)[i];
+                  const checked = !!weekChecks[d];
+                    return (
+                      <View key={d} style={[styles.weekDayItem, i < 6 ? { marginRight: THEME.spacing.s } : null]}>
+                      <View style={[styles.weekDot, checked ? { borderColor: theme.color, backgroundColor: theme.bgColor } : null]}>
+                        {checked && (
+                          <Image source={require('../../assets/icons/Check.png')} style={[styles.checkIcon, { tintColor: theme.color }]} resizeMode="contain" />
+                        )}
+                      </View>
+                      <Text style={styles.weekDayLabel}>{short}</Text>
                     </View>
-                    <Text style={styles.weekDayLabel}>{short}</Text>
-                  </View>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Main card */}
         <View style={styles.cardContainer}>
@@ -275,6 +356,32 @@ const styles = StyleSheet.create({
     right: THEME.spacing.l,
     bottom: 129,
   },
+  recentWrapper: {
+    position: 'absolute',
+    top: 144,
+    left: 24,
+    maxWidth: CARD_MAX_WIDTH,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 0,
+    zIndex: 20,
+  },
+  recentRow: { flexDirection: 'row', alignItems: 'flex-start', position: 'relative' },
+  recentAvatarWrap: { width: 48, height: 48, borderRadius: 24, overflow: 'hidden', backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', marginRight: 16, zIndex: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 6 },
+  recentAvatar: { width: 40, height: 40, resizeMode: 'contain' },
+  recentBubble: { backgroundColor: COLORS.white, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 18, alignSelf: 'flex-start', minWidth: 160, marginLeft: 0, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 14, elevation: 10, position: 'relative' },
+  recentTail: { position: 'absolute', left: -6, top: 20, width: 14, height: 14, backgroundColor: COLORS.white, transform: [{ rotate: '45deg' }], shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 6, zIndex: 1 },
+  recentTitle: { fontWeight: '700', marginBottom: 6, fontSize: 15, lineHeight: 20, letterSpacing: 0 },
+  recentText: { color: COLORS.foreground, fontSize: 14 },
+  starRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8 },
+  starIcon: { width: 24, height: 24, marginHorizontal: 4, tintColor: '#D0D0D0' },
+  starSelected: { tintColor: '#F6C34A' },
+  recentActionsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },
+  recentSecondary: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 20, borderWidth: 1, borderColor: '#EAEAF2', backgroundColor: '#fff', marginRight: 12 },
+  recentSecondaryText: { color: COLORS.foreground, fontWeight: '700' },
+  recentPrimary: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 20, backgroundColor: '#6B5CE7' },
+  recentPrimaryText: { color: '#fff', fontWeight: '700' },
+  recentPrimaryDisabled: { backgroundColor: '#D8D4F6' },
+  recentPrimaryTextDisabled: { color: 'rgba(255,255,255,0.85)' },
   title: {
     fontSize: 20,
     fontWeight: '600',
