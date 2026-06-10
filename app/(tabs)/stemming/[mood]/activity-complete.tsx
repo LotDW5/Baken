@@ -104,6 +104,7 @@ export default function ActivityComplete() {
                 if (progress >= 1) {
                   try {
                     await AsyncStorage.setItem('recentCompletion', JSON.stringify({ activity: activity, timestamp: new Date().toISOString() }));
+                    try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
                   } catch (e) {
                     console.error('Failed to persist recentCompletion', e);
                   }
