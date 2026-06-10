@@ -243,7 +243,7 @@ export default function StatistiekenScreen() {
           </View>
         </View>
 
-        <View style={styles.content}>
+        <View style={styles.content} onStartShouldSetResponder={() => true}>
           <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
         </View>
 
@@ -403,7 +403,7 @@ const styles = StyleSheet.create<any>({
   },
   bar: {
     width: 46,
-    borderRadius: 20,
+    borderRadius: 8,
   },
   pill: {
     width: '100%',
