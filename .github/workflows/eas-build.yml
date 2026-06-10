@@ -23,13 +23,41 @@ jobs:
       - name: Install eas-cli
         run: npm install -g eas-cli
 
+      - name: Run EAS init (create project config if missing)
+        env:
+          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+          GIT_EMAIL: actions@github.com
+          GIT_NAME: github-actions[bot]
+        run: |
+          echo "Logging in with EXPO_TOKEN"
+          eas login --token "$EXPO_TOKEN" || true
+          eas whoami || true
+          # Try to initialize the EAS project non-interactively if missing
+          echo "Attempting eas init --non-interactive"
+          set -e
+          if [ ! -f ".eas/config.json" ]; then
+            set +e
+            eas init --non-interactive --yes || true
+            set -e
+          else
+            echo ".eas/config.json already present"
+          fi
+          # If init created files, commit them back so subsequent runs see them
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.email "$GIT_EMAIL"
+            git config user.name "$GIT_NAME"
+            git add -A
+            git commit -m "chore(ci): add eas project config via CI init" || true
+            git push origin HEAD:main || true
+          fi
+
       - name: Run EAS build (Android APK)
         env:
           EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
-          echo "Logging in with EXPO_TOKEN"
-          eas login --token "$EXPO_TOKEN" || true
+          echo "Building with EAS"
           eas whoami || true
           # Run EAS build and capture JSON output
           BUILD_JSON=$(eas build -p android --profile release --non-interactive --wait --json)
