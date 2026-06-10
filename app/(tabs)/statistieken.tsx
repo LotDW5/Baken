@@ -123,6 +123,22 @@ export default function StatistiekenScreen() {
     }, [loadStats])
   );
 
+  // subscribe to data events so stats update immediately when moodCheckIns change
+  useEffect(() => {
+    let unsub: (() => void) | null = null;
+    (async () => {
+      try {
+        const mod = await import('@/utils/data-events');
+        unsub = mod.onDataChange(() => {
+          loadStats();
+        });
+      } catch (e) {
+        /* ignore */
+      }
+    })();
+    return () => { if (unsub) unsub(); };
+  }, [loadStats]);
+
   const topActivities = useMemo(() => {
     if (!activityStats || activityStats.length === 0) return [];
     const sorted = activityStats.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));

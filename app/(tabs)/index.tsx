@@ -245,6 +245,22 @@ function HomeContent() {
                             await AsyncStorage.setItem('recentCompletion', JSON.stringify(updated));
                             setRecentCompletion(updated);
                             setRecentRating(0);
+                            // Persist the rating into the most recent matching moodCheckIn
+                            try {
+                              const raw = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
+                              const moods = JSON.parse(raw);
+                              for (let i = moods.length - 1; i >= 0; i--) {
+                                const m = moods[i];
+                                if (m.activity && m.activity === recentCompletion.activity) {
+                                  m.rating = recentRating;
+                                  break;
+                                }
+                              }
+                              await AsyncStorage.setItem('moodCheckIns', JSON.stringify(moods));
+                              try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+                            } catch (e) {
+                              console.error('Failed to persist rating into moodCheckIns', e);
+                            }
                           } catch (e) {
                             console.error('Failed to persist rating/message', e);
                           }

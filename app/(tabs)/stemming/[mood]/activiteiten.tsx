@@ -209,6 +209,7 @@ export default function ActivitiesScreen() {
       const moods = JSON.parse(existingMoods);
       moods.push(moodData);
       await AsyncStorage.setItem('moodCheckIns', JSON.stringify(moods));
+      try { (await import('@/utils/data-events')).emitDataChange(); } catch(e) { /* ignore */ }
 
       const today = new Date().toDateString();
       await AsyncStorage.setItem('lastMoodCheckIn', today);
@@ -252,6 +253,7 @@ export default function ActivitiesScreen() {
       const moods = JSON.parse(existingMoods);
       moods.push(moodData);
       await AsyncStorage.setItem('moodCheckIns', JSON.stringify(moods));
+      try { (await import('@/utils/data-events')).emitDataChange(); } catch(e) { /* ignore */ }
 
       const today = new Date().toDateString();
       await AsyncStorage.setItem('lastMoodCheckIn', today);
@@ -324,6 +326,7 @@ export default function ActivitiesScreen() {
       const moods = JSON.parse(existingMoods);
       moods.push(moodData);
       await AsyncStorage.setItem('moodCheckIns', JSON.stringify(moods));
+      try { (await import('@/utils/data-events')).emitDataChange(); } catch(e) { /* ignore */ }
 
       const today = new Date().toDateString();
       await AsyncStorage.setItem('lastMoodCheckIn', today);
