@@ -249,8 +249,11 @@ export default function StatistiekenScreen() {
             );
             })
           ) : (
-            <View style={styles.noActivitiesBox}>
-              <Text style={styles.noActivitiesText}>Nog geen activiteiten gedaan</Text>
+            <View style={styles.emptyState}>
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyTitle}>Je hebt nog geen activiteiten gedaan</Text>
+                <Text style={styles.emptySubtitle}>Klik op een gevoel op de Check-in pagina om te beginnen</Text>
+              </View>
             </View>
           )}
         </View>
@@ -395,6 +398,26 @@ const styles = StyleSheet.create<any>({
     color: COLORS.mutedForeground,
     fontSize: 14,
   },
+  emptyState: { flex: 1, alignItems: 'center', paddingHorizontal: 24, gap: 16, paddingBottom: THEME.sizes.tabBarHeight + 48 },
+  emptyCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: 24,
+    borderColor: COLORS.border,
+    paddingVertical: 44,
+    paddingHorizontal: 28,
+    width: '100%',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.foreground, textAlign: 'center' },
+  emptySubtitle: { fontSize: 14, color: COLORS.mutedForeground, textAlign: 'center' },
   activityCard: {
     minHeight: 78,
     flexDirection: 'row',
