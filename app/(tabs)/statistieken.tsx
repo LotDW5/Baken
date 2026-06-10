@@ -89,6 +89,8 @@ export default function StatistiekenScreen() {
       const raw = (await AsyncStorage.getItem('moodCheckIns')) || '[]';
       const checks = JSON.parse(raw);
 
+      try { console.log('[statistieken] loadStats called - moodCheckIns length=', (checks || []).length); } catch (e) {}
+
       const map: Record<string, { count: number; sum: number }> = {};
       (checks || []).forEach((c: any) => {
         const label = c.activity || c.selectedActivity || c.name || 'Onbekend';
@@ -110,6 +112,7 @@ export default function StatistiekenScreen() {
         return { label, count, avg: count > 0 ? Math.round((sum / count) * 10) / 10 : 0 };
       });
 
+      try { console.log('[statistieken] computed stats count=', stats.length); } catch (e) {}
       setActivityStats(stats);
     } catch (e) {
       console.error(e);
