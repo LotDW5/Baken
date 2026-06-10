@@ -28,6 +28,8 @@ jobs:
           EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
+          echo "Logging in with EXPO_TOKEN"
+          eas login --token "$EXPO_TOKEN" || true
           eas whoami || true
           # Run EAS build and capture JSON output
           BUILD_JSON=$(eas build -p android --profile release --non-interactive --wait --json)
