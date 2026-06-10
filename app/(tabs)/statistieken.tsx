@@ -9,7 +9,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const PERIOD_OPTIONS = ['Laatste maand', 'Laatste 3 maanden', 'Dit jaar'];
+const PERIOD_OPTIONS = ['Laatste week', 'Laatste maand', 'Dit jaar'];
 
 const STATISTICS_BARS = [
   { label: 'Wk 1', value: 92 },
@@ -66,7 +66,8 @@ const ACTIVITY_ICON_MAP: Record<string, any> = {
 export default function StatistiekenScreen() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
-  const [selectedPeriod] = useState(PERIOD_OPTIONS[0]);
+  const [selectedPeriod, setSelectedPeriod] = useState(PERIOD_OPTIONS[0]);
+  const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [activityStats, setActivityStats] = useState<Array<{ label: string; count: number; avg: number }>>([]);
   const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
   const [selectedBar, setSelectedBar] = useState<string | null>(null);
@@ -193,10 +194,22 @@ export default function StatistiekenScreen() {
       <View style={styles.pageContent}>
         <View>
           <View style={styles.filterRow}>
-            <TouchableOpacity style={styles.periodButton} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.periodButton} activeOpacity={0.8} onPress={() => setShowPeriodMenu(s => !s)}>
               <Text style={styles.periodText}>{selectedPeriod}</Text>
               <Ionicons name="chevron-down" size={16} color={COLORS.foreground} />
             </TouchableOpacity>
+
+            {showPeriodMenu ? (
+              <TouchableOpacity style={styles.periodOverlay} activeOpacity={1} onPress={() => setShowPeriodMenu(false)}>
+                <View style={styles.periodMenu}>
+                  {PERIOD_OPTIONS.map(opt => (
+                    <TouchableOpacity key={opt} style={styles.periodMenuItem} onPress={() => { setSelectedPeriod(opt); setShowPeriodMenu(false); }}>
+                      <Text style={styles.periodMenuText}>{opt}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </TouchableOpacity>
+            ) : null}
           </View>
 
           <View style={styles.chartCard}>
@@ -386,6 +399,39 @@ const styles = StyleSheet.create<any>({
     paddingTop: 8,
     marginBottom: 22,
     paddingHorizontal: 24,
+  },
+  periodOverlay: {
+    position: 'absolute',
+    top: 40,
+    right: 24,
+    left: 0,
+    bottom: 0,
+  },
+  periodMenu: {
+    position: 'absolute',
+    top: -8,
+    right: 24,
+    width: 180,
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E8E8EE',
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  periodMenuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  periodMenuText: {
+    fontSize: 14,
+    color: COLORS.foreground,
   },
   chartArea: {
     height: 170,
