@@ -39,9 +39,9 @@ export default function StatistiekenScreen() {
     const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
     // Sort primarily by average rating (desc), then by count (desc)
     const sorted = done.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
-    return sorted.slice(0, 6).map(a => ({ label: a.label, value: a.count }));
+    return sorted.slice(0, 6).map(a => ({ label: a.label, value: a.avg, count: a.count }));
   }, [activityStats]);
-  const maxValue = useMemo(() => (barsToShow && barsToShow.length > 0 ? Math.max(...barsToShow.map((bar) => bar.value)) : 1), [barsToShow]);
+  const maxValue = useMemo(() => (barsToShow && barsToShow.length > 0 ? Math.max(...barsToShow.map((bar) => bar.value)) : 5), [barsToShow]);
 
   const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
 
@@ -126,11 +126,11 @@ export default function StatistiekenScreen() {
 
         <View style={styles.chartCard}>
           <View style={styles.chartArea}>
-            {barsToShow && barsToShow.length > 0 ? (
-              barsToShow.map((bar, index) => {
+            {Array.from({ length: 6 }).map((_, i) => {
+              const bar = barsToShow && barsToShow[i];
+              if (bar) {
                 const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 34);
-                const isPrimary = index === 0;
-
+                const isPrimary = i === 0;
                 return (
                   <TouchableOpacity key={bar.label} style={styles.barColumn} activeOpacity={0.8} onPress={() => setExpandedActivity(expandedActivity === bar.label ? null : bar.label)}>
                     <View
@@ -145,19 +145,23 @@ export default function StatistiekenScreen() {
                     <Text style={styles.barLabel} numberOfLines={1}>{bar.label}</Text>
                   </TouchableOpacity>
                 );
-              })
-            ) : (
-              <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                <Text style={{color: COLORS.mutedForeground}}>Nog geen activiteiten</Text>
-              </View>
-            )}
+              }
+
+              // preview column
+              return (
+                <View key={`preview-${i}`} style={styles.barColumn}>
+                  <View style={[styles.bar, { height: 28, backgroundColor: withAlpha(theme.color, '22') }]} />
+                </View>
+              );
+            })}
           </View>
         </View>
 
         <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
 
         <View style={styles.activityList}>
-          {topActivities.map((activity, index) => {
+          {topActivities && topActivities.length > 0 ? (
+            topActivities.map((activity, index) => {
             const fav = FAVORITE_ACTIVITIES.find(f => f.label === activity.label);
             const isPrimary = index === 0;
             const iconColor = isPrimary ? theme.color : withAlpha(theme.color, 'AA');
@@ -190,7 +194,12 @@ export default function StatistiekenScreen() {
                 ) : null}
               </View>
             );
-          })}
+            })
+          ) : (
+            <View style={styles.noActivitiesBox}>
+              <Text style={styles.noActivitiesText}>Nog geen activiteiten gedaan</Text>
+            </View>
+          )}
         </View>
         </ScrollView>
       </View>
@@ -324,6 +333,14 @@ const styles = StyleSheet.create<any>({
     fontSize: 13,
     color: COLORS.foreground,
     lineHeight: 18,
+  },
+  noActivitiesBox: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  noActivitiesText: {
+    color: COLORS.mutedForeground,
+    fontSize: 14,
   },
   activityCard: {
     minHeight: 78,
