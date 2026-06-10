@@ -72,13 +72,15 @@ export default function StatistiekenScreen() {
 
 
   const maxBarHeight = 120;
+  const MAX_RATING = 5;
   const barsToShow = useMemo(() => {
     const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
     // Sort primarily by average rating (desc), then by count (desc)
     const sorted = done.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
     return sorted.slice(0, 6).map(a => ({ label: a.label, value: a.avg, count: a.count }));
   }, [activityStats]);
-  const maxValue = useMemo(() => (barsToShow && barsToShow.length > 0 ? Math.max(...barsToShow.map((bar) => bar.value)) : 5), [barsToShow]);
+  // Always scale bars to the 5-star rating scale so heights change predictably
+  const maxValue = MAX_RATING;
 
   const withAlpha = (hex: string, alpha = '33') => (hex && hex.length === 7 ? `${hex}${alpha}` : hex);
 
@@ -172,7 +174,7 @@ export default function StatistiekenScreen() {
             {Array.from({ length: 6 }).map((_, i) => {
               const bar = barsToShow && barsToShow[i];
               if (bar) {
-                const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 34);
+                const barHeight = Math.max((bar.value / maxValue) * maxBarHeight, 28);
                 const isPrimary = i === 0;
                 return (
                   <TouchableOpacity key={bar.label} style={styles.barColumn} activeOpacity={0.8} onPress={() => setExpandedActivity(expandedActivity === bar.label ? null : bar.label)}>
@@ -389,7 +391,7 @@ const styles = StyleSheet.create<any>({
     color: COLORS.mutedForeground,
     fontSize: 14,
   },
-  emptyState: { flex: 1, alignItems: 'center', paddingHorizontal: 24, gap: 16, paddingBottom: THEME.sizes.tabBarHeight + 48 },
+  emptyState: { flex: 1, alignItems: 'center', gap: 16, paddingBottom: THEME.sizes.tabBarHeight + 48 },
   emptyCard: {
     backgroundColor: COLORS.card,
     borderRadius: 24,
