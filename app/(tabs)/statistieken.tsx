@@ -124,7 +124,7 @@ export default function StatistiekenScreen() {
   );
 
   const topActivities = useMemo(() => {
-    if (!activityStats || activityStats.length === 0) return FAVORITE_ACTIVITIES.map(a => ({ label: a.label, count: 0, avg: 0 }));
+    if (!activityStats || activityStats.length === 0) return [];
     const sorted = activityStats.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
     return sorted.slice(0, 6);
   }, [activityStats]);
@@ -197,7 +197,7 @@ export default function StatistiekenScreen() {
 
         <View style={styles.activityList}>
           {topActivities && topActivities.length > 0 ? (
-            topActivities.map((activity, index) => {
+            topActivities.map((activity: any, index: number) => {
             const isPrimary = index === 0;
             const iconAsset = ACTIVITY_ICON_MAP[activity.label];
 
