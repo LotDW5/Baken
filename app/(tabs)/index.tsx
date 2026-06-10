@@ -34,7 +34,7 @@ function HomeContent() {
   const [bgLoaded, setBgLoaded] = useState(false);
   const [weekChecks, setWeekChecks] = useState<Record<string, boolean>>({});
   const [weekCount, setWeekCount] = useState(0);
-  const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string } | null>(null);
+  const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string; message?: string } | null>(null);
   const [recentRating, setRecentRating] = useState<number>(0);
 
   const loadPreferences = async () => {
@@ -152,6 +152,27 @@ function HomeContent() {
     setRecentRating(0);
   }, [recentCompletion]);
 
+  useEffect(() => {
+    // when a message has been written to recentCompletion, show it for 10s then clear
+    let timer: number | null = null;
+    if (recentCompletion && recentCompletion.message) {
+      timer = setTimeout(async () => {
+        try {
+          await AsyncStorage.removeItem('recentCompletion');
+        } catch (e) { /* ignore */ }
+        setRecentCompletion(null);
+      }, 10000) as unknown as number;
+    }
+    return () => { if (timer) clearTimeout(timer as any); };
+  }, [recentCompletion]);
+
+  const getCompletionMessage = (rating: number, activity: string) => {
+    if (rating <= 2) return 'Spijtig! Misschien kun je een andere activiteit proberen die beter bij je past?';
+    if (rating === 3) return 'Goed geprobeerd! Blijf experimenteren met wat voor jou werkt.';
+    if (rating === 4) return 'Fijn om te horen dat dit je geholpen heeft!';
+    return 'Super! Deze activiteit werkt echt goed voor je.'; // 5
+  };
+
   return (
     <ImageBackground 
       source={backgroundImage} 
@@ -192,33 +213,48 @@ function HomeContent() {
               </View>
               <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                 <View style={styles.recentTail} />
-                <Text style={styles.recentTitle}>Hoe goed heeft {String(recentCompletion.activity).toLowerCase()} je geholpen?</Text>
-                <View style={styles.starRow}>
-                  {[1,2,3,4,5].map((n) => (
-                    <TouchableOpacity key={n} onPress={() => setRecentRating(n)} activeOpacity={0.8}>
-                      <Image
-                        source={n <= recentRating ? require('../../assets/icons/Gevulde ster.png') : require('../../assets/icons/Ster.png')}
-                        style={[styles.starIcon, n <= recentRating ? { tintColor: '#FFB84D' } : null]}
-                      />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                <View style={styles.recentActionsRow}>
-                  <TouchableOpacity style={styles.recentSecondary} onPress={() => { setRecentCompletion(null); setRecentRating(0); }}>
-                    <Text style={styles.recentSecondaryText}>Overslaan</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity disabled={recentRating === 0} style={[styles.recentPrimary, recentRating === 0 ? styles.recentPrimaryDisabled : null]} onPress={async () => {
-                    if (recentRating === 0) return;
-                    try {
-                      // persist a lightweight rating record for now
-                      await AsyncStorage.setItem('recentCompletionRating', JSON.stringify({ activity: recentCompletion.activity, rating: recentRating, timestamp: new Date().toISOString() }));
-                    } catch (e) { console.error('Failed to persist rating', e); }
-                    setRecentCompletion(null);
-                    setRecentRating(0);
-                  }}>
-                    <Text style={[styles.recentPrimaryText, recentRating === 0 ? styles.recentPrimaryTextDisabled : null]}>Opslaan</Text>
-                  </TouchableOpacity>
-                </View>
+                {recentCompletion.message ? (
+                  <Text style={styles.recentText}>{recentCompletion.message}</Text>
+                ) : (
+                  <>
+                    <Text style={styles.recentTitle}>Hoe goed heeft {String(recentCompletion.activity).toLowerCase()} je geholpen?</Text>
+                    {/* rating row */}
+                    <View style={styles.starRow}>
+                      {[1,2,3,4,5].map((n) => (
+                        <TouchableOpacity key={n} onPress={() => setRecentRating(n)} activeOpacity={0.8}>
+                          <Image
+                            source={n <= recentRating ? require('../../assets/icons/Gevulde ster.png') : require('../../assets/icons/Ster.png')}
+                            style={[styles.starIcon, n <= recentRating ? { tintColor: '#FFB84D' } : null]}
+                          />
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    <View style={styles.recentActionsRow}>
+                      <TouchableOpacity style={styles.recentSecondary} onPress={() => { setRecentCompletion(null); setRecentRating(0); }}>
+                        <Text style={styles.recentSecondaryText}>Overslaan</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        disabled={recentRating === 0}
+                        style={[styles.recentPrimary, recentRating === 0 ? styles.recentPrimaryDisabled : null]}
+                        onPress={async () => {
+                          if (recentRating === 0 || !recentCompletion) return;
+                          try {
+                            const message = getCompletionMessage(recentRating, recentCompletion.activity);
+                            const updated = { ...recentCompletion, message, timestamp: new Date().toISOString() };
+                            await AsyncStorage.setItem('recentCompletion', JSON.stringify(updated));
+                            setRecentCompletion(updated);
+                            setRecentRating(0);
+                          } catch (e) {
+                            console.error('Failed to persist rating/message', e);
+                          }
+                        }}
+                      >
+                        <Text style={[styles.recentPrimaryText, recentRating === 0 ? styles.recentPrimaryTextDisabled : null]}>Opslaan</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
           </View>
