@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
   },
-  
+
   label: {
     marginTop: 0,
     transform: [{ translateY: -4 }],
