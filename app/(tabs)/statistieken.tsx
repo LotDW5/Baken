@@ -421,7 +421,7 @@ const styles = StyleSheet.create<any>({
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.foreground,
-    marginBottom: 14,
+    marginBottom: 4,
   },
   activityList: {
     gap: 12,
