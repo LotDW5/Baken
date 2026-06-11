@@ -1347,12 +1347,12 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 320,
+    height: 320,
     resizeMode: 'contain',
-    marginBottom: 22,
+    marginBottom: 12,
     alignSelf: 'center',
-    marginTop: -8,
+    marginTop: -4,
   },
   addActivityButton: {
     marginTop: 8,
