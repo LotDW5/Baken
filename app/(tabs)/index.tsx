@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.label.fontWeight as any,
     textAlign: 'center',
     lineHeight: THEME.typography.label.lineHeight,
-    marginTop: THEME.spacing.xs,
+    marginTop: THEME.spacing.xs - 2,
     color: COLORS.foreground,
   },
   weekTrackerWrapper: {
