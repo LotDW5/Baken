@@ -677,7 +677,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-back" size={24} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.arrowButton, activePart === 'head' ? styles.arrowButtonActive : {}, { right: -24, top: 22 }]}
@@ -687,7 +687,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-forward" size={24} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -698,7 +698,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-back" size={24} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.arrowButton, activePart === 'top' ? styles.arrowButtonActive : {}, { right: -24, top: 160 }]}
@@ -708,7 +708,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-forward" size={24} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -719,7 +719,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-back" size={24} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.arrowButton, activePart === 'bottom' ? styles.arrowButtonActive : {}, { right: -24, top: 260 }]}
@@ -729,7 +729,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-forward" size={24} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -740,7 +740,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-back" size={24} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.arrowButton, activePart === 'shoes' ? styles.arrowButtonActive : {}, { right: -24, top: 340 }]}
@@ -750,7 +750,7 @@ export default function OnboardingScreen() {
                       setTimeout(() => setActivePart(null), 300);
                     }}
                   >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
+                    <Ionicons name="chevron-forward" size={24} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
                   </TouchableOpacity>
                 </View>
               </View>
