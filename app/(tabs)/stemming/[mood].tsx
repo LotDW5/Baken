@@ -137,9 +137,9 @@ export default function MoodCheckInScreen() {
               onFocus={() => setIsNoteFocused(true)}
               onBlur={() => setIsNoteFocused(false)}
               style={[
-                styles.noteInput,
-                (isNoteFocused || moodNote.trim() !== '') ? styles.noteInputFocus : null,
-                  { minHeight: Platform.OS === 'web' ? 320 : 120, marginBottom: 8, width: CARD_CONTENT_WIDTH - 32, alignSelf: 'center' },
+                  styles.noteInput,
+                  (isNoteFocused || moodNote.trim() !== '') ? styles.noteInputFocus : null,
+                    { minHeight: Platform.OS === 'web' ? 320 : 220, marginBottom: 8, width: CARD_CONTENT_WIDTH, alignSelf: 'center' },
               ]}
             />
           </View>
@@ -149,26 +149,26 @@ export default function MoodCheckInScreen() {
         
       </KeyboardAvoidingView>
         {/* Footer overlay (single, matches onboarding) */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, zIndex: 10005 }]}> 
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0, zIndex: 10005 }]}> 
           <View pointerEvents="box-none" style={{ width: '100%' }}>
-            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 4, paddingBottom: 4, gap: 4, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: -4 }, elevation: 8, zIndex: 10006, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: -56 }]}>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 8, paddingBottom: (insets.bottom || 0) + 12, gap: 8, borderTopWidth: 1, borderTopColor: COLORS.border }]}> 
               <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
                 <TouchableOpacity
                   style={[
                     styles.modalPrimaryButton,
                     {
-                      position: 'absolute',
-                      left: '50%',
-                      transform: [{ translateX: -((CARD_CONTENT_WIDTH - 32) / 2) }],
+                      position: 'relative',
+                      left: 'auto',
+                      transform: [],
                       backgroundColor: selectedMood.color || theme.color || '#F8B34A',
-                      width: CARD_CONTENT_WIDTH - 32,
+                      width: CARD_CONTENT_WIDTH,
                       paddingVertical: 16,
                       borderRadius: 24,
-                      shadowColor: theme.color || selectedMood.color || '#F8B34A',
-                      shadowOpacity: 0.14,
-                      shadowRadius: 18,
-                      shadowOffset: { width: 0, height: 6 },
-                      elevation: 20,
+                      shadowColor: 'transparent',
+                      shadowOpacity: 0,
+                      shadowRadius: 0,
+                      shadowOffset: { width: 0, height: 0 },
+                      elevation: 0,
                     },
                   ]}
                   onPress={handleSave}
@@ -273,10 +273,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight + 80,
+    bottom: 0,
     alignItems: 'center',
     zIndex: 9999,
-    elevation: 30,
+    elevation: 10,
   },
 
   headerContainer: {
