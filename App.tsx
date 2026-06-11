@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
-import Agenda from './app/(tabs)/agenda_override';
+import Agenda from './app/(tabs)/agenda';
 import ContactForm from './app/(tabs)/contact-form';
 import Contacten from './app/(tabs)/contacten';
 import CheckInStack from './app/(tabs)/index';
