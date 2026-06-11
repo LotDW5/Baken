@@ -176,12 +176,12 @@ const styles = StyleSheet.create({
   bubbleTail: {
     position: 'absolute',
     left: '50%',
-    marginLeft: -11,
     bottom: -10,
     width: 22,
     height: 22,
     backgroundColor: COLORS.white,
-    transform: [{ rotate: '45deg' }],
+    // use translateX to reliably center the rotated square
+    transform: [{ translateX: -11 }, { rotate: '45deg' }],
     // remove separate shadow so tail visually attaches to bubble
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
