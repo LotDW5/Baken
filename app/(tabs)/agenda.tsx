@@ -5,14 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -212,7 +212,10 @@ export default function AgendaScreen() {
                   onPress={() => day && onSelectDay(day)}
                 >
                   {isEmpty ? <View /> : (
-                    <View style={[styles.dayNumberWrap, isSelected && { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.22, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } }]}>
+                    <View style={[
+                      styles.dayNumberWrap,
+                      isSelected && { backgroundColor: theme.color, borderRadius: 8, shadowColor: theme.color, shadowOpacity: 0.22, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } }
+                    ]}>
                       <Text style={[styles.dayNumber, isSelected && { color: '#fff' }]}>{day.getDate()}</Text>
                       {hasEvent && !isSelected && (
                         <View style={[styles.eventDot, { backgroundColor: theme.color, left: 16, bottom: -5, position: 'absolute' }]} />
@@ -337,9 +340,9 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 4,
   },
-        fabHeader: { position: 'absolute', right: 24, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
-      fabCircle: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
-      fabIcon: { width: 18, height: 18, tintColor: '#fff', resizeMode: 'contain' },
+        fabHeader: { position: 'absolute', right: 28, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
+        fabCircle: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
+        fabIcon: { width: 16, height: 16, tintColor: '#fff', resizeMode: 'contain' },
   iconCircle: {
     width: 40,
     height: 40,
@@ -548,7 +551,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     width: 200,
-    height: 52,
+    height: 48,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -633,7 +636,7 @@ const styles = StyleSheet.create({
   dayNumberWrap: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
