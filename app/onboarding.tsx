@@ -151,6 +151,8 @@ export default function OnboardingScreen() {
   const [email, setEmail] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
+  const displayColor = getTheme(selectedTheme).color;
+  const displayBg = getTheme(selectedTheme).bgColor || '#F4F2FF';
   const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
   const [showCustomActivity, setShowCustomActivity] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -567,7 +569,7 @@ export default function OnboardingScreen() {
         >
           <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
             <TouchableOpacity
-              style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center' }}
+              style={{ backgroundColor: displayColor, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center' }}
               onPress={handleNext}
             >
               <Text style={styles.buttonText}>Beginnen</Text>
@@ -593,7 +595,7 @@ export default function OnboardingScreen() {
 
               <Text style={styles.profileTitle}>Welke naam wil je gebruiken?</Text>
 
-              <View style={[styles.inputWrapper, { width: '100%' }, isProfileFocused ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.08, shadowRadius: 8 } : null]}> 
+              <View style={[styles.inputWrapper, { width: '100%' }, isProfileFocused ? { borderColor: displayColor, shadowColor: displayColor, shadowOpacity: 0.08, shadowRadius: 8 } : null]}> 
                 <TextInput
                   style={styles.input}
                   value={fullName}
@@ -627,7 +629,7 @@ export default function OnboardingScreen() {
         >
           <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
             <TouchableOpacity
-              style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }}
+              style={{ backgroundColor: displayColor, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }}
               onPress={handleNext}
             >
               <Text style={styles.buttonText}>Volgende</Text>
@@ -773,7 +775,7 @@ export default function OnboardingScreen() {
             >
               <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
                 <TouchableOpacity
-                  style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }}
+                  style={{ backgroundColor: displayColor, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }}
                   onPress={handleNext}
                 >
                   <Text style={styles.buttonText}>Opslaan</Text>
@@ -919,7 +921,7 @@ export default function OnboardingScreen() {
           <View style={styles.moodScreen}>
             <View style={[styles.progressBar, { paddingTop: insets.top + 56 }]}>
               {[1, 2, 3, 4].map((i) => (
-                <View key={i} style={[styles.progressDot, { backgroundColor: i <= progressStep ? theme.color : '#E1DFE8' }]} />
+                <View key={i} style={[styles.progressDot, { backgroundColor: i <= progressStep ? displayColor : '#E1DFE8' }]} />
               ))}
             </View>
 
@@ -947,8 +949,8 @@ export default function OnboardingScreen() {
                             styles.activityButton,
                             { width: cardWidth },
                             {
-                              backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
-                              borderColor: isSelected ? currentMood.color : COLORS.border,
+                              backgroundColor: isSelected ? displayBg : COLORS.card,
+                              borderColor: isSelected ? displayColor : COLORS.border,
                             }
                           ]}
                           onPress={() => handleActivityToggle(currentMood.id, activity.name)}
@@ -957,13 +959,13 @@ export default function OnboardingScreen() {
                             <Ionicons
                               name={activity.icon as any}
                               size={28}
-                              color={isSelected ? currentMood.color : COLORS.mutedForeground}
+                              color={isSelected ? displayColor : COLORS.mutedForeground}
                               style={styles.activityIcon}
                             />
                           ) : (
-                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? currentMood.color : COLORS.mutedForeground }]} />
+                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? displayColor : COLORS.mutedForeground }]} />
                           )}
-                          <Text style={[styles.activityText, { color: isSelected ? currentMood.color : COLORS.foreground }]}>{activity.name}</Text>
+                          <Text style={[styles.activityText, { color: isSelected ? displayColor : COLORS.foreground }]}>{activity.name}</Text>
                         </TouchableOpacity>
                       );
                     })}
@@ -976,7 +978,7 @@ export default function OnboardingScreen() {
                   <View style={styles.categoryHeaderRow}>
                     <Text style={styles.categoryTitle}>Jouw activiteiten</Text>
                     <TouchableOpacity onPress={() => setEditingCustom(!editingCustom)}>
-                      <Text style={[styles.editButton, { color: theme.color }]}>{editingCustom ? 'Gereed' : 'Bewerken'}</Text>
+                      <Text style={[styles.editButton, { color: displayColor }]}>{editingCustom ? 'Gereed' : 'Bewerken'}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.customActivityGrid}>
@@ -989,14 +991,14 @@ export default function OnboardingScreen() {
                               styles.activityButton,
                               styles.customActivityButton,
                               {
-                                backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
-                                borderColor: isSelected ? currentMood.color : COLORS.border,
+                                backgroundColor: isSelected ? displayBg : COLORS.card,
+                                borderColor: isSelected ? displayColor : COLORS.border,
                               }
                             ]}
                             onPress={() => handleActivityToggle(currentMood.id, activityName)}
                           >
-                            <Ionicons name="add-circle-outline" size={28} color={isSelected ? theme.color : COLORS.mutedForeground} style={styles.activityIcon} />
-                            <Text style={[styles.activityText, { color: isSelected ? theme.color : COLORS.foreground }]}>{activityName}</Text>
+                            <Ionicons name="add-circle-outline" size={28} color={isSelected ? displayColor : COLORS.mutedForeground} style={styles.activityIcon} />
+                            <Text style={[styles.activityText, { color: isSelected ? displayColor : COLORS.foreground }]}>{activityName}</Text>
                           </TouchableOpacity>
 
                           {editingCustom && (
@@ -1015,7 +1017,7 @@ export default function OnboardingScreen() {
                 <View style={styles.customActivityCard}>
                   <Text style={styles.customActivityLabel}>Nieuwe activiteit</Text>
                   <TextInput
-                    style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') ? ({ borderColor: theme.color, borderWidth: 1, outlineColor: theme.color as any, outlineWidth: 1 as any, outlineStyle: 'solid' as any } as any) : null]}
+                    style={[styles.customActivityInput, (isCustomFocused || customActivityName.trim() !== '') ? ({ borderColor: displayColor, borderWidth: 1, outlineColor: displayColor as any, outlineWidth: 1 as any, outlineStyle: 'solid' as any } as any) : null]}
                     value={customActivityName}
                     onChangeText={setCustomActivityName}
                     placeholder="Typ een activiteit"
@@ -1027,11 +1029,11 @@ export default function OnboardingScreen() {
                   />
                   <View style={styles.customActivityActions}>
                     <TouchableOpacity
-                      style={[styles.customActivityAddButton, canAddCustomActivity ? { backgroundColor: theme.color } : { backgroundColor: 'rgba(107, 92, 231, 0.35)' }]}
+                      style={[styles.customActivityAddButton, canAddCustomActivity ? { backgroundColor: displayColor } : { backgroundColor: 'rgba(107, 92, 231, 0.35)' }]}
                       onPress={handleAddCustomActivity}
                       disabled={!canAddCustomActivity}
                     >
-                      <Text style={[styles.customActivityAddButtonText, canAddCustomActivity ? { color: theme.color } : styles.customActivityAddButtonTextDisabled]}>Toevoegen</Text>
+                      <Text style={[styles.customActivityAddButtonText, canAddCustomActivity ? { color: displayColor } : styles.customActivityAddButtonTextDisabled]}>Toevoegen</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.customActivityCancelButton} onPress={() => setShowCustomActivity(false)}>
                       <Text style={styles.customActivityCancelButtonText}>Annuleren</Text>
@@ -1041,8 +1043,8 @@ export default function OnboardingScreen() {
               )}
 
               <TouchableOpacity style={styles.addActivityButton} onPress={() => setShowCustomActivity(true)}>
-                <Ionicons name="add" size={18} color={theme.color} />
-                <Text style={[styles.addActivityButtonText, { color: theme.color }]}>Voeg een activiteit toe</Text>
+                <Ionicons name="add" size={18} color={displayColor} />
+                <Text style={[styles.addActivityButtonText, { color: displayColor }]}>Voeg een activiteit toe</Text>
               </TouchableOpacity>
 
               {/* spacer removed — paddingBottom handles spacing for the fixed footer */}
@@ -1053,7 +1055,7 @@ export default function OnboardingScreen() {
         {/* footer fixed outside KeyboardAvoidingView so keyboard doesn't push it up */}
         <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: COLORS.white }}>
           <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
-            <TouchableOpacity style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }} onPress={handleNext}>
+            <TouchableOpacity style={{ backgroundColor: displayColor, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }} onPress={handleNext}>
               <Text style={styles.buttonText}>Ga verder</Text>
             </TouchableOpacity>
 
