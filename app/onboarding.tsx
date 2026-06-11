@@ -1306,6 +1306,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     lineHeight: 15,
+    marginTop: -2,
   },
   footer: {
     paddingHorizontal: 16,
