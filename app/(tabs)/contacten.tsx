@@ -301,6 +301,7 @@ const styles = StyleSheet.create<any>({
     width: '100%',
     alignItems: 'center',
     gap: 8,
+    marginTop: 4,
     marginBottom: 24,
     // subtle shadow that sits below the card (positive vertical offset)
     shadowColor: '#000',
@@ -312,7 +313,7 @@ const styles = StyleSheet.create<any>({
   },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.foreground, textAlign: 'center' },
   emptySubtitle: { fontSize: 14, color: COLORS.mutedForeground, textAlign: 'center' },
-  primaryButton: { width: 160, paddingVertical: 14, borderRadius: 20, alignSelf: 'center' },
+  primaryButton: { width: 176, paddingVertical: 14, borderRadius: 20, alignSelf: 'center' },
   primaryButtonText: { color: COLORS.white, fontWeight: '600', fontSize: 16, textAlign: 'center' },
   listContent: { paddingHorizontal: 24, paddingVertical: 24, paddingBottom: THEME.sizes.tabBarHeight + 48 },
   section: { marginBottom: 24 },
