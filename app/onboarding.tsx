@@ -215,12 +215,12 @@ export default function OnboardingScreen() {
       console.error(e);
     }
   };
-
-  const handleBackgroundChange = async (id: string) => {
-    try {
-      setSelectedBackground(id);
-      await AsyncStorage.setItem('homeBackground', id);
-    } catch (e) {
+      width: 200,
+      height: 200,
+      resizeMode: 'contain',
+      marginBottom: 12,
+      alignSelf: 'center',
+      marginTop: -20,
       console.error(e);
     }
   };
@@ -537,7 +537,7 @@ export default function OnboardingScreen() {
         >
           <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
             <TouchableOpacity
-              style={{ backgroundColor: theme.color, borderRadius: 12, paddingVertical: 16, width: '100%', alignItems: 'center' }}
+              style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center' }}
               onPress={handleNext}
             >
               <Text style={styles.buttonText}>Beginnen</Text>
@@ -1249,7 +1249,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   button: {
-    borderRadius: 18,
+    borderRadius: 20,
     paddingVertical: 17,
     alignItems: 'center',
     shadowColor: '#000',
