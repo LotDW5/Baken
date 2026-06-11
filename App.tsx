@@ -45,34 +45,12 @@ function Tabs() {
 }
 
 export default function App() {
-  const [initialRoute, setInitialRoute] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    AsyncStorage.getItem('onboarding_completed')
-      .then(value => {
-        if (!mounted) return;
-        if (value === 'true') setInitialRoute('Main');
-        else setInitialRoute('Onboarding');
-      })
-      .catch(() => {
-        if (!mounted) return;
-        setInitialRoute('Onboarding');
-      });
-    return () => { mounted = false; };
-  }, []);
-
-  if (initialRoute === null) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // Always start on `Ademen` (breathing) screen; it will redirect after its 5s timer.
+  const initialRoute = 'Ademen';
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute || 'Ademen'} screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Ademen" component={Ademen} />
         <Stack.Screen name="Main" component={Tabs} />
         <Stack.Screen name="Onboarding" component={Onboarding} />
