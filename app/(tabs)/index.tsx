@@ -358,7 +358,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   bgPlaceholder: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: 'rgba(247,245,251,0.6)',
     zIndex: 0,
     pointerEvents: 'none',

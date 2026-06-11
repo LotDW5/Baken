@@ -7,7 +7,6 @@
     "icon": "./assets/icons/Profiel.png",
     "scheme": "finalprojectapp",
     "userInterfaceStyle": "automatic",
-    
     "ios": {
       "supportsTablet": true
     },
@@ -39,6 +38,10 @@
         }
       ]
     ],
-    
+    "extra": {
+      "eas": {
+        "projectId": "ac93be51-edb4-4328-8d59-de726989a418"
+      }
+    }
   }
 }

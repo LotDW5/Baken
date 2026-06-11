@@ -71,7 +71,7 @@ export default function StatistiekenScreen() {
   const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
   const [selectedBar, setSelectedBar] = useState<string | null>(null);
 
-  const scrollRef = useRef<ScrollView | null>(null as any);
+  const scrollRef = useRef<ScrollView | null>(null);
   const activityPositions = useRef<Record<string, number>>({});
 
 
@@ -218,7 +218,7 @@ export default function StatistiekenScreen() {
                             const y = activityPositions.current[next];
                             // small offset so card sits nicely below header
                             const offset = Math.max(0, y - 8);
-                            try { scrollRef.current.scrollTo({ y: offset, animated: true }); } catch (e) {}
+                            try { scrollRef.current?.scrollTo({ y: offset, animated: true }); } catch (e) {}
                           }
                         }}
                     >
@@ -242,7 +242,7 @@ export default function StatistiekenScreen() {
           <Text style={styles.sectionTitle}>Jouw favoriete activiteiten</Text>
         </View>
 
-        <ScrollView ref={r => (scrollRef.current = r)} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView ref={scrollRef} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.activityList}>
           {topActivities && topActivities.length > 0 ? (
