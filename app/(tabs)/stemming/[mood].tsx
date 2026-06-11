@@ -151,26 +151,17 @@ export default function MoodCheckInScreen() {
         {/* Footer overlay (single, matches onboarding) */}
         <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0, zIndex: 10005 }]}> 
           <View pointerEvents="box-none" style={{ width: '100%' }}>
-            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 8, paddingBottom: (insets.bottom || 0) + 12, gap: 8, borderTopWidth: 1, borderTopColor: COLORS.border }]}> 
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 12, paddingBottom: (insets.bottom || 0) + 12, gap: 8, borderTopWidth: 1, borderTopColor: COLORS.border }]}> 
               <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
                 <TouchableOpacity
-                  style={[
-                    styles.modalPrimaryButton,
-                    {
-                      position: 'relative',
-                      left: 'auto',
-                      transform: [],
-                      backgroundColor: selectedMood.color || theme.color || '#F8B34A',
-                      width: CARD_CONTENT_WIDTH,
-                      paddingVertical: 16,
-                      borderRadius: 24,
-                      shadowColor: 'transparent',
-                      shadowOpacity: 0,
-                      shadowRadius: 0,
-                      shadowOffset: { width: 0, height: 0 },
-                      elevation: 0,
-                    },
-                  ]}
+                  style={{
+                    width: CARD_CONTENT_WIDTH,
+                    backgroundColor: selectedMood.color || theme.color || '#F8B34A',
+                    paddingVertical: 16,
+                    borderRadius: 24,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                   onPress={handleSave}
                 >
                   <Text style={styles.modalPrimaryText}>Ga verder</Text>
@@ -273,7 +264,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: THEME.sizes.tabBarHeight + 4,
+    bottom: THEME.sizes.tabBarHeight,
     alignItems: 'center',
     zIndex: 9999,
     elevation: 10,
