@@ -416,7 +416,9 @@ export default function ActivitiesScreen() {
           </View>
 
           {/* Show exactly 3 activities chosen from onboarding (or defaults filled) */}
-          {suggestions.slice(0, 3).map((activity, idx) => (
+          {suggestions.slice(0, 3).map((activity, idx) => {
+            const isCustom = !((DEFAULT_BY_MOOD[mood as string] || []).includes(activity));
+            return (
             <View key={`sug-${idx}`}>
                 <TouchableOpacity
                   style={[styles.activityCard, selectedActivity === activity ? { borderColor: selectedMood.color, borderWidth: 2 } : {}]}
@@ -437,13 +439,14 @@ export default function ActivitiesScreen() {
                   <View style={styles.expandedCard}>
                     <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
                     <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleCompleteActivity(activity)}>
-                      <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
+                      <Text style={styles.primaryActionText}>{isCustom ? `Ga ${activity}` : 'Ik ga dit doen'}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               )}
             </View>
-          ))}
+              );
+            })}
         </View>
       </ScrollView>
 
@@ -464,6 +467,8 @@ export default function ActivitiesScreen() {
                     borderRadius: 24,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: '#E0E0E0',
                   }}
                   onPress={async () => {
                     try {
@@ -650,7 +655,7 @@ export default function ActivitiesScreen() {
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: '#F9F8FC',
   },
   activityIcon: {
     width: 48,
