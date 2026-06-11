@@ -31,6 +31,7 @@ function HomeContent() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
+  const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
   const [bgLoaded, setBgLoaded] = useState(false);
   const [weekChecks, setWeekChecks] = useState<Record<string, boolean>>({});
   const [weekCount, setWeekCount] = useState(0);
@@ -41,9 +42,16 @@ function HomeContent() {
     try {
       const savedTheme = await AsyncStorage.getItem('appTheme');
       const savedBg = await AsyncStorage.getItem('homeBackground');
+      const savedCustom = await AsyncStorage.getItem('customBackgrounds');
 
       if (savedTheme) {
         /* theme handled by useAppTheme hook */
+      }
+      if (savedCustom) {
+        try {
+          const parsed = JSON.parse(savedCustom);
+          setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
+        } catch { setCustomBackgrounds([]); }
       }
       if (savedBg) setSelectedBackground(savedBg);
     } catch (e) {
@@ -116,7 +124,13 @@ function HomeContent() {
     };
   }, [navigation]);
 
-  const backgroundImage = BACKGROUND_IMAGES[selectedBackground as keyof typeof BACKGROUND_IMAGES] || BACKGROUND_IMAGES['butterfly'];
+  let backgroundImage: any = BACKGROUND_IMAGES['butterfly'];
+  if (String(selectedBackground).startsWith('custom-')) {
+    const found = customBackgrounds.find(c => c.id === selectedBackground);
+    if (found && found.uri) backgroundImage = { uri: found.uri };
+  } else {
+    backgroundImage = BACKGROUND_IMAGES[selectedBackground as keyof typeof BACKGROUND_IMAGES] || BACKGROUND_IMAGES['butterfly'];
+  }
 
   const iconMap: Record<string, any> = {
     good: require('../../assets/icons/Goed.png'),
