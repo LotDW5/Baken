@@ -520,16 +520,29 @@ export default function OnboardingScreen() {
           <Text style={styles.welcomeTitle}>Welkom!</Text>
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
-        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: (insets.bottom || 0) + 12, paddingHorizontal: 24, paddingBottom: 0, backgroundColor: COLORS.white }]}> 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: theme.color, borderRadius: 12, paddingVertical: 16, width: '100%', elevation: 0, shadowOpacity: 0, shadowRadius: 0, shadowOffset: { width: 0, height: 0 }, shadowColor: 'transparent' }
-            ]}
-            onPress={handleNext}
-          >
-            <Text style={styles.buttonText}>Beginnen</Text>
-          </TouchableOpacity>
+        <View
+          pointerEvents="box-none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: COLORS.white,
+            elevation: 0,
+            shadowOpacity: 0,
+            shadowRadius: 0,
+            shadowOffset: { width: 0, height: 0 },
+            shadowColor: 'transparent',
+          }}
+        >
+          <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
+            <TouchableOpacity
+              style={{ backgroundColor: theme.color, borderRadius: 12, paddingVertical: 16, width: '100%', alignItems: 'center' }}
+              onPress={handleNext}
+            >
+              <Text style={styles.buttonText}>Beginnen</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     );
