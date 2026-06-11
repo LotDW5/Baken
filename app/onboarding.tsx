@@ -516,6 +516,7 @@ export default function OnboardingScreen() {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.welcomeContainer}>
+          <Image source={require('../assets/images/Logo 1.png')} style={styles.logo} />
           <Text style={styles.welcomeTitle}>Welkom!</Text>
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
@@ -1263,6 +1264,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
     color: COLORS.white,
+  },
+  logo: {
+    width: 140,
+    height: 140,
+    resizeMode: 'contain',
+    marginBottom: 18,
+    alignSelf: 'center',
   },
   addActivityButton: {
     marginTop: 8,
