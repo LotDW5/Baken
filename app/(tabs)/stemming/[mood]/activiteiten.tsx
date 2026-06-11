@@ -451,31 +451,23 @@ export default function ActivitiesScreen() {
 
       {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn */}
       {!selectedActivity && (
-        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight + 40, alignItems: 'center', zIndex: 2000 }}>
-          <View style={{ width: '100%', backgroundColor: COLORS.white, borderTopWidth: 1, borderColor: '#E0E0E0', paddingTop: 24, paddingBottom: 16, alignItems: 'center', paddingHorizontal: THEME.spacing.l }}>
+        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight, alignItems: 'center', zIndex: 2000 }}>
+          <View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 24 }}>
             <TouchableOpacity
               style={{
-                width: '100%',
+                width: CARD_CONTENT_WIDTH,
                 maxWidth: CARD_MAX_WIDTH,
                 backgroundColor: COLORS.white,
-                paddingVertical: 18,
+                paddingVertical: 16,
                 borderRadius: 24,
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignSelf: 'center',
                 borderWidth: 1,
                 borderColor: '#E0E0E0',
-                shadowColor: '#000',
-                shadowOpacity: 0.04,
-                shadowRadius: 12,
-                shadowOffset: { width: 0, height: 6 },
-                elevation: 2,
               }}
               onPress={async () => {
                 try {
-                  Alert.alert('Debug', 'Overslaan pressed');
-                  // small console log for web devtools
-                  console.log('Overslaan pressed');
                   await handleSkip();
                 } catch (e) {
                   console.error('handleSkip failed', e);
