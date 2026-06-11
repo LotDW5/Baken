@@ -451,31 +451,31 @@ export default function ActivitiesScreen() {
 
       {/* Footer overlay anchored above the bottom tab bar to match MoodCheckIn */}
       {!selectedActivity && (
-        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: THEME.sizes.tabBarHeight, alignItems: 'center', zIndex: 2000 }}>
-          <View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 24 }}>
-            <TouchableOpacity
-              style={{
-                width: CARD_CONTENT_WIDTH,
-                maxWidth: CARD_MAX_WIDTH,
-                backgroundColor: COLORS.white,
-                paddingVertical: 16,
-                borderRadius: 24,
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderWidth: 1,
-                borderColor: '#E0E0E0',
-              }}
-              onPress={async () => {
-                try {
-                  await handleSkip();
-                } catch (e) {
-                  console.error('handleSkip failed', e);
-                }
-              }}
-            >
-              <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
-            </TouchableOpacity>
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: THEME.sizes.tabBarHeight, zIndex: 2000 }]}> 
+          <View pointerEvents="box-none" style={{ width: '100%' }}>
+            <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 12, paddingBottom: (insets?.bottom || 0) + 12, gap: 8, borderTopWidth: 1, borderTopColor: COLORS.border }]}> 
+              <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={{
+                    width: CARD_CONTENT_WIDTH,
+                    backgroundColor: COLORS.white,
+                    paddingVertical: 16,
+                    borderRadius: 24,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onPress={async () => {
+                    try {
+                      await handleSkip();
+                    } catch (e) {
+                      console.error('handleSkip failed', e);
+                    }
+                  }}
+                >
+                  <Text style={{ color: COLORS.foreground, fontWeight: '700', fontSize: 16 }}>Overslaan</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
       )}
