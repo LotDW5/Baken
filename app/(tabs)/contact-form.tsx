@@ -118,7 +118,7 @@ export default function ContactForm() {
       <View style={styles.formTopBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 
@@ -277,7 +277,7 @@ const styles = StyleSheet.create<any>({
     position: 'relative',
   },
   backButton: { flexDirection: 'row', alignItems: 'center', gap: 16, justifyContent: 'flex-start' },
-  backIcon: { width: 24, height: 24, resizeMode: 'contain', marginTop: 2, marginRight: 0 },
+  backIcon: { width: 20, height: 20, resizeMode: 'contain', marginTop: 2, marginRight: 0 },
   formTitle: { fontSize: 22, fontWeight: '700', color: COLORS.foreground },
   formContent: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: 16, gap: 18 },
   inputGroup: { gap: 6 },

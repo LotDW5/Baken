@@ -97,7 +97,7 @@ export default function MoodCheckInScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} resizeMode="contain" />
+              <Image source={require('../../../assets/personage/langhaarbruin.png')} style={styles.iconImage} resizeMode="contain" />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>

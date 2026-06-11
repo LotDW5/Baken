@@ -180,7 +180,7 @@ export default function ProfileScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-                <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: uiTheme.color }]} />
+                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -200,14 +200,21 @@ export default function ProfileScreen() {
 
         {/* PROFILE CARD */}
         <View style={styles.cardProfile}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={[styles.profileEditBtn, { backgroundColor: '#FAF9FD', width: 36, height: 36, borderRadius: 18 }]}
+            onPress={() => (navigation as any).navigate('Onboarding', { fromProfile: true, step: 'avatar' })}
+          >
+            <Image source={require('../../assets/icons/Bewerken.png')} style={[styles.editIcon, { tintColor: uiTheme.color }]} />
+          </TouchableOpacity>
           <View style={styles.profileSectionCard}>
             <View style={styles.avatarContainer}>
               <TouchableOpacity onPress={handlePickProfileImage}>
-                <View style={[styles.avatarCircle, { backgroundColor: uiTheme.color }]}>
+                <View style={styles.avatarCircle}>
                   {profileImage ? (
                     <Image source={{ uri: profileImage }} style={styles.avatarImage} />
                   ) : (
-                    <Image source={require('../../assets/icons/Profiel.png')} style={styles.avatarImage} />
+                    <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.avatarImage} />
                   )}
                 </View>
               </TouchableOpacity>
@@ -453,6 +460,9 @@ const styles = StyleSheet.create({
     borderRadius: 46,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 0.5,
+    borderColor: '#E0E0E0',
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -465,6 +475,25 @@ const styles = StyleSheet.create({
     height: 48,
     resizeMode: 'contain',
   },
+
+  profileEditBtn: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    zIndex: 30,
+  },
+
+  editIcon: { width: 18, height: 18, resizeMode: 'contain' },
 
   profileName: {
     fontSize: 18,

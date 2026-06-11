@@ -147,7 +147,7 @@ export default function AgendaScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

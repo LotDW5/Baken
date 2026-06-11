@@ -5,16 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Linking,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Linking,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -149,8 +149,8 @@ export default function ContactsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-          <View style={styles.iconCircle}>
-            <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            <View style={styles.iconCircle}>
+            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 
@@ -349,7 +349,7 @@ const styles = StyleSheet.create<any>({
   editLink: { marginTop: 4, fontSize: 14, fontWeight: '600' },
   topBar: { position: 'absolute', top: 56, left: 24, right: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 },
   plusIcon: { width: 16, height: 16, tintColor: '#fff', resizeMode: 'contain' },
-  fabHeader: { position: 'absolute', right: 24, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
+  fabHeader: { position: 'absolute', right: 28, top: 0, bottom: 0, justifyContent: 'center', zIndex: 70 },
   fabCircle: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 10 },
   fabIcon: { width: 16, height: 16, tintColor: '#fff', resizeMode: 'contain' },
   callCircle: { width: 38, height: 38, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
