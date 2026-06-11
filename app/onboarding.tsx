@@ -1099,6 +1099,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
+    marginTop: -80,
   },
   welcomeEmoji: {
     fontSize: 80,
@@ -1109,7 +1110,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_SEMIBOLD,
     fontWeight: '600',
     color: COLORS.foreground,
-    marginBottom: 12,
+    marginBottom: 4,
     textAlign: 'center',
   },
   welcomeSubtitle: {
@@ -1347,12 +1348,12 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   logo: {
-    width: 320,
-    height: 320,
+    width: 420,
+    height: 420,
     resizeMode: 'contain',
-    marginBottom: 12,
+    marginBottom: 2,
     alignSelf: 'center',
-    marginTop: -4,
+    marginTop: -12,
   },
   addActivityButton: {
     marginTop: 8,
