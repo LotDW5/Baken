@@ -42,26 +42,37 @@ export default function Ademen() {
   const { width, height } = Dimensions.get('window');
   const themeColor = getTheme('blue').color || '#3B82F6';
 
-  const logoSize = Math.min(width * 0.96, 900);
-  const outerSize = Math.min(width * 0.9, logoSize * 1.8);
+    // enlarge logo to occupy more of the screen (overflow is hidden)
+    const logoSize = Math.max(width, height) * 1.02;
+    // cap the outerSize so it never exceeds the visible screen
+    const outerSize = Math.min(logoSize * 0.85, Math.min(width, height) * 0.9);
 
   // limit the scale so the circle never grows off-screen (single gradient svg)
-  const outerScale = scale.interpolate({ inputRange: [0, 1], outputRange: [0.65, 1.0] });
+  // allow a slightly larger breathing amplitude
+  const outerScale = scale.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1.12] });
   const outerOpacity = scale.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.6, 0.95, 0.7] });
 
-  // tuned so the circle center aligns closer to the tower top in the logo
-  const circleTranslateY = -(logoSize * 0.62);
+    // tuned so the circle center aligns with the top of the tower in the logo
+    const circleTranslateY = -(logoSize * 0.25);
+    const translateYOffset = height * 0.02; // move logo+circle higher (logo up)
+    // slightly raise the circle compared to previous; keep a separate offset
+    const circleYOffset = translateYOffset + height * 0.12 - 12; // move circle a few pixels higher
+
+    // compute where the circle's center will be on screen and position text just above the top edge
+    const circleCenterY = height / 2 + (circleTranslateY + circleYOffset);
+    const textTop = circleCenterY - (outerSize / 2) - 120 + 20; // move instruction text 20px down
+    const translateXOffset = -width * 0.01 + 4; // nudge logo 4px to the right relative to previous
 
   return (
     <View style={styles.container}>
-      <View style={[styles.logoWrap, { width, height: height * 0.65 }] }>
+        <View style={[styles.logoWrap, { width, height }] }>
         {/* single radial gradient rendered with SVG */}
         <Animated.View
           style={{
             position: 'absolute',
             width: outerSize,
             height: outerSize,
-            transform: [{ translateY: circleTranslateY }, { scale: outerScale }],
+            transform: [{ translateY: circleTranslateY + circleYOffset }, { scale: outerScale }],
             opacity: outerOpacity,
             alignItems: 'center',
             justifyContent: 'center',
@@ -79,11 +90,12 @@ export default function Ademen() {
         </Animated.View>
 
         {/* instruction text above the logo */}
-        <Animated.View style={[styles.circleTextWrap, { transform: [{ translateY: circleTranslateY * 0.95 }], opacity }]} pointerEvents="none">
+        {/* instruction text positioned just above the circle */}
+        <Animated.View style={[styles.circleTextWrap, { top: textTop, opacity }]} pointerEvents="none">
           <Animated.Text style={[styles.breathText, { fontSize: 18 } ]}>Haal diep adem</Animated.Text>
         </Animated.View>
 
-        <Animated.Image source={require('../assets/images/Logo 2.png')} style={[styles.logo, { width: logoSize, height: logoSize, opacity, marginTop: 20 }]} resizeMode="contain" />
+          <Animated.Image source={require('../assets/images/Logo 2.png')} style={[styles.logo, { width: logoSize, height: logoSize, opacity, marginTop: 0, transform: [{ translateY: translateYOffset }, { translateX: translateXOffset }] }]} resizeMode="contain" />
       </View>
       
     </View>
@@ -91,8 +103,8 @@ export default function Ademen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' },
-  logoWrap: { justifyContent: 'center', alignItems: 'center', overflow: 'visible' },
+  container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
+  logoWrap: { justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
   circle: { position: 'absolute' },
   circleMiddle: { position: 'absolute' },
   circleInner: { position: 'absolute', backgroundColor: '#fff' },

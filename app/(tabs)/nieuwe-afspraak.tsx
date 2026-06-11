@@ -266,7 +266,7 @@ export default function NieuweAfspraak() {
         ref={scrollRef}
         contentContainerStyle={[
           styles.formContent,
-          { paddingBottom: insets.bottom + themeConstants.sizes.tabBarHeight + footerHeight + 24 + 24 },
+          { paddingBottom: insets.bottom + themeConstants.sizes.tabBarHeight + footerHeight - 31 },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -398,14 +398,14 @@ export default function NieuweAfspraak() {
         </View>
       </ScrollView>
 
-        <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + themeConstants.sizes.tabBarHeight + 24 }} pointerEvents="box-none">
+        <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + themeConstants.sizes.tabBarHeight - 31 }} pointerEvents="box-none">
           <View style={styles.formFooter} pointerEvents="auto" onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } }]} onPress={save}>
+              <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, flex: 1 }]} onPress={save}>
                 <Text style={styles.modalPrimaryText}>Opslaan</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.modalSecondaryButton]} onPress={() => (navigation as any).navigate('Agenda')}>
+              <TouchableOpacity style={[styles.modalSecondaryButton, { marginLeft: 12, flex: 1 }]} onPress={() => (navigation as any).navigate('Agenda')}>
                 <Text style={styles.modalSecondaryText}>Annuleren</Text>
               </TouchableOpacity>
             </View>
@@ -500,9 +500,9 @@ const styles = StyleSheet.create<any>({
     elevation: 12,
   },
   buttonRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: COLORS.card, width: 160, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  modalPrimaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: COLORS.card, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
-  modalSecondaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', width: 160, justifyContent: 'center', alignItems: 'center' },
+  modalSecondaryButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', justifyContent: 'center', alignItems: 'center' },
   modalSecondaryText: { textAlign: 'center', fontWeight: '600', color: '#2D2D3A', fontSize: 16 },
   deleteButton: { paddingVertical: 14, borderRadius: 20, backgroundColor: '#FFE8ED', width: '100%', marginTop: 12, alignItems: 'center' },
   deleteButtonText: { textAlign: 'center', fontWeight: '700', color: '#E85D75', fontSize: 16 },

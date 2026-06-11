@@ -1,9 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
 import 'react-native-gesture-handler';
 import Agenda from './app/(tabs)/agenda';
 import ContactForm from './app/(tabs)/contact-form';
@@ -15,8 +12,8 @@ import Nonverbaal from './app/(tabs)/nonverbaal';
 import NonverbaalMessage from './app/(tabs)/nonverbaal-bericht';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
-import Onboarding from './app/onboarding';
 import Ademen from './app/Ademen';
+import Onboarding from './app/onboarding';
 import BottomTabBar from './components/ui/bottom-tab-bar';
 
 const Tab = createBottomTabNavigator();
