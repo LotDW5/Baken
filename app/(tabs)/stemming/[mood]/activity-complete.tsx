@@ -87,13 +87,14 @@ export default function ActivityComplete() {
         </TouchableOpacity>
       </View>
       <View style={styles.bubbleWrap}>
-        <View style={[styles.bubble, { width: Math.max(0, screenWidth - 48) }]}>
-          <Text style={styles.title}>Veel plezier!</Text>
-          <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
-          <View style={styles.bubbleTail} />
-        </View>
-        <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatar} resizeMode="contain" />
-      </View>
+            <View style={[styles.bubble, { width: Math.max(0, screenWidth - 48) }]}>
+              <Text style={styles.title}>Veel plezier!</Text>
+              <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
+            </View>
+            {/* position tail relative to page center so it lines up with avatar */}
+            <View style={[styles.bubbleTail, { left: Math.max(24, (screenWidth / 2) - 11) }]} />
+            <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatar} resizeMode="contain" />
+          </View>
 
       <View style={styles.footer}> 
         {showButton && (
@@ -150,7 +151,7 @@ export default function ActivityComplete() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white, alignItems: 'center', paddingHorizontal: 24 },
-  bubbleWrap: { marginTop: 0, alignItems: 'center', flex: 1, justifyContent: 'center' },
+  bubbleWrap: { marginTop: 0, alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' },
   bubble: { backgroundColor: COLORS.white, padding: 22, borderRadius: 20, alignSelf: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 16, marginBottom: 6, zIndex: 2 },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
@@ -182,12 +183,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     // use translateX to reliably center the rotated square
     transform: [{ translateX: -11 }, { rotate: '45deg' }],
-    // remove separate shadow so tail visually attaches to bubble
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-    zIndex: 3,
+    // give a subtle shadow and lower zIndex so the tail appears attached under the bubble
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 6,
+    zIndex: 1,
   },
 });
