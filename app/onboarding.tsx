@@ -215,12 +215,12 @@ export default function OnboardingScreen() {
       console.error(e);
     }
   };
-      width: 200,
-      height: 200,
-      resizeMode: 'contain',
-      marginBottom: 12,
-      alignSelf: 'center',
-      marginTop: -20,
+
+  const handleBackgroundChange = async (id: string) => {
+    try {
+      setSelectedBackground(id);
+      await AsyncStorage.setItem('homeBackground', id);
+    } catch (e) {
       console.error(e);
     }
   };
@@ -1285,7 +1285,6 @@ const styles = StyleSheet.create({
     marginBottom: 22,
     alignSelf: 'center',
     marginTop: -8,
-    alignSelf: 'center',
   },
   addActivityButton: {
     marginTop: 8,
