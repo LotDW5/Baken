@@ -588,18 +588,8 @@ export default function OnboardingScreen() {
         >
           <ScrollView contentContainerStyle={styles.profileScrollContent} keyboardShouldPersistTaps="handled">
             <View style={styles.profileSimpleContent}>
-              <TouchableOpacity onPress={handlePickProfileImage} style={{ alignItems: 'center' }}>
-                <View style={[styles.avatarCircleOnboarding, profileImage ? {} : { backgroundColor: theme.color }]}>
-                  {profileImage ? (
-                    <Image source={{ uri: profileImage }} style={styles.avatarImageOnboarding} />
-                  ) : (
-                    <Image source={require('../assets/icons/Profiel.png')} style={[styles.avatarImageOnboarding, { tintColor: '#fff' }]} />
-                  )}
-                  <View style={styles.avatarAddBadge}>
-                    <Image source={require('../assets/icons/Plus.png')} style={styles.addIconSmall} />
-                  </View>
-                </View>
-              </TouchableOpacity>
+                {/* Profile avatar intentionally hidden per design request */}
+                <View style={{ height: 8 }} />
 
               <Text style={styles.profileTitle}>Welke naam wil je gebruiken?</Text>
 
@@ -957,8 +947,8 @@ export default function OnboardingScreen() {
                             styles.activityButton,
                             { width: cardWidth },
                             {
-                              backgroundColor: isSelected ? theme.bgColor : COLORS.card,
-                              borderColor: isSelected ? theme.color : COLORS.border,
+                              backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
+                              borderColor: isSelected ? currentMood.color : COLORS.border,
                             }
                           ]}
                           onPress={() => handleActivityToggle(currentMood.id, activity.name)}
@@ -967,13 +957,13 @@ export default function OnboardingScreen() {
                             <Ionicons
                               name={activity.icon as any}
                               size={28}
-                              color={isSelected ? theme.color : COLORS.mutedForeground}
+                              color={isSelected ? currentMood.color : COLORS.mutedForeground}
                               style={styles.activityIcon}
                             />
                           ) : (
-                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? theme.color : COLORS.mutedForeground }]} />
+                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? currentMood.color : COLORS.mutedForeground }]} />
                           )}
-                          <Text style={[styles.activityText, { color: isSelected ? theme.color : COLORS.foreground }]}>{activity.name}</Text>
+                          <Text style={[styles.activityText, { color: isSelected ? currentMood.color : COLORS.foreground }]}>{activity.name}</Text>
                         </TouchableOpacity>
                       );
                     })}
@@ -999,8 +989,8 @@ export default function OnboardingScreen() {
                               styles.activityButton,
                               styles.customActivityButton,
                               {
-                                backgroundColor: isSelected ? theme.bgColor : COLORS.card,
-                                borderColor: isSelected ? theme.color : COLORS.border,
+                                backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
+                                borderColor: isSelected ? currentMood.color : COLORS.border,
                               }
                             ]}
                             onPress={() => handleActivityToggle(currentMood.id, activityName)}
@@ -1063,7 +1053,7 @@ export default function OnboardingScreen() {
         {/* footer fixed outside KeyboardAvoidingView so keyboard doesn't push it up */}
         <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: COLORS.white }}>
           <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
-            <TouchableOpacity style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', elevation: 0, shadowOpacity: 0, shadowRadius: 0, shadowOffset: { width: 0, height: 0 } }} onPress={handleNext}>
+            <TouchableOpacity style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }} onPress={handleNext}>
               <Text style={styles.buttonText}>Ga verder</Text>
             </TouchableOpacity>
 
