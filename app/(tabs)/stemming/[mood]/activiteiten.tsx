@@ -5,14 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity, useWindowDimensions, View
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../../assets/icons/Goed.png'),
@@ -114,6 +114,7 @@ export default function ActivitiesScreen() {
   const route = useRoute();
   const { mood } = (route.params || {}) as { mood: string };
   const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
   let router: any = null;
   try { router = require('expo-router').useRouter(); } catch (e) { /* expo-router not available at type-check time */ }
   const [activities, setActivities] = useState<string[]>([]);
