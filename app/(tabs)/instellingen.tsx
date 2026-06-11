@@ -112,7 +112,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         {/* ACTIVITEITEN AANPASSEN */}
-        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good' })}>
+        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good', fromSettings: true })}>
           <View style={styles.left}>
             <Image source={settingsIcons.adjust} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>

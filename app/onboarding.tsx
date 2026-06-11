@@ -139,6 +139,7 @@ export default function OnboardingScreen() {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const openedFromProfile = (route.params as any)?.fromProfile === true;
+  const openedFromSettings = (route.params as any)?.fromSettings === true;
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
@@ -388,6 +389,11 @@ export default function OnboardingScreen() {
     } else if (currentStep === 'bad') {
       setCurrentStep('crisis');
     } else if (currentStep === 'crisis') {
+      // if opened from settings to edit activities, return to Instellingen after crisis
+      if (openedFromSettings) {
+        (navigation as any).navigate('Instellingen');
+        return;
+      }
       setCurrentStep('avatar');
     } else if (currentStep === 'avatar') {
       try {
