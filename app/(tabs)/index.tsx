@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     left: THEME.spacing.l,
     right: THEME.spacing.l,
-    bottom: 129,
+    bottom: 125,
   },
   recentWrapper: {
     position: 'absolute',
