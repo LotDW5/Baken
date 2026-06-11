@@ -519,8 +519,8 @@ export default function OnboardingScreen() {
           <Text style={styles.welcomeTitle}>Welkom!</Text>
           <Text style={styles.welcomeSubtitle}>Ontdek wat jou kan helpen om je goed te voelen.</Text>
         </View>
-        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 60, paddingHorizontal: 24, backgroundColor: COLORS.white }]}> 
-          <TouchableOpacity style={[styles.button, { backgroundColor: theme.color }]} onPress={handleNext}>
+        <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: insets.bottom || 0, paddingHorizontal: 24, paddingBottom: 0, backgroundColor: COLORS.white }]}> 
+          <TouchableOpacity style={[styles.button, { backgroundColor: theme.color, borderRadius: 12, paddingVertical: 16, width: '100%' }]} onPress={handleNext}>
             <Text style={styles.buttonText}>Beginnen</Text>
           </TouchableOpacity>
         </View>
