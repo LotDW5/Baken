@@ -573,17 +573,40 @@ export default function OnboardingScreen() {
               />
             </View>
           </ScrollView>
-          {!isKeyboardVisible && (
-            <View pointerEvents="box-none" style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: -2, paddingHorizontal: 24, backgroundColor: COLORS.white }]}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: theme.color }]} onPress={handleNext}>
-                <Text style={styles.buttonText}>Volgende</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.secondaryButton, { borderColor: '#E0E0E0', backgroundColor: COLORS.white }]} onPress={handleBack}>
-                <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </KeyboardAvoidingView>
+
+        <View
+          pointerEvents="box-none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: COLORS.white,
+            elevation: 0,
+            shadowOpacity: 0,
+            shadowRadius: 0,
+            shadowOffset: { width: 0, height: 0 },
+            shadowColor: 'transparent',
+          }}
+        >
+          <View style={{ paddingHorizontal: 24, paddingBottom: (insets.bottom || 0) + 12, paddingTop: 8 }}>
+            <TouchableOpacity
+              style={{ backgroundColor: theme.color, borderRadius: 20, paddingVertical: 16, width: '100%', alignItems: 'center', marginBottom: 12 }}
+              onPress={handleNext}
+            >
+              <Text style={styles.buttonText}>Volgende</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{ borderRadius: 20, paddingVertical: 14, width: '100%', alignItems: 'center', backgroundColor: COLORS.white, borderWidth: 1, borderColor: '#E0E0E0' }}
+              onPress={handleBack}
+            >
+              <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Terug</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      
       </SafeAreaView>
     );
   }
