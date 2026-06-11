@@ -149,7 +149,7 @@ export default function MoodCheckInScreen() {
         
       </KeyboardAvoidingView>
         {/* Footer overlay (single, matches onboarding) */}
-        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: 0, zIndex: 10005 }]}> 
+        <View pointerEvents="box-none" style={[styles.fixedFooterWrap, { left: 0, right: 0, bottom: THEME.sizes.tabBarHeight, zIndex: 10005 }]}> 
           <View pointerEvents="box-none" style={{ width: '100%' }}>
             <View pointerEvents="box-none" style={[styles.footer, { backgroundColor: COLORS.white, borderTopLeftRadius: 0, borderTopRightRadius: 0, paddingHorizontal: 24, paddingTop: 12, paddingBottom: (insets.bottom || 0) + 12, gap: 8, borderTopWidth: 1, borderTopColor: COLORS.border }]}> 
               <View style={{ width: '100%', paddingHorizontal: 0, alignItems: 'center' }}>
