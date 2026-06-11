@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Animated, Easing, Platform, Dimensions } from 'react-native';
-import { Svg, Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
+import { getTheme } from '@/constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { getTheme } from '@/constants/colors';
+import { useEffect, useRef } from 'react';
+import { Animated, Dimensions, Easing, Platform, StyleSheet, View } from 'react-native';
+import { Circle, Defs, RadialGradient, Stop, Svg } from 'react-native-svg';
 
 export default function Ademen() {
   const navigation = useNavigation<any>();
@@ -42,14 +42,15 @@ export default function Ademen() {
   const { width, height } = Dimensions.get('window');
   const themeColor = getTheme('blue').color || '#3B82F6';
 
-  const outerSize = Math.min(width * 0.78, 820);
-  const logoSize = Math.min(width * 0.66, 520);
+  const logoSize = Math.min(width * 0.96, 900);
+  const outerSize = Math.min(width * 0.9, logoSize * 1.8);
 
   // limit the scale so the circle never grows off-screen (single gradient svg)
   const outerScale = scale.interpolate({ inputRange: [0, 1], outputRange: [0.65, 1.0] });
   const outerOpacity = scale.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.6, 0.95, 0.7] });
 
-  const circleTranslateY = -(logoSize * 0.95); // position the center above the tower top
+  // tuned so the circle center aligns closer to the tower top in the logo
+  const circleTranslateY = -(logoSize * 0.62);
 
   return (
     <View style={styles.container}>
@@ -82,7 +83,7 @@ export default function Ademen() {
           <Animated.Text style={[styles.breathText, { fontSize: 18 } ]}>Haal diep adem</Animated.Text>
         </Animated.View>
 
-        <Animated.Image source={require('../assets/images/Logo 2.png')} style={[styles.logo, { width: logoSize, height: logoSize, opacity, marginTop: 8 }]} resizeMode="contain" />
+        <Animated.Image source={require('../assets/images/Logo 2.png')} style={[styles.logo, { width: logoSize, height: logoSize, opacity, marginTop: 20 }]} resizeMode="contain" />
       </View>
       
     </View>
