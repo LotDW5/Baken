@@ -90,9 +90,8 @@ export default function ActivityComplete() {
             <View style={[styles.bubble, { width: Math.max(0, screenWidth - 48) }]}>
               <Text style={styles.title}>Veel plezier!</Text>
               <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
+              <View style={styles.bubbleTail} />
             </View>
-            {/* position tail relative to page center so it lines up with avatar */}
-            <View style={[styles.bubbleTail, { left: Math.max(24, (screenWidth / 2) - 11) }]} />
             <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatar} resizeMode="contain" />
           </View>
 
@@ -177,18 +176,16 @@ const styles = StyleSheet.create({
   bubbleTail: {
     position: 'absolute',
     left: '50%',
-    bottom: -10,
+    bottom: -11,
     width: 22,
     height: 22,
     backgroundColor: COLORS.white,
-    // use translateX to reliably center the rotated square
     transform: [{ translateX: -11 }, { rotate: '45deg' }],
-    // give a subtle shadow and lower zIndex so the tail appears attached under the bubble
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 8,
     zIndex: 1,
   },
 });
