@@ -655,7 +655,7 @@ export default function ActivitiesScreen() {
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#F9F8FC',
+    borderColor: '#E0E0E0',
   },
   activityIcon: {
     width: 48,
