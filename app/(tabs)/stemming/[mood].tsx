@@ -139,7 +139,7 @@ export default function MoodCheckInScreen() {
               style={[
                   styles.noteInput,
                   (isNoteFocused || moodNote.trim() !== '') ? styles.noteInputFocus : null,
-                    { minHeight: Platform.OS === 'web' ? 320 : 220, marginBottom: 8, width: CARD_CONTENT_WIDTH, alignSelf: 'center' },
+                    { minHeight: Platform.OS === 'web' ? 360 : 260, marginBottom: 8, width: CARD_CONTENT_WIDTH, alignSelf: 'center' },
               ]}
             />
           </View>
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: THEME.sizes.tabBarHeight + 4,
     alignItems: 'center',
     zIndex: 9999,
     elevation: 10,
