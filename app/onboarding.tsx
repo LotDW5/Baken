@@ -1266,10 +1266,12 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   logo: {
-    width: 140,
-    height: 140,
+    width: 180,
+    height: 180,
     resizeMode: 'contain',
-    marginBottom: 18,
+    marginBottom: 22,
+    alignSelf: 'center',
+    marginTop: -8,
     alignSelf: 'center',
   },
   addActivityButton: {
