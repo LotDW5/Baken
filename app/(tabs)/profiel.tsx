@@ -122,6 +122,7 @@ export default function ProfileScreen() {
     try {
       setSelectedBackground(id);
       await AsyncStorage.setItem('homeBackground', id);
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
     } catch (e) {
       console.error(e);
     }
@@ -164,6 +165,7 @@ export default function ProfileScreen() {
         // set selected to the new custom background
         setSelectedBackground(newId);
         await AsyncStorage.setItem('homeBackground', newId);
+        try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
       }
     } catch (e) {
       console.warn('[profiel] image picker error', e);
