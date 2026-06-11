@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   recentAvatarWrap: { width: 48, height: 48, borderRadius: 24, overflow: 'hidden', backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', marginRight: 16, zIndex: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 6 },
   recentAvatar: { width: 40, height: 40, resizeMode: 'contain' },
   recentBubble: { backgroundColor: COLORS.white, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 18, alignSelf: 'flex-start', minWidth: 160, marginLeft: 0, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 14, elevation: 10, position: 'relative' },
-  recentTail: { position: 'absolute', left: -6, top: 20, width: 14, height: 14, backgroundColor: COLORS.white, transform: [{ rotate: '45deg' }], shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 6, zIndex: 1 },
+  recentTail: { position: 'absolute', left: -7, top: 20, width: 14, height: 14, backgroundColor: COLORS.white, transform: [{ rotate: '45deg' }], shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 0, zIndex: -1 },
   recentTitle: { fontWeight: '700', marginBottom: 6, fontSize: 15, lineHeight: 20, letterSpacing: 0 },
   recentText: { color: COLORS.foreground, fontSize: 14 },
   starRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8 },
