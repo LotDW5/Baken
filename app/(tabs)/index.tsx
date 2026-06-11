@@ -3,7 +3,7 @@ import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     fontWeight: THEME.typography.label.fontWeight as any,
     textAlign: 'center',
     lineHeight: THEME.typography.label.lineHeight,
-    marginTop: THEME.spacing.xs - 2,
+    marginTop: THEME.spacing.xs - 4,
     color: COLORS.foreground,
   },
   weekTrackerWrapper: {
