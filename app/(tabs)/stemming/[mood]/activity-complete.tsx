@@ -173,5 +173,21 @@ const styles = StyleSheet.create({
   fillButtonBg: { width: '100%', height: 56, borderRadius: 20, overflow: 'hidden', justifyContent: 'center', shadowOpacity: 0.18, shadowRadius: 24, elevation: 12 },
   fillButtonFill: { position: 'absolute', left: 0, top: 0, bottom: 0, height: '100%', borderTopLeftRadius: 20, borderBottomLeftRadius: 20, width: '0%' },
   fillButtonText: { position: 'absolute', alignSelf: 'center', color: '#ffffff', fontWeight: '700' },
-  bubbleTail: { position: 'absolute', left: '50%', marginLeft: -11, bottom: -11, width: 22, height: 22, backgroundColor: COLORS.white, transform: [{ rotate: '45deg' }], shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 8, zIndex: 1 },
+  bubbleTail: {
+    position: 'absolute',
+    left: '50%',
+    marginLeft: -11,
+    bottom: -10,
+    width: 22,
+    height: 22,
+    backgroundColor: COLORS.white,
+    transform: [{ rotate: '45deg' }],
+    // remove separate shadow so tail visually attaches to bubble
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    zIndex: 3,
+  },
 });
