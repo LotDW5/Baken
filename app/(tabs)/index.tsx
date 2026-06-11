@@ -3,10 +3,11 @@ import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
+import { onThemeChange } from '@/utils/theme-events';
 
 // Background images mapping
 const BACKGROUND_IMAGES: Record<string, any> = {
@@ -38,7 +39,7 @@ function HomeContent() {
   const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string; message?: string } | null>(null);
   const [recentRating, setRecentRating] = useState<number>(0);
 
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
       const savedTheme = await AsyncStorage.getItem('appTheme');
       const savedBg = await AsyncStorage.getItem('homeBackground');
@@ -57,7 +58,7 @@ function HomeContent() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // load preferences on mount
@@ -123,6 +124,12 @@ function HomeContent() {
       if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, [navigation]);
+
+  useEffect(() => {
+    // reload preferences when theme/background changes elsewhere
+    const unsub = onThemeChange(() => { loadPreferences(); });
+    return unsub;
+  }, [loadPreferences]);
 
   let backgroundImage: any = BACKGROUND_IMAGES['butterfly'];
   if (String(selectedBackground).startsWith('custom-')) {
