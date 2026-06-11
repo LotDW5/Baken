@@ -180,12 +180,14 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     backgroundColor: COLORS.white,
-    transform: [{ translateX: -11 }, { rotate: '45deg' }],
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 1,
+    // nudge the tail to the right relative to center (was translateX: -11)
+    transform: [{ translateX: 13 }, { rotate: '45deg' }],
+    // place behind the bubble
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    zIndex: 0,
   },
 });
