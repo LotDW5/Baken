@@ -16,6 +16,7 @@ import NonverbaalMessage from './app/(tabs)/nonverbaal-bericht';
 import Profiel from './app/(tabs)/profiel';
 import Statistieken from './app/(tabs)/statistieken';
 import Onboarding from './app/onboarding';
+import Ademen from './app/Ademen';
 import BottomTabBar from './components/ui/bottom-tab-bar';
 
 const Tab = createBottomTabNavigator();
@@ -71,12 +72,11 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute || 'Ademen'} screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Ademen" component={Ademen} />
         <Stack.Screen name="Main" component={Tabs} />
         <Stack.Screen name="Onboarding" component={Onboarding} />
         <Stack.Screen name="ContactForm" component={ContactForm} />
-        {/* Nonverbaal screens moved into the Tab navigator so bottom tab is always visible */}
-        {/* Profiel and Instellingen are now part of the bottom tabs to keep the tab bar visible */}
       </Stack.Navigator>
     </NavigationContainer>
   );
