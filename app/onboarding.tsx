@@ -957,8 +957,8 @@ export default function OnboardingScreen() {
                             styles.activityButton,
                             { width: cardWidth },
                             {
-                              backgroundColor: isSelected ? '#F0EDF7' : COLORS.card,
-                              borderColor: isSelected ? theme.color : COLORS.border,
+                              backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
+                              borderColor: isSelected ? currentMood.color : COLORS.border,
                             }
                           ]}
                           onPress={() => handleActivityToggle(currentMood.id, activity.name)}
@@ -967,13 +967,13 @@ export default function OnboardingScreen() {
                             <Ionicons
                               name={activity.icon as any}
                               size={28}
-                              color={isSelected ? theme.color : COLORS.mutedForeground}
+                              color={isSelected ? currentMood.color : COLORS.mutedForeground}
                               style={styles.activityIcon}
                             />
                           ) : (
-                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? theme.color : COLORS.mutedForeground }]} />
+                            <Image source={activity.icon as any} style={[styles.activityIcon, { width: 28, height: 28, tintColor: isSelected ? currentMood.color : COLORS.mutedForeground }]} />
                           )}
-                          <Text style={[styles.activityText, { color: isSelected ? theme.color : COLORS.foreground }]}>{activity.name}</Text>
+                          <Text style={[styles.activityText, { color: isSelected ? currentMood.color : COLORS.foreground }]}>{activity.name}</Text>
                         </TouchableOpacity>
                       );
                     })}
@@ -999,8 +999,8 @@ export default function OnboardingScreen() {
                               styles.activityButton,
                               styles.customActivityButton,
                               {
-                                backgroundColor: isSelected ? '#F0EDF7' : COLORS.card,
-                                borderColor: isSelected ? theme.color : COLORS.border,
+                                backgroundColor: isSelected ? currentMood.bgColor : COLORS.card,
+                                borderColor: isSelected ? currentMood.color : COLORS.border,
                               }
                             ]}
                             onPress={() => handleActivityToggle(currentMood.id, activityName)}
@@ -1306,7 +1306,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     lineHeight: 15,
-    marginTop: -2,
   },
   footer: {
     paddingHorizontal: 16,
