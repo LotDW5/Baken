@@ -146,6 +146,7 @@ export default function OnboardingScreen() {
   const cardWidth = (screenWidth - 48 - GRID_GAP) / 2;
   const [currentStep, setCurrentStep] = useState<OnboardingStepExtended>('welcome');
   const [fullName, setFullName] = useState('');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('purple');
@@ -257,15 +258,44 @@ export default function OnboardingScreen() {
     }
   };
 
+  const handlePickProfileImage = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        alert('Fotokeuze is niet beschikbaar in de webversie.');
+        return;
+      }
+      // eslint-disable-next-line import/no-unresolved
+      const ImagePicker = await import('expo-image-picker');
+      const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
+      if (perm && perm.status !== 'granted') {
+        alert("Toegang tot je foto's is nodig om een profielfoto te kiezen.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      if (result && !(result as any).cancelled) {
+        const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
+        if (uri) {
+          setProfileImage(uri);
+          await AsyncStorage.setItem('profileImage', uri);
+        }
+      }
+    } catch (e) {
+      console.warn('[onboarding] pick profile image error', e);
+      alert('Kon de fotokeuze niet openen (image picker niet beschikbaar).');
+    }
+  };
+
   // load saved theme/background/custom backgrounds when onboarding mounts
   useEffect(() => {
     (async () => {
       try {
         const savedTheme = await AsyncStorage.getItem('appTheme');
         const savedBg = await AsyncStorage.getItem('homeBackground');
+        const savedProfileImage = await AsyncStorage.getItem('profileImage');
         const savedCustom = await AsyncStorage.getItem('customBackgrounds');
         if (savedTheme) setSelectedTheme(savedTheme);
         if (savedBg) setSelectedBackground(savedBg);
+        if (savedProfileImage) setProfileImage(savedProfileImage);
         if (savedCustom) {
           try {
             const parsed = JSON.parse(savedCustom);
@@ -558,6 +588,19 @@ export default function OnboardingScreen() {
         >
           <ScrollView contentContainerStyle={styles.profileScrollContent} keyboardShouldPersistTaps="handled">
             <View style={styles.profileSimpleContent}>
+              <TouchableOpacity onPress={handlePickProfileImage} style={{ alignItems: 'center' }}>
+                <View style={[styles.avatarCircleOnboarding, profileImage ? {} : { backgroundColor: theme.color }]}>
+                  {profileImage ? (
+                    <Image source={{ uri: profileImage }} style={styles.avatarImageOnboarding} />
+                  ) : (
+                    <Image source={require('../assets/icons/Profiel.png')} style={[styles.avatarImageOnboarding, { tintColor: '#fff' }]} />
+                  )}
+                  <View style={styles.avatarAddBadge}>
+                    <Image source={require('../assets/icons/Plus.png')} style={styles.addIconSmall} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+
               <Text style={styles.profileTitle}>Welke naam wil je gebruiken?</Text>
 
               <View style={[styles.inputWrapper, { width: '100%' }, isProfileFocused ? { borderColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.08, shadowRadius: 8 } : null]}> 
@@ -1411,6 +1454,39 @@ const styles = StyleSheet.create({
   avatarPreviewContainer: {
     alignItems: 'center',
     marginTop: 8,
+  },
+  avatarCircleOnboarding: {
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  avatarImageOnboarding: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  avatarAddBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  addIconSmall: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
   },
   avatarPreviewInner: {
     width: 120,

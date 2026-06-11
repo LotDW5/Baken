@@ -47,6 +47,7 @@ export default function ProfileScreen() {
   const [selectedTheme, setSelectedTheme] = useState('purple');
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const uiTheme = selectedTheme ? getTheme(selectedTheme) : globalTheme;
 
@@ -67,6 +68,8 @@ export default function ProfileScreen() {
         setSelectedTheme(savedTheme);
       }
       if (savedBg) setSelectedBackground(savedBg);
+      const savedProfile = await AsyncStorage.getItem('profileImage');
+      if (savedProfile) setProfileImage(savedProfile);
       if (savedCustom) {
         try {
           const parsed = JSON.parse(savedCustom);
@@ -75,6 +78,33 @@ export default function ProfileScreen() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handlePickProfileImage = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        alert('Fotokeuze is niet beschikbaar in de webversie.');
+        return;
+      }
+      // eslint-disable-next-line import/no-unresolved
+      const ImagePicker = await import('expo-image-picker');
+      const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
+      if (perm && perm.status !== 'granted') {
+        alert("Toegang tot je foto's is nodig om een profielfoto te kiezen.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      if (result && !result.cancelled) {
+        const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
+        if (uri) {
+          setProfileImage(uri);
+          await AsyncStorage.setItem('profileImage', uri);
+        }
+      }
+    } catch (e) {
+      console.warn('[profiel] pick profile image error', e);
+      alert('Kon de fotokeuze niet openen (image picker niet beschikbaar).');
     }
   };
 
@@ -170,9 +200,15 @@ export default function ProfileScreen() {
         <View style={styles.cardProfile}>
           <View style={styles.profileSectionCard}>
             <View style={styles.avatarContainer}>
-              <View style={[styles.avatarCircle, { backgroundColor: uiTheme.color }]}>
-                <Image source={require('../../assets/icons/Profiel.png')} style={styles.avatarImage} />
-              </View>
+              <TouchableOpacity onPress={handlePickProfileImage}>
+                <View style={[styles.avatarCircle, { backgroundColor: uiTheme.color }]}>
+                  {profileImage ? (
+                    <Image source={{ uri: profileImage }} style={styles.avatarImage} />
+                  ) : (
+                    <Image source={require('../../assets/icons/Profiel.png')} style={styles.avatarImage} />
+                  )}
+                </View>
+              </TouchableOpacity>
             </View>
             <Text style={styles.profileName}>{userData?.firstName || 'Lot'}</Text>
           </View>
