@@ -4,7 +4,7 @@
     "slug": "baken",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Logo 1.png",
+    "icon": "./assets/images/Logo 2.png",
     "scheme": "finalprojectapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -13,13 +13,13 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/Logo 1.png"
+        "foregroundImage": "./assets/images/Logo 2.png"
       },
       "package": "com.baken.baken"
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/Logo 1.png"
+      "favicon": "./assets/images/Logo 2.png"
     },
     "updates": {
       "enabled": false
@@ -36,7 +36,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-image"
     ],
     "extra": {
       "eas": {
