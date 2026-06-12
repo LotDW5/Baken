@@ -217,17 +217,6 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* HELP & SUPPORT */}
-        <TouchableOpacity style={styles.card}>
-          <View style={styles.left}>
-            <Image source={settingsIcons.help} style={[styles.rowIcon, { tintColor: theme.color }]} />
-            <View>
-              <Text style={styles.cardTitle}>Help & Support</Text>
-              <Text style={styles.cardSubtitle}>Krijg hulp bij de app</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
         {/* ACTIVITEITEN AANPASSEN */}
         <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good', fromSettings: true })}>
           <View style={styles.left}>
@@ -235,6 +224,17 @@ export default function SettingsScreen() {
             <View>
               <Text style={styles.cardTitle}>Activiteiten aanpassen</Text>
               <Text style={styles.cardSubtitle}>Pas je gekozen activiteiten per emotie aan</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        {/* HELP & SUPPORT */}
+        <TouchableOpacity style={styles.card}>
+          <View style={styles.left}>
+            <Image source={settingsIcons.help} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View>
+              <Text style={styles.cardTitle}>Help & Support</Text>
+              <Text style={styles.cardSubtitle}>Krijg hulp botieij de app</Text>
             </View>
           </View>
         </TouchableOpacity>
