@@ -65,7 +65,6 @@ export default function PersonageView(props: Props) {
         hemd: require('../../assets/personage/lang-donker-hemd.png'),
       },
       wit: {
-        vest: require('../../assets/personage/lang-wit-vest.png'),
         shirt: require('../../assets/personage/lang-wit-shirt.png'),
         hemd: require('../../assets/personage/lang-wit-hemd.png'),
       }
