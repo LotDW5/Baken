@@ -70,7 +70,17 @@ export default function NonverbaalMessage() {
               const current = raw ? JSON.parse(raw) : [];
               const next = current.filter((c: any) => c.id !== editingId);
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-              (navigation as any).navigate('Nonverbaal');
+              try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+              try {
+                const parent = (navigation as any).getParent?.();
+                if (parent && typeof parent.navigate === 'function') {
+                  parent.navigate('Nonverbaal');
+                } else {
+                  (navigation as any).navigate('Nonverbaal');
+                }
+              } catch (e) {
+                try { (navigation as any).goBack(); } catch (e2) { /* ignore */ }
+              }
             } catch (err) {
               console.error(err);
             }
@@ -85,7 +95,8 @@ export default function NonverbaalMessage() {
       const current = raw ? JSON.parse(raw) : [];
       const next = current.filter((c: any) => c.id !== editingId);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      (navigation as any).navigate('Nonverbaal');
+      try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+      try { (navigation as any).navigate('Nonverbaal'); } catch (e) { try { (navigation as any).goBack(); } catch (e2) { /* ignore */ } }
     } catch (err) {
       console.error(err);
     }
