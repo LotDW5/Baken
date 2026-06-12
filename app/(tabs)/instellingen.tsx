@@ -16,7 +16,6 @@ import {
   View,
 } from 'react-native';
 import DateTimePickerShim from './DateTimePickerShim';
-import * as Notifications from 'expo-notifications';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -95,25 +94,39 @@ export default function SettingsScreen() {
       await AsyncStorage.setItem('notifications_enabled', 'false');
       const existingId = await AsyncStorage.getItem('daily_reminder_notification_id');
       if (existingId) {
-        try { await Notifications.cancelScheduledNotificationAsync(existingId); } catch {}
+        try {
+          const Notifications = require('expo-notifications');
+          await Notifications.cancelScheduledNotificationAsync(existingId);
+        } catch (e) {
+          // module not available (Expo Go) or cancellation failed
+        }
         await AsyncStorage.removeItem('daily_reminder_notification_id');
       }
     }
   };
 
   const ensurePermissions = async () => {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') {
-      const res = await Notifications.requestPermissionsAsync();
-      return res.status === 'granted';
+    try {
+      const Notifications = require('expo-notifications');
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        const res = await Notifications.requestPermissionsAsync();
+        return res.status === 'granted';
+      }
+      return true;
+    } catch (e) {
+      // expo-notifications not available in Expo Go; inform caller
+      return false;
     }
-    return true;
   };
 
   const scheduleDailyNotification = async (timeStr: string) => {
     if (!timeStr || !/^\d{1,2}:\d{2}$/.test(timeStr)) return null;
     const ok = await ensurePermissions();
-    if (!ok) return null;
+    if (!ok) {
+      Alert.alert('Notificaties niet beschikbaar', 'Notificaties zijn niet beschikbaar in deze omgeving. Bouw een development build om notificaties te testen.');
+      return null;
+    }
     const [hh, mm] = timeStr.split(':').map(Number);
     const content = {
       title: 'Check-in herinnering',
@@ -121,6 +134,7 @@ export default function SettingsScreen() {
       data: { screen: 'Home' },
     } as any;
     try {
+      const Notifications = require('expo-notifications');
       const id = await Notifications.scheduleNotificationAsync({
         content,
         trigger: { hour: hh, minute: mm, repeats: true },
@@ -128,6 +142,7 @@ export default function SettingsScreen() {
       await AsyncStorage.setItem('daily_reminder_notification_id', id);
       return id;
     } catch (e) {
+      Alert.alert('Fout bij notificatie', 'Kon notificatie niet plannen.');
       return null;
     }
   };
