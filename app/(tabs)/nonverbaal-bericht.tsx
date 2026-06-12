@@ -14,6 +14,20 @@ export default function NonverbaalMessage() {
   const insets = useSafeAreaInsets();
   const theme = useAppTheme();
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const p = await AsyncStorage.getItem('profileImage');
+        if (p) setProfileImage(p);
+      } catch (e) {
+        // ignore
+      }
+    };
+    loadProfile();
+  }, []);
+
   useEffect(() => {
     // Keep bottom tab bar visible on this screen
     return () => {};
@@ -102,7 +116,11 @@ export default function NonverbaalMessage() {
       <View style={styles.topIconsRow}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../assets/icons/Profiel.png')} style={[styles.iconImage as any, { tintColor: theme.color }]} />
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} style={[styles.iconImage as any]} />
+              ) : (
+                <Image source={require('../../assets/personage/langhaarbruin.png')} style={[styles.iconImage as any, { tintColor: theme.color }]} />
+              )}
             </View>
           </TouchableOpacity>
 
