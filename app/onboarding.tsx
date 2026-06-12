@@ -249,7 +249,8 @@ export default function OnboardingScreen() {
     },
     lang: {
       wit: {
-        vest: require('../assets/personage/lang-wit-vest.png'),
+        // lang-wit-vest.png is not present in the assets bundle; fall back to the shirt variant
+        vest: require('../assets/personage/lang-wit-shirt.png'),
         shirt: require('../assets/personage/lang-wit-shirt.png'),
         hemd: require('../assets/personage/lang-wit-hemd.png'),
       },
