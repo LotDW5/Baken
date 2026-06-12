@@ -1082,13 +1082,13 @@ export default function OnboardingScreen() {
                     onBlur={() => setIsCustomFocused(false)}
                   />
                   <View style={styles.customActivityActions}>
-                    <TouchableOpacity
-                      style={[styles.customActivityAddButton, canAddCustomActivity ? { backgroundColor: displayColor } : { backgroundColor: 'rgba(107, 92, 231, 0.35)' }]}
-                      onPress={handleAddCustomActivity}
-                      disabled={!canAddCustomActivity}
-                    >
-                      <Text style={[styles.customActivityAddButtonText, canAddCustomActivity ? { color: displayColor } : styles.customActivityAddButtonTextDisabled]}>Toevoegen</Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.customActivityAddButton, canAddCustomActivity ? { backgroundColor: displayColor } : { backgroundColor: 'rgba(107, 92, 231, 0.35)' }]}
+                        onPress={handleAddCustomActivity}
+                        disabled={!canAddCustomActivity}
+                      >
+                        <Text style={[styles.customActivityAddButtonText, canAddCustomActivity ? styles.customActivityAddButtonTextActive : styles.customActivityAddButtonTextDisabled]}>Toevoegen</Text>
+                      </TouchableOpacity>
                     <TouchableOpacity style={styles.customActivityCancelButton} onPress={() => setShowCustomActivity(false)}>
                       <Text style={styles.customActivityCancelButtonText}>Annuleren</Text>
                     </TouchableOpacity>
