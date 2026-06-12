@@ -5,15 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Platform,
-  Alert,
 } from 'react-native';
 import DateTimePickerShim from './DateTimePickerShim';
 
@@ -139,7 +139,7 @@ export default function SettingsScreen() {
             <Image source={settingsIcons.notifications} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>
               <Text style={styles.cardTitle}>Notificaties</Text>
-              <Text style={styles.cardSubtitle}>Krijg één keer per dag een herinnering om in te checken .</Text>
+              <Text style={styles.cardSubtitle}>Krijg één keer per dag een herinnering om in te checken</Text>
             </View>
           </View>
 
@@ -299,6 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     flex: 1,
+    marginRight: 68,
   },
   rowIcon: {
     width: 22,
@@ -315,6 +316,8 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 13,
     color: COLORS.mutedForeground,
+    flexWrap: 'wrap',
+    flex: 1,
   },
   notificationToggle: {
     paddingVertical: 10,
