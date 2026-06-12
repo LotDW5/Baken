@@ -1,3 +1,4 @@
+import { onThemeChange } from '@/utils/theme-events';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Image, ImageStyle } from 'react-native';
@@ -85,26 +86,31 @@ export default function SavedAvatar({ style }: { style?: ImageStyle }) {
   const [src, setSrc] = useState<any>(Fallback);
 
   useEffect(() => {
-    (async () => {
+    let mounted = true;
+    const load = async () => {
       try {
         const raw = await AsyncStorage.getItem('user_data');
-        if (!raw) { setSrc(Fallback); return; }
+        if (!raw) { if (mounted) setSrc(Fallback); return; }
         const data = JSON.parse(raw) || {};
         const parsed: AvatarData = data.avatar || data || {};
         // parsed might be { composite: 'krullen-wit-vest.png' } or keys
         if (parsed?.composite) {
           const parts = String(parsed.composite).replace('.png', '').split('-').map(normalizeKey);
           const [hair, skin, clothing] = parts;
-          setSrc(getCompositeByKeys(hair, skin, clothing));
+          if (mounted) setSrc(getCompositeByKeys(hair, skin, clothing));
           return;
         }
-        setSrc(getCompositeByKeys(parsed?.hair, parsed?.skin, parsed?.clothing));
+        if (mounted) setSrc(getCompositeByKeys(parsed?.hair, parsed?.skin, parsed?.clothing));
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn('[SavedAvatar] error reading avatar from storage', e);
-        setSrc(Fallback);
+        if (mounted) setSrc(Fallback);
       }
-    })();
+    };
+
+    load();
+    const unsub = onThemeChange(() => load());
+    return () => { mounted = false; unsub(); };
   }, []);
 
   return <Image source={src} style={style} resizeMode="contain" />;
