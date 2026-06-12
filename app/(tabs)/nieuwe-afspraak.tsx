@@ -508,8 +508,8 @@ const styles = StyleSheet.create<any>({
     position: 'relative',
   },
   /* removed divider to match Contacten spacing */
-  backButton: { flexDirection: 'row', alignItems: 'center', gap: 16, justifyContent: 'flex-start' },
-  backIcon: { width: 20, height: 20, resizeMode: 'contain', marginTop: 2, marginRight: 0 },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 12, justifyContent: 'flex-start' },
+  backIcon: { width: 22, height: 22, resizeMode: 'contain', marginTop: 2, marginRight: 0 },
   formTitle: { fontSize: 22, fontWeight: '700', color: COLORS.foreground },
   formContent: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: 16, gap: 18 },
   inputGroup: { gap: 6 },

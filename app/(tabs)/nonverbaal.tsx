@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   backButtonHeader: { marginRight: 12, padding: 6 },
-  backIconHeader: { width: 20, height: 20, resizeMode: 'contain' },
+  backIconHeader: { width: 22, height: 22, resizeMode: 'contain' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left', flexShrink: 1 },
   content: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: THEME.sizes.tabBarHeight + 48, gap: 16, alignItems: 'stretch' },
