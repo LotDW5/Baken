@@ -438,12 +438,12 @@ export default function ActivitiesScreen() {
 
               {selectedActivity === activity && (
                 <View style={styles.expandedCardWrapper}>
-                  <View style={styles.expandedCard}>
-                    <Text style={styles.expandedText}>{ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.'}</Text>
-                    <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleCompleteActivity(activity)}>
-                      <Text style={styles.primaryActionText}>{isCustom ? `Ga ${activity}` : 'Ik ga dit doen'}</Text>
-                    </TouchableOpacity>
-                  </View>
+                    <View style={styles.expandedCard}>
+                      <Text style={styles.expandedText}>{isCustom ? `Ga ${activity}` : (ACTIVITY_DESCRIPTIONS[activity] || 'Meer informatie over deze activiteit.')}</Text>
+                      <TouchableOpacity style={[styles.primaryAction, { backgroundColor: selectedMood.color }]} onPress={() => handleCompleteActivity(activity)}>
+                        <Text style={styles.primaryActionText}>Ik ga dit doen</Text>
+                      </TouchableOpacity>
+                    </View>
                 </View>
               )}
             </View>
