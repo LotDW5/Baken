@@ -1,12 +1,22 @@
 import { COLORS } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
+import applyShadow from '@/utils/shadow';
 import { useNavigation } from '@react-navigation/native';
-import { Image, Linking, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HelpSupportScreen() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
+  const hexToRgba = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(99,84,255,${alpha})`;
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -25,7 +35,7 @@ export default function HelpSupportScreen() {
       </View>
 
       <View style={styles.pageHeader}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
           <Image source={require('../../assets/icons/Terug.png')} style={[styles.arrowIcon, { tintColor: COLORS.foreground }]} />
         </TouchableOpacity>
         <View style={styles.titleWrap}>
@@ -38,7 +48,7 @@ export default function HelpSupportScreen() {
 
         <View style={styles.card}>
           <View style={styles.leftRow}>
-            <View style={styles.iconCircleSmall}>
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }] }>
               <Image source={require('../../assets/icons/Mail.png')} style={[styles.icon, { tintColor: theme.color }]} />
             </View>
             <View style={{ flex: 1 }}>
@@ -55,7 +65,7 @@ export default function HelpSupportScreen() {
 
         <View style={styles.card}>
           <View style={styles.leftRow}>
-            <View style={styles.iconCircleSmall}>
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }] }>
               <Image source={require('../../assets/icons/Melden.png')} style={[styles.icon, { tintColor: theme.color }]} />
             </View>
             <View style={{ flex: 1 }}>
@@ -70,22 +80,30 @@ export default function HelpSupportScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomNav} pointerEvents="box-none">
+      <View style={[styles.bottomNav, applyShadow({ opacity: 0.12, radius: 14, offsetX: 0, offsetY: -6, elevation: 12 })]} pointerEvents="box-none">
         <View style={styles.bottomInner}>
           <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Check-in' })} style={styles.bottomItem}>
-            <Image source={require('../../assets/icons/Check-in.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <View style={styles.iconWrap}>
+              <Image source={require('../../assets/icons/Check-in.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            </View>
             <Text style={styles.bottomLabel}>Check-in</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Contacten' })} style={styles.bottomItem}>
-            <Image source={require('../../assets/icons/Contacten.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <View style={styles.iconWrap}>
+              <Image source={require('../../assets/icons/Contacten.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            </View>
             <Text style={styles.bottomLabel}>Contacten</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Agenda' })} style={styles.bottomItem}>
-            <Image source={require('../../assets/icons/Agenda.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <View style={styles.iconWrap}>
+              <Image source={require('../../assets/icons/Agenda.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            </View>
             <Text style={styles.bottomLabel}>Agenda</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Statistieken' })} style={styles.bottomItem}>
-            <Image source={require('../../assets/icons/Statistieken.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <View style={styles.iconWrap}>
+              <Image source={require('../../assets/icons/Statistieken.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            </View>
             <Text style={styles.bottomLabel}>Statistieken</Text>
           </TouchableOpacity>
         </View>
@@ -126,9 +144,10 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: '700' },
   bulletRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 6 },
   bullet: { color: COLORS.mutedForeground, marginRight: 6 },
-  bottomNav: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'transparent' },
-  bottomInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: Platform.OS === 'ios' ? 16 : 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.border },
-  bottomItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  bottomNav: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'stretch', backgroundColor: '#FFF' },
+  bottomInner: { width: '100%', minHeight: themeConstants.sizes.tabBarHeight, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: themeConstants.spacing.s, paddingTop: themeConstants.spacing.s, paddingBottom: themeConstants.spacing.m },
+  bottomItem: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 4 },
+  iconWrap: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', transform: [{ translateY: -4 }] },
   bottomIcon: { width: 22, height: 22, resizeMode: 'contain' },
-  bottomLabel: { marginTop: 2, fontSize: 11, color: COLORS.mutedForeground },
+  bottomLabel: { marginTop: 0, transform: [{ translateY: -4 }], fontSize: 11, fontWeight: '500' },
 });
