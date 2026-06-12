@@ -43,8 +43,9 @@ export default function StatistiekenScreen() {
   const activityPositions = useRef<Record<string, number>>({});
 
 
-  const maxBarHeight = 120;
   const MAX_RATING = 5;
+  const PIXELS_PER_STAR = 48; // pixels of height per 1-star average
+  const maxBarHeight = PIXELS_PER_STAR * MAX_RATING;
   const maxPillHeight = 36;
   const barsToShow = useMemo(() => {
     const done = activityStats ? activityStats.filter(a => a.count > 0) : [];
@@ -186,7 +187,7 @@ export default function StatistiekenScreen() {
                   const anySelected = !!selectedBar;
                   const bg = isSelected ? theme.color : (anySelected ? withAlpha(theme.color, '22') : withAlpha(theme.color, '44'));
                   const MIN_BAR_HEIGHT = 8;
-                  const barHeight = Math.max((bar.value / MAX_RATING) * maxBarHeight, MIN_BAR_HEIGHT);
+                  const barHeight = Math.max(bar.value * PIXELS_PER_STAR, MIN_BAR_HEIGHT);
                   return (
                     <TouchableOpacity
                       key={bar.label}
@@ -373,7 +374,6 @@ const styles = StyleSheet.create<any>({
   },
   chartCard: {
     paddingTop: 8,
-    marginTop: -40,
     marginBottom: 22,
     paddingHorizontal: 24,
   },
