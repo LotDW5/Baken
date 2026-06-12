@@ -84,7 +84,6 @@ function HomeContent() {
       try {
         const seen = await AsyncStorage.getItem('seenWelcome');
         if (!seen) {
-          // only show welcome if onboarding presumably completed (optional)
           setShowWelcome(true);
         }
         // try to load profile name
@@ -104,6 +103,14 @@ function HomeContent() {
       try {
         const raw = await AsyncStorage.getItem('moodCheckIns') || '[]';
         const moods = JSON.parse(raw);
+
+        // If the user has completed any activity, mark the welcome as seen so it disappears
+        try {
+          if (Array.isArray(moods) && moods.length > 0) {
+            await AsyncStorage.setItem('seenWelcome', '1');
+            setShowWelcome(false);
+          }
+        } catch (e) { /* ignore */ }
 
         // build this week's dates (Mon-Sun)
         const today = new Date();
@@ -152,8 +159,8 @@ function HomeContent() {
     };
     loadRecent();
 
-    // listen for focus events from navigation
-    const unsubscribe = (navigation as any)?.addListener?.('focus', loadPreferences);
+    // listen for focus events from navigation: refresh preferences and week checks
+    const unsubscribe = (navigation as any)?.addListener?.('focus', async () => { await loadPreferences(); await loadWeekChecks(); });
 
     return () => {
       if (typeof unsubscribe === 'function') unsubscribe();
@@ -263,20 +270,15 @@ function HomeContent() {
         {/* Week tracker (positioned above card) */}
         {showWelcome ? (
           <View style={styles.recentWrapper}>
-            <View style={styles.recentRow}>
-              <View style={styles.recentAvatarWrap}>
-                <HeadAvatar style={styles.recentAvatar} />
-              </View>
-              <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
-                <View style={styles.recentTail} />
-                <Text style={styles.recentText}>Dag {userName ? userName : ''}! Welkom bij BAKEN</Text>
-                <Text style={[styles.recentText, { marginTop: 8, fontSize: 13, color: COLORS.mutedForeground }]}>Hier vind je dagelijks check-ins en activiteiten om je te ondersteunen. Veeg omhoog om te beginnen.</Text>
-                <View style={{ height: 6 }} />
-                <TouchableOpacity style={[styles.recentPrimary, { alignSelf: 'flex-end', marginTop: 8 }]} onPress={async () => { await AsyncStorage.setItem('seenWelcome', '1'); setShowWelcome(false); }}>
-                  <Text style={styles.recentPrimaryText}>Begrepen</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                <View style={styles.recentRow}>
+                  <View style={styles.recentAvatarWrap}>
+                    <HeadAvatar style={styles.recentAvatar} />
+                  </View>
+                  <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
+                    <View style={styles.recentTail} />
+                    <Text style={styles.recentText}>Dag {userName ? userName : ''}! Duid aan hoe je je voelt en ontdek wat jou helpt, of kijk eens rond in de app om te zien wat je nog kan doen.</Text>
+                  </View>
+                </View>
           </View>
         ) : recentCompletion ? (
           <View style={styles.recentWrapper}>
