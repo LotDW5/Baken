@@ -56,9 +56,9 @@ export default function HelpSupportScreen() {
               <Text style={styles.cardTitle}>Contact opnemen</Text>
               <Text style={styles.cardText}>Heb je een probleem met de app, een vraag of wil je feedback geven? Stuur ons een e-mail en we antwoorden zo snel mogelijk.</Text>
               <View style={{ height: 12 }} />
-              <TouchableOpacity style={[styles.pillButton, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:dewulflof@gmail.com')}>
+              <TouchableOpacity style={[styles.pillButton, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:bakenapphelp@gmail.com')}>
                 <Image source={require('../../assets/icons/Mail.png')} style={[styles.buttonIcon, { tintColor: '#fff' }]} />
-                <Text style={styles.buttonText}>dewulflof@gmail.com</Text>
+                <Text style={styles.buttonText}>bakenapphelp@gmail.com</Text>
               </TouchableOpacity>
             </View>
           </View>
