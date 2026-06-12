@@ -700,41 +700,41 @@ export default function OnboardingScreen() {
                 {/** Left/right arrow pairs (top, middle, bottom) — closer to the avatar and styled like design */}
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
-                  style={{ position: 'absolute', left: -8, top: 40, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: -2, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
-                  style={{ position: 'absolute', right: -8, top: 40, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: -2, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
-                  style={{ position: 'absolute', left: -8, top: 160, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: -2, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
-                  style={{ position: 'absolute', right: -8, top: 160, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: -2, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
-                  style={{ position: 'absolute', left: -8, top: 280, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: -2, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
-                  style={{ position: 'absolute', right: -8, top: 280, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(107,92,231,0.08)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: -2, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={18} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
               </View>
 
