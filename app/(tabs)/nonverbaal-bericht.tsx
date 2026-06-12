@@ -117,9 +117,9 @@ export default function NonverbaalMessage() {
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
             <View style={styles.iconCircle}>
               {profileImage ? (
-                <Image source={{ uri: profileImage }} style={[styles.iconImage as any]} />
+                <Image source={{ uri: profileImage }} style={styles.avatarImage} />
               ) : (
-                <Image source={require('../../assets/personage/langhaarbruin.png')} style={[styles.iconImage as any, { tintColor: theme.color }]} />
+                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.avatarImage} />
               )}
             </View>
           </TouchableOpacity>
@@ -198,8 +198,10 @@ const styles = StyleSheet.create<any>({
     justifyContent: 'center',
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
+    overflow: 'hidden',
   },
   iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  avatarImage: { width: 36, height: 36, borderRadius: 18, resizeMode: 'cover' },
   pageHeader: {
     marginTop: 144,
     marginBottom: 24,
