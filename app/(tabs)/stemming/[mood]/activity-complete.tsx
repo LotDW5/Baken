@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import SavedAvatar from '../../../components/SavedAvatar';
 import HeadAvatar from '../../../components/HeadAvatar';
+import SavedAvatar from '../../../components/SavedAvatar';
 
 export default function ActivityComplete() {
   const navigation = useNavigation<any>();

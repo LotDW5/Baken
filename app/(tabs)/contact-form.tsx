@@ -15,8 +15,8 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HeadAvatar from '../components/HeadAvatar';
 
 const STORAGE_KEY = 'contacts';
 

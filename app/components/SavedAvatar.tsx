@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Image, ImageStyle } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { Image, ImageStyle } from 'react-native';
 
 type AvatarData = {
   hair?: string | null;

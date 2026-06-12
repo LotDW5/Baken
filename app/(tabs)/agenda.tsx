@@ -14,8 +14,8 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HeadAvatar from '../components/HeadAvatar';
 
 interface CalendarEvent {
   id: string;
