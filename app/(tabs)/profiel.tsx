@@ -205,7 +205,7 @@ export default function ProfileScreen() {
             style={[styles.profileEditBtn, { backgroundColor: '#FAF9FD', width: 36, height: 36, borderRadius: 18 }]}
             onPress={() => (navigation as any).navigate('Onboarding', { fromProfile: true, step: 'avatar' })}
           >
-            <Image source={require('../../assets/icons/Bewerken.png')} style={[styles.editIcon, { tintColor: uiTheme.color }]} />
+            <Image source={require('../../assets/icons/Aanpassen.png')} style={[styles.editIcon, { tintColor: uiTheme.color }]} />
           </TouchableOpacity>
           <View style={styles.profileSectionCard}>
             <View style={styles.avatarContainer}>

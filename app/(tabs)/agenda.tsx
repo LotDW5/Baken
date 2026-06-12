@@ -274,7 +274,7 @@ export default function AgendaScreen() {
                         setEditingId(event.id);
                         (navigation as any).navigate('NieuweAfspraak', { event });
                       }}>
-                        <Image source={require('../../assets/icons/Bewerken.png')} style={[styles.editIcon, { tintColor: theme.color }]} />
+                        <Image source={require('../../assets/icons/Aanpassen.png')} style={[styles.editIcon, { tintColor: theme.color }]} />
                       </TouchableOpacity>
                     </View>
                   </View>

@@ -80,7 +80,7 @@ export default function NonverbaalScreen() {
                   <Text numberOfLines={2} ellipsizeMode="tail" style={styles.messageCardText}>{m.text}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.editButton} onPress={() => (navigation as any).navigate('NonverbaalMessage', { message: m })}>
-                  <Image source={require('../../assets/icons/Bewerken.png')} style={{ width: 20, height: 20, tintColor: theme.color }} />
+                  <Image source={require('../../assets/icons/Aanpassen.png')} style={{ width: 20, height: 20, tintColor: theme.color }} />
                 </TouchableOpacity>
               </View>
             ))}
