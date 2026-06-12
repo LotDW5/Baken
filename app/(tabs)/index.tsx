@@ -276,7 +276,7 @@ function HomeContent() {
                   </View>
                   <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                     <View style={styles.recentTail} />
-                    <Text style={styles.recentText}>Dag {userName ? userName : ''}! Duid aan hoe je je voelt en ontdek wat jou helpt, of kijk eens rond in de app om te zien wat je nog kan doen.</Text>
+                    <Text style={styles.recentText}>Dag{userName ? ` ${userName}!` : '!'} Duid aan hoe je je voelt en ontdek wat jou helpt, of kijk eens rond in de app om te zien wat je nog kan doen.</Text>
                   </View>
                 </View>
           </View>
