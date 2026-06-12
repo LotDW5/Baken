@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'nonverbal_messages';
@@ -52,7 +53,7 @@ export default function NonverbaalScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage as any} />
+            <HeadAvatar style={styles.iconImage as any} />
           </View>
         </TouchableOpacity>
 

@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePickerShim from './DateTimePickerShim';
 let Calendar: any = null;
@@ -294,7 +295,7 @@ export default function NieuweAfspraak() {
           onPress={() => (navigation as any).navigate('Instellingen')}
         >
             <View style={[styles.iconCircle, styles.iconCircleShadow]}>
-            <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+            <HeadAvatar style={styles.iconImage} />
           </View>
         </TouchableOpacity>
       </View>

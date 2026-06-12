@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';
 import { onThemeChange } from '@/utils/theme-events';
@@ -236,7 +237,7 @@ function HomeContent() {
         <View style={styles.header}>
               <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel' as any)}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
+              <HeadAvatar style={styles.iconImage} />
             </View>
           </TouchableOpacity>
 
@@ -252,7 +253,7 @@ function HomeContent() {
           <View style={styles.recentWrapper}>
             <View style={styles.recentRow}>
               <View style={styles.recentAvatarWrap}>
-                <Image source={require('../../assets/personage/Personage.png')} style={styles.recentAvatar} />
+                <HeadAvatar style={styles.recentAvatar} />
               </View>
               <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                 <View style={styles.recentTail} />
@@ -269,7 +270,7 @@ function HomeContent() {
           <View style={styles.recentWrapper}>
             <View style={styles.recentRow}>
               <View style={styles.recentAvatarWrap}>
-                  <Image source={require('../../assets/personage/Personage.png')} style={styles.recentAvatar} />
+                  <HeadAvatar style={styles.recentAvatar} />
                 </View>
               <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                 <View style={styles.recentTail} />

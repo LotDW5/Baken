@@ -4,6 +4,7 @@ import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
 import { useNavigation } from '@react-navigation/native';
 import { Image, Linking, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 
 export default function HelpSupportScreen() {
   const navigation = useNavigation<any>();
@@ -23,7 +24,7 @@ export default function HelpSupportScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
+            <HeadAvatar style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

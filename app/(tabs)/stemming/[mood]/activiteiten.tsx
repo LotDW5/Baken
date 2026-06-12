@@ -13,7 +13,7 @@ import {
   TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import SavedAvatar from '../../../components/SavedAvatar';
+import HeadAvatar from '../../../components/HeadAvatar';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../../assets/icons/Goed.png'),
@@ -372,8 +372,8 @@ export default function ActivitiesScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
               <View style={styles.iconCircle}>
-              {/* show saved personage if available */}
-              <SavedAvatar style={styles.iconImage as any} />
+              {/* show saved head if available */}
+              <HeadAvatar style={styles.iconImage as any} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -387,7 +387,7 @@ export default function ActivitiesScreen() {
           {recentCompletion ? (
             <View style={styles.completionRow}>
               <View style={styles.avatarCircle}>
-                <SavedAvatar style={styles.avatarHead as any} />
+                <HeadAvatar style={styles.avatarHead as any} />
               </View>
               <View style={styles.completionBubble}>
                 <Text style={styles.completionTitle}>Goed gedaan!</Text>
@@ -520,8 +520,8 @@ export default function ActivitiesScreen() {
     borderColor: '#E0E0E0',
   },
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
   header: {

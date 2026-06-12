@@ -18,6 +18,7 @@ import {
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HeadAvatar from '../../components/HeadAvatar';
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../assets/icons/Goed.png'),
   okay: require('../../../assets/icons/Minder goed.png'),
@@ -97,7 +98,7 @@ export default function MoodCheckInScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
               <View style={styles.iconCircle}>
-              <Image source={require('../../../assets/personage/Personage.png')} style={styles.iconImage} resizeMode="contain" />
+              <HeadAvatar style={styles.iconImage} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>

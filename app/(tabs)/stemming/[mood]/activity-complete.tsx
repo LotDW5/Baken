@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import SavedAvatar from '../../../components/SavedAvatar';
+import HeadAvatar from '../../../components/HeadAvatar';
 
 export default function ActivityComplete() {
   const navigation = useNavigation<any>();
@@ -78,7 +79,7 @@ export default function ActivityComplete() {
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <SavedAvatar style={styles.iconImage as any} />
+            <HeadAvatar style={styles.iconImage as any} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   },
   iconButton: { padding: 4 },
   iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', justifyContent: 'center', alignItems: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   footer: { position: 'absolute', left: 24, right: 24, bottom: THEME.sizes.tabBarHeight + 48, alignItems: 'center' },
   fillButtonWrap: { width: '100%', alignSelf: 'stretch', alignItems: 'center' },
   fillButtonBg: { width: '100%', height: 56, borderRadius: 20, overflow: 'hidden', justifyContent: 'center', shadowOpacity: 0.18, shadowRadius: 24, elevation: 12 },

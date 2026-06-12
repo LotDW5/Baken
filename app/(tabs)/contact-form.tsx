@@ -15,6 +15,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'contacts';
@@ -118,7 +119,7 @@ export default function ContactForm() {
       <View style={styles.formTopBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
+            <HeadAvatar style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

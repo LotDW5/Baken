@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
  
 import applyShadow from '@/utils/shadow';
 
@@ -189,10 +190,10 @@ export default function ProfileScreen() {
       {/* HEADER */}
       <View style={styles.topIconsRow}>
             <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-            <View style={styles.iconCircle}>
-              <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
-            </View>
-          </TouchableOpacity>
+              <View style={styles.iconCircle}>
+                <HeadAvatar style={styles.iconImage} />
+              </View>
+            </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
           <View style={styles.iconCircle}>
             <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: uiTheme.color }]} />
@@ -224,7 +225,7 @@ export default function ProfileScreen() {
                   {profileImage ? (
                     <Image source={{ uri: profileImage }} style={styles.avatarImage} />
                   ) : (
-                    <Image source={require('../../assets/personage/Personage.png')} style={styles.avatarImage} />
+                    <HeadAvatar style={styles.avatarImage} />
                   )}
                 </View>
               </TouchableOpacity>
@@ -371,8 +372,8 @@ const styles = StyleSheet.create({
   
 
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
 
@@ -477,8 +478,8 @@ const styles = StyleSheet.create({
   },
 
   avatarImage: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
     resizeMode: 'contain',
   },
 

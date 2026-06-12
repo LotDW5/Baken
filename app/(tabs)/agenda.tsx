@@ -14,6 +14,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import HeadAvatar from '../components/HeadAvatar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CalendarEvent {
@@ -156,7 +157,7 @@ export default function AgendaScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
+            <HeadAvatar style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 
