@@ -18,15 +18,15 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.4.1",
-    "expo": "^56.0.8",
+    "expo": "~56.0.11",
     "expo-calendar": "~56.0.8",
     "expo-constants": "^56.0.16",
-    "expo-dev-client": "^56.0.18",
+    "expo-dev-client": "~56.0.20",
     "expo-font": "~56.0.5",
     "expo-haptics": "~56.0.3",
-    "expo-image": "~56.0.10",
+    "expo-image": "~56.0.11",
     "expo-image-picker": "~56.0.17",
-    "expo-linking": "^56.0.13",
+    "expo-linking": "~56.0.14",
     "expo-notifications": "~56.0.17",
     "expo-splash-screen": "^56.0.10",
     "expo-status-bar": "~56.0.4",
@@ -49,10 +49,9 @@
     "@babel/plugin-proposal-optional-chaining": "^7.20.0",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.20.0",
     "@types/react": "~19.2.14",
-    "@types/react-native": "^0.72.8",
     "babel-plugin-module-resolver": "^5.0.3",
-    "eslint-config-expo": "~10.0.0",
-    "typescript": "~5.9.2"
+    "eslint-config-expo": "~56.0.4",
+    "typescript": "~6.0.3"
   },
   "private": true
 }

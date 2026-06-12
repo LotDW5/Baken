@@ -2,12 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Image, ImageStyle } from 'react-native';
 
-const Fallback = require('../../assets/personage/Personage.png');
+const Fallback = require('../../assets/personage/hoofd-krullen-wit.png');
+
+function normalizeKey(v?: string | null) {
+  if (!v) return '';
+  return String(v).toLowerCase().trim();
+}
 
 function getHeadByKeys(hair?: string | null, skin?: string | null) {
   try {
-    const h = hair || 'krullen';
-    const s = skin || 'wit';
+    const h = normalizeKey(hair) || 'krullen';
+    const s = normalizeKey(skin) || 'wit';
     const map: any = {
       krullen: {
         wit: require('../../assets/personage/hoofd-krullen-wit.png'),
@@ -32,8 +37,18 @@ function getHeadByKeys(hair?: string | null, skin?: string | null) {
     // direct match
     if (map[h] && map[h][s]) return map[h][s];
 
-    // try fallbacks
-    if (map[h] && map[h].wit) return map[h].wit;
+    // try common fallbacks
+    if (map[h]) {
+      if (map[h].wit) return map[h].wit;
+      const firstSkin = Object.keys(map[h])[0];
+      if (firstSkin) return map[h][firstSkin];
+    }
+
+    // try to find any head matching the skin across hair styles
+    for (const hh of Object.keys(map)) {
+      if (map[hh] && map[hh][s]) return map[hh][s];
+    }
+
     return Fallback;
   } catch (e) {
     return Fallback;
@@ -48,14 +63,31 @@ export default function HeadAvatar({ style }: { style?: ImageStyle }) {
       try {
         const raw = await AsyncStorage.getItem('user_data');
         if (!raw) { setSrc(Fallback); return; }
-        const parsed = JSON.parse(raw)?.avatar || JSON.parse(raw) || {};
-        if (parsed?.composite) {
-          const parts = String(parsed.composite).replace('.png', '').split('-');
-          const [hair, skin] = parts;
+        const data = JSON.parse(raw) || {};
+        // avatar may be nested under .avatar or the root may already be the avatar
+        const avatar = data.avatar || data;
+
+        // handle composite filename like 'krullen-wit-vest.png'
+        if (avatar?.composite) {
+          const parts = String(avatar.composite).replace('.png', '').split('-').map(normalizeKey);
+          const hair = parts[0];
+          const skin = parts[1];
           setSrc(getHeadByKeys(hair, skin));
           return;
         }
-        setSrc(getHeadByKeys(parsed?.hair, parsed?.skin));
+
+        // handle direct hair/skin keys
+        const hairKey = avatar?.hair ?? avatar?.head ?? null;
+        const skinKey = avatar?.skin ?? null;
+        if (hairKey || skinKey) {
+          setSrc(getHeadByKeys(hairKey, skinKey));
+          return;
+        }
+
+        // nothing usable found — keep fallback and log for debugging
+        // eslint-disable-next-line no-console
+        console.warn('[HeadAvatar] no avatar data found in storage', data);
+        setSrc(Fallback);
       } catch (e) { setSrc(Fallback); }
     })();
   }, []);

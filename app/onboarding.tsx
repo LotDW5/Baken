@@ -190,26 +190,26 @@ export default function OnboardingScreen() {
 
   // Avatar/personage assets
   const HEADS = [
-    { name: 'Hoofd 1', src: require('../assets/personage/Personage.png') },
-    { name: 'Hoofd 2', src: require('../assets/personage/Personage.png') },
-    { name: 'Hoofd 3', src: require('../assets/personage/Personage.png') },
+    { name: 'Hoofd 1', src: require('../assets/personage/hoofd-krullen-wit.png') },
+    { name: 'Hoofd 2', src: require('../assets/personage/hoofd-krullen-donker.png') },
+    { name: 'Hoofd 3', src: require('../assets/personage/hoofd-krullen-bruin.png') },
   ];
   const SKIN_COLORS = ['#8B5F3C', '#5A3420', '#F0C8B3'];
   const HAIRS = [
-    { name: 'Haar 1', src: require('../assets/personage/Personage.png') },
-    { name: 'Haar 2', src: require('../assets/personage/Personage.png') },
-    { name: 'Haar 3', src: require('../assets/personage/Personage.png') },
+    { name: 'Haar 1', src: require('../assets/personage/hoofd-krullen-wit.png') },
+    { name: 'Haar 2', src: require('../assets/personage/hoofd-kort-wit.png') },
+    { name: 'Haar 3', src: require('../assets/personage/hoofd-lang-wit.png') },
   ];
   const TOPS = [
-    { name: 'Top 1', src: require('../assets/personage/Personage.png') },
-    { name: 'Top 2', src: require('../assets/personage/Personage.png') },
-    { name: 'Top 3', src: require('../assets/personage/Personage.png') },
+    { name: 'Top 1', src: require('../assets/personage/krullen-wit-vest.png') },
+    { name: 'Top 2', src: require('../assets/personage/krullen-wit-shirt.png') },
+    { name: 'Top 3', src: require('../assets/personage/krullen-wit-hemd.png') },
   ];
   const BOTTOMS = [
-    { name: 'Onderstuk 1', src: require('../assets/personage/Personage.png') },
+    { name: 'Onderstuk 1', src: require('../assets/personage/krullen-wit-vest.png') },
   ];
   const SHOES = [
-    { name: 'Schoenen 1', src: require('../assets/personage/Personage.png') },
+    { name: 'Schoenen 1', src: require('../assets/personage/krullen-wit-vest.png') },
   ];
 
   const [headIndex, setHeadIndex] = useState(0);
@@ -748,7 +748,7 @@ export default function OnboardingScreen() {
         const clothingKey = CLOTHING_KEYS[clothingIndex];
         const compositeSource = (
           COMPOSITE_MAP?.[hairKey]?.[skinKey]?.[clothingKey]
-        ) || require('../assets/personage/Personage.png');
+        ) || require('../assets/personage/krullen-wit-vest.png');
 
         return (
           <SafeAreaView style={styles.safeArea}>

@@ -9,13 +9,18 @@ type AvatarData = {
   composite?: string | null;
 };
 
-const Fallback = require('../../assets/personage/Personage.png');
+const Fallback = require('../../assets/personage/krullen-wit-vest.png');
+
+function normalizeKey(v?: string | null) {
+  if (!v) return '';
+  return String(v).toLowerCase().trim();
+}
 
 function getCompositeByKeys(hair?: string | null, skin?: string | null, clothing?: string | null) {
   try {
-    const h = hair || 'krullen';
-    const s = skin || 'wit';
-    const c = clothing || 'vest';
+    const h = normalizeKey(hair) || 'krullen';
+    const s = normalizeKey(skin) || 'wit';
+    const c = normalizeKey(clothing) || 'vest';
     // map combinations to requires (explicit so Metro picks them up)
     const map: any = {
       krullen: {
@@ -84,16 +89,21 @@ export default function SavedAvatar({ style }: { style?: ImageStyle }) {
       try {
         const raw = await AsyncStorage.getItem('user_data');
         if (!raw) { setSrc(Fallback); return; }
-        const parsed: AvatarData = JSON.parse(raw)?.avatar || JSON.parse(raw) || {};
+        const data = JSON.parse(raw) || {};
+        const parsed: AvatarData = data.avatar || data || {};
         // parsed might be { composite: 'krullen-wit-vest.png' } or keys
         if (parsed?.composite) {
-          const parts = String(parsed.composite).replace('.png', '').split('-');
+          const parts = String(parsed.composite).replace('.png', '').split('-').map(normalizeKey);
           const [hair, skin, clothing] = parts;
           setSrc(getCompositeByKeys(hair, skin, clothing));
           return;
         }
         setSrc(getCompositeByKeys(parsed?.hair, parsed?.skin, parsed?.clothing));
-      } catch (e) { setSrc(Fallback); }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('[SavedAvatar] error reading avatar from storage', e);
+        setSrc(Fallback);
+      }
     })();
   }, []);
 
