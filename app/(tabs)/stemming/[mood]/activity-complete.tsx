@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import SavedAvatar from '../../../components/SavedAvatar';
 
 export default function ActivityComplete() {
   const navigation = useNavigation<any>();
@@ -77,7 +78,7 @@ export default function ActivityComplete() {
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../../../assets/personage/Personage.png')} style={styles.iconImage} />
+            <SavedAvatar style={styles.iconImage as any} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -92,7 +93,7 @@ export default function ActivityComplete() {
               <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
               <View style={styles.bubbleTail} />
             </View>
-            <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatar} resizeMode="contain" />
+            <SavedAvatar style={styles.avatar as any} />
           </View>
 
       <View style={styles.footer}> 

@@ -13,6 +13,7 @@ import {
   TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SavedAvatar from '../../../components/SavedAvatar';
 
 const MOOD_ICON_SOURCES: Record<string, any> = {
   good: require('../../../../assets/icons/Goed.png'),
@@ -371,7 +372,8 @@ export default function ActivitiesScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
               <View style={styles.iconCircle}>
-              <Image source={require('../../../../assets/personage/Personage.png')} style={styles.iconImage} />
+              {/* show saved personage if available */}
+              <SavedAvatar style={styles.iconImage as any} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -385,7 +387,7 @@ export default function ActivitiesScreen() {
           {recentCompletion ? (
             <View style={styles.completionRow}>
               <View style={styles.avatarCircle}>
-                <Image source={require('../../../../assets/personage/Personage.png')} style={styles.avatarHead} />
+                <SavedAvatar style={styles.avatarHead as any} />
               </View>
               <View style={styles.completionBubble}>
                 <Text style={styles.completionTitle}>Goed gedaan!</Text>
