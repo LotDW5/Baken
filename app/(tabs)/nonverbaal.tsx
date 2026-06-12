@@ -14,6 +14,15 @@ export default function NonverbaalScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const route = useRoute<any>();
+  const hexToRgba = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(99,84,255,${alpha})`;
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
   const [preview, setPreview] = useState<any>(route.params?.previewMessage ?? null);
   const [messages, setMessages] = useState<any[]>([]);
 
@@ -79,7 +88,7 @@ export default function NonverbaalScreen() {
                 <TouchableOpacity style={styles.messageCardInner} activeOpacity={0.8} onPress={() => setPreview(m)}>
                   <Text numberOfLines={2} ellipsizeMode="tail" style={styles.messageCardText}>{m.text}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.editButton} onPress={() => (navigation as any).navigate('NonverbaalMessage', { message: m })}>
+                <TouchableOpacity style={[styles.editButton, { backgroundColor: hexToRgba(theme.color, 0.08) }]} onPress={() => (navigation as any).navigate('NonverbaalMessage', { message: m })}>
                   <Image source={require('../../assets/icons/Aanpassen.png')} style={{ width: 20, height: 20, tintColor: theme.color }} />
                 </TouchableOpacity>
               </View>
