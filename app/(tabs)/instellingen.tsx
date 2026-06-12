@@ -229,12 +229,12 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         {/* HELP & SUPPORT */}
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Help')}>
           <View style={styles.left}>
             <Image source={settingsIcons.help} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>
               <Text style={styles.cardTitle}>Help & Support</Text>
-              <Text style={styles.cardSubtitle}>Krijg hulp botieij de app</Text>
+              <Text style={styles.cardSubtitle}>Krijg hulp bij de app</Text>
             </View>
           </View>
         </TouchableOpacity>

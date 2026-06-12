@@ -15,6 +15,7 @@ import Statistieken from './app/(tabs)/statistieken';
 import Ademen from './app/Ademen';
 import Onboarding from './app/onboarding';
 import BottomTabBar from './components/ui/bottom-tab-bar';
+import HelpSupport from './app/(tabs)/help-support';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -50,6 +51,7 @@ export default function App() {
       <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Ademen" component={Ademen} />
         <Stack.Screen name="Main" component={Tabs} />
+        <Stack.Screen name="Help" component={HelpSupport} />
         <Stack.Screen name="Onboarding" component={Onboarding} />
         <Stack.Screen name="ContactForm" component={ContactForm} />
       </Stack.Navigator>
