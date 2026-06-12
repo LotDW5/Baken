@@ -207,6 +207,18 @@ export default function OnboardingScreen() {
   const [shoesIndex, setShoesIndex] = useState(0);
   const [activePart, setActivePart] = useState<string | null>(null);
 
+  // Composite images to cycle through on the avatar page
+  const COMPOSITES = [
+    require('../assets/personage/krullen-wit-vest.png'),
+    require('../assets/personage/krullen-bruin-vest.png'),
+    require('../assets/personage/krullen-donker-vest.png'),
+    require('../assets/personage/lang-bruin-shirt.png'),
+    require('../assets/personage/lang-donker-shirt.png'),
+    require('../assets/personage/kort-bruin-shirt.png'),
+    require('../assets/personage/lang-wit-shirt.png'),
+  ];
+  const [compositeIndex, setCompositeIndex] = useState(0);
+
   const cycle = (idx: number, max: number, delta: number) => {
     return (idx + delta + max) % max;
   };
@@ -678,11 +690,51 @@ export default function OnboardingScreen() {
 
               
 
-              <View style={{ alignItems: 'center', marginTop: 16 }}>
+              <View style={{ alignItems: 'center', marginTop: 16, position: 'relative' }}>
                 <Image
-                  source={require('../assets/personage/krullen-wit-vest.png')}
+                  source={COMPOSITES[compositeIndex]}
                   style={{ width: 240, height: 480, resizeMode: 'contain' }}
                 />
+
+                {/* arrow controls around the avatar */}
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  style={{ position: 'absolute', left: -18, top: 48, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-back" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  style={{ position: 'absolute', right: -18, top: 48, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-forward" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  style={{ position: 'absolute', left: -18, top: 180, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-back" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  style={{ position: 'absolute', right: -18, top: 180, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-forward" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  style={{ position: 'absolute', left: -18, top: 300, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-back" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  style={{ position: 'absolute', right: -18, top: 300, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.03)', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="chevron-forward" size={20} color={'#6B5CE7'} />
+                </TouchableOpacity>
               </View>
 
               {/* footer buttons rendered in overlay to match other pages */}
