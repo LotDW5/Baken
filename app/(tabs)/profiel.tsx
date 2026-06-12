@@ -473,11 +473,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
+    /* no shadow: keep flat per visual spec */
   },
 
   avatarImage: {
