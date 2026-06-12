@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   bubble: { backgroundColor: COLORS.white, padding: 18, borderRadius: 18, alignSelf: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 16, marginBottom: 6, zIndex: 3 },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
-  avatar: { width: 140, height: 140, marginTop: 8, zIndex: 1 },
+  avatar: { width: 220, height: 320, marginTop: 18, zIndex: 1 },
   topBar: {
     position: 'absolute',
     top: 56,

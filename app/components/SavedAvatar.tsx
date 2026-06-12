@@ -97,5 +97,5 @@ export default function SavedAvatar({ style }: { style?: ImageStyle }) {
     })();
   }, []);
 
-  return <Image source={src} style={style} />;
+  return <Image source={src} style={style} resizeMode="contain" />;
 }
