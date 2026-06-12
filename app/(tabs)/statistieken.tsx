@@ -339,7 +339,7 @@ const styles = StyleSheet.create<any>({
     overflow: 'hidden',
   },
   pageHeader: {
-    marginTop: 144,
+    marginTop: 110,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
