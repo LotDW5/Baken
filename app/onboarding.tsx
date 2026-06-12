@@ -23,7 +23,7 @@ type OnboardingStep = 'welcome' | 'profile' | 'good' | 'okay' | 'bad' | 'crisis'
 // add theme selection step after avatar
 type OnboardingStepExtended = OnboardingStep | 'theme';
 
-const ACTIVITY_CATEGORIES = [
+export const ACTIVITY_CATEGORIES = [
   {
     name: 'Zintuiglijke rust',
     activities: [

@@ -21,47 +21,15 @@ const STATISTICS_BARS = [
   { label: 'Wk 7', value: 38 },
 ];
 
-const ACTIVITY_ICON_MAP: Record<string, any> = {
-  'Een warme douche/ bad nemen': require('../../assets/icons/Water.png'),
-  'Iemand knuffelen': require('../../assets/icons/Hart.png'),
-  'Naar buiten gaan in de natuur': require('../../assets/icons/Bos.png'),
-  'Muziek luisteren': require('../../assets/icons/Muziek.png'),
-  'Een sigaret roken': require('../../assets/icons/Icon.png'),
-  'Een boek lezen': require('../../assets/icons/Boek.png'),
-  'Serie of film kijken': require('../../assets/icons/TV.png'),
-  'Podcast luisteren': require('../../assets/icons/Muziek-1.png'),
-  'Mediteren': require('../../assets/icons/Sterren.png'),
-  'Ademhalingsoefeningen': require('../../assets/icons/Wind.png'),
-  'Tekenen of schilderen': require('../../assets/icons/Schilderen.png'),
-  'Iets opschrijven': require('../../assets/icons/Schrijven.png'),
-  'Muziek maken': require('../../assets/icons/Muziek.png'),
-  'Breien of haken': require('../../assets/icons/Breien.png'),
-  'Knutselen': require('../../assets/icons/Knutselen.png'),
-  'Wandelen': require('../../assets/icons/Wandelen.png'),
-  'Sporten': require('../../assets/icons/Sporten.png'),
-  'Yoga doen': require('../../assets/icons/Yoga.png'),
-  'Slapen of een dutje doen': require('../../assets/icons/Slapen.png'),
-  'Dansen': require('../../assets/icons/Dansen.png'),
-  'Tuinieren': require('../../assets/icons/Tuinieren.png'),
-  'Contact opnemen met vrienden': require('../../assets/icons/Contacten.png'),
-  'Bellen met een vriend(in)': require('../../assets/icons/Bellen.png'),
-  'Samen iets drinken': require('../../assets/icons/Drinken.png'),
-  'Grapjes maken': require('../../assets/icons/Grappig.png'),
-  'Huisdier knuffelen': require('../../assets/icons/Huisdier.png'),
-  'Met dieren in contact komen': require('../../assets/icons/Dieren.png'),
-  'Social media bekijken': require('../../assets/icons/Socials.png'),
-  'Opruimen of schoonmaken': require('../../assets/icons/Schoonmaken.png'),
-  'Spelletjes spelen': require('../../assets/icons/Spelen.png'),
-  'Een buitenactiviteit doen': require('../../assets/icons/Buiten.png'),
-  'Koken of bakken': require('../../assets/icons/Koken.png'),
-  'To-do lijst maken': require('../../assets/icons/To-do.png'),
-  'Planning maken': require('../../assets/icons/Planning.png'),
-  'Je routine volgen': require('../../assets/icons/Routine.png'),
-  'Dagboek schrijven': require('../../assets/icons/Dagboek.png'),
-  'Bidden': require('../../assets/icons/Bidden.png'),
-  'Naar de kerk gaan': require('../../assets/icons/Kerk.png'),
-  'In de natuur zijn': require('../../assets/icons/Natuur.png'),
-};
+import { ACTIVITY_CATEGORIES } from '@/app/onboarding';
+
+// Build icon map from onboarding categories to keep single source of truth
+const ACTIVITY_ICON_MAP: Record<string, any> = {};
+(ACTIVITY_CATEGORIES || []).forEach((cat: any) => {
+  (cat.activities || []).forEach((a: any) => {
+    if (a && a.name) ACTIVITY_ICON_MAP[a.name] = a.icon;
+  });
+});
 
 export default function StatistiekenScreen() {
   const navigation = useNavigation<any>();
