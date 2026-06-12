@@ -64,12 +64,10 @@ export default function NonverbaalScreen() {
       </View>
 
       <View style={styles.pageHeader}>
-        <TouchableOpacity style={styles.backButtonHeader} onPress={() => (navigation as any).navigate('Instellingen')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => (navigation as any).navigate('Instellingen')}>
           <Image source={require('../../assets/icons/Terug.png')} style={[styles.backIconHeader as any, { tintColor: COLORS.foreground }]} />
-        </TouchableOpacity>
-        <View style={styles.titleWrap}>
           <Text numberOfLines={1} ellipsizeMode="tail" style={styles.pageTitle}>Nonverbale modus</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -166,6 +164,7 @@ const styles = StyleSheet.create({
   },
   backButtonHeader: { marginRight: 12, padding: 6 },
   backIconHeader: { width: 22, height: 22, resizeMode: 'contain' },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 12, justifyContent: 'flex-start' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left', flexShrink: 1 },
   content: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: THEME.sizes.tabBarHeight + 48, gap: 16, alignItems: 'stretch' },
