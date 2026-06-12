@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PersonageView from './components/PersonageView';
 
 const FONT_REGULAR = Platform.select({
   web: 'Manrope, system-ui, sans-serif',
@@ -677,99 +678,11 @@ export default function OnboardingScreen() {
 
               
 
-              <View style={styles.avatarPreviewContainer}>
-                <View style={styles.avatarPreviewInner}>
-                  <Image source={BOTTOMS[bottomIndex].src} style={[styles.avatarBottomImage, { position: 'absolute' }]} resizeMode="contain" />
-                  <Image source={TOPS[topIndex].src} style={[styles.avatarTopImage, { position: 'absolute' }]} resizeMode="contain" />
-                  <View style={[styles.avatarSkinCircle, { backgroundColor: SKIN_COLORS[headIndex] }]} />
-                  <Image source={HEADS[headIndex].src} style={[styles.avatarHeadImage, { position: 'absolute' }]} resizeMode="contain" />
-                  <Image source={HAIRS[hairIndex].src} style={[styles.avatarHairImage, { position: 'absolute' }]} resizeMode="contain" />
-                  <Image source={SHOES[shoesIndex].src} style={[styles.avatarShoesImage, { position: 'absolute' }]} resizeMode="contain" />
-                  {/* chevrons around avatar parts */}
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'head' ? styles.arrowButtonActive : {}, { left: -24, top: 22 }]}
-                    onPress={() => {
-                      setHeadIndex(cycle(headIndex, HEADS.length, -1));
-                      setActivePart('head');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'head' ? styles.arrowButtonActive : {}, { right: -24, top: 22 }]}
-                    onPress={() => {
-                      setHeadIndex(cycle(headIndex, HEADS.length, 1));
-                      setActivePart('head');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'head' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'top' ? styles.arrowButtonActive : {}, { left: -24, top: 160 }]}
-                    onPress={() => {
-                      setTopIndex(cycle(topIndex, TOPS.length, -1));
-                      setActivePart('top');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'top' ? styles.arrowButtonActive : {}, { right: -24, top: 160 }]}
-                    onPress={() => {
-                      setTopIndex(cycle(topIndex, TOPS.length, 1));
-                      setActivePart('top');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'top' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'bottom' ? styles.arrowButtonActive : {}, { left: -24, top: 260 }]}
-                    onPress={() => {
-                      setBottomIndex(cycle(bottomIndex, BOTTOMS.length, -1));
-                      setActivePart('bottom');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'bottom' ? styles.arrowButtonActive : {}, { right: -24, top: 260 }]}
-                    onPress={() => {
-                      setBottomIndex(cycle(bottomIndex, BOTTOMS.length, 1));
-                      setActivePart('bottom');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'bottom' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'shoes' ? styles.arrowButtonActive : {}, { left: -24, top: 340 }]}
-                    onPress={() => {
-                      setShoesIndex(cycle(shoesIndex, SHOES.length, -1));
-                      setActivePart('shoes');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-back" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.arrowButton, activePart === 'shoes' ? styles.arrowButtonActive : {}, { right: -24, top: 340 }]}
-                    onPress={() => {
-                      setShoesIndex(cycle(shoesIndex, SHOES.length, 1));
-                      setActivePart('shoes');
-                      setTimeout(() => setActivePart(null), 300);
-                    }}
-                  >
-                    <Ionicons name="chevron-forward" size={20} color={activePart === 'shoes' ? '#fff' : COLORS.mutedForeground} />
-                  </TouchableOpacity>
-                </View>
+              <View style={{ alignItems: 'center', marginTop: 16 }}>
+                <Image
+                  source={require('../assets/personage/krullen-wit-vest.png')}
+                  style={{ width: 240, height: 480, resizeMode: 'contain' }}
+                />
               </View>
 
               {/* footer buttons rendered in overlay to match other pages */}
