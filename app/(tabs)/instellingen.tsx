@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import DateTimePickerShim from './DateTimePickerShim';
+import * as Notifications from 'expo-notifications';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -37,6 +38,13 @@ export default function SettingsScreen() {
     }
     const savedTime = await AsyncStorage.getItem('daily_reminder_time');
     if (savedTime) setDailyTime(savedTime);
+    // If notifications are enabled but no scheduled id exists, schedule it
+    if (saved === 'true' && savedTime) {
+      const existingId = await AsyncStorage.getItem('daily_reminder_notification_id');
+      if (!existingId) {
+        await scheduleDailyNotification(savedTime);
+      }
+    }
   };
 
   const handleNotificationsChange = async (value: boolean) => {
@@ -85,6 +93,42 @@ export default function SettingsScreen() {
       // disabling notifications
       setNotificationsEnabled(false);
       await AsyncStorage.setItem('notifications_enabled', 'false');
+      const existingId = await AsyncStorage.getItem('daily_reminder_notification_id');
+      if (existingId) {
+        try { await Notifications.cancelScheduledNotificationAsync(existingId); } catch {}
+        await AsyncStorage.removeItem('daily_reminder_notification_id');
+      }
+    }
+  };
+
+  const ensurePermissions = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') {
+      const res = await Notifications.requestPermissionsAsync();
+      return res.status === 'granted';
+    }
+    return true;
+  };
+
+  const scheduleDailyNotification = async (timeStr: string) => {
+    if (!timeStr || !/^\d{1,2}:\d{2}$/.test(timeStr)) return null;
+    const ok = await ensurePermissions();
+    if (!ok) return null;
+    const [hh, mm] = timeStr.split(':').map(Number);
+    const content = {
+      title: 'Check-in herinnering',
+      body: 'Het is tijd om in te checken.',
+      data: { screen: 'Home' },
+    } as any;
+    try {
+      const id = await Notifications.scheduleNotificationAsync({
+        content,
+        trigger: { hour: hh, minute: mm, repeats: true },
+      });
+      await AsyncStorage.setItem('daily_reminder_notification_id', id);
+      return id;
+    } catch (e) {
+      return null;
     }
   };
 
@@ -204,6 +248,8 @@ export default function SettingsScreen() {
               await AsyncStorage.setItem('notifications_enabled', 'true');
               setDailyTime(v);
               setNotificationsEnabled(true);
+              // schedule local notification
+              await scheduleDailyNotification(v);
             } else {
               await AsyncStorage.setItem('notifications_enabled', 'false');
               setNotificationsEnabled(false);
