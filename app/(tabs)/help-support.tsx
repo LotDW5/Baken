@@ -2,8 +2,7 @@ import { COLORS } from '@/constants/colors';
 import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Linking, Platform } from 'react-native';
+import { Image, Linking, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HelpSupportScreen() {
   const navigation = useNavigation<any>();
@@ -25,34 +24,39 @@ export default function HelpSupportScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.pageHeader}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
-            <Image source={require('../../assets/icons/Terug.png')} style={[styles.arrowIcon, { tintColor: theme.color }]} />
-          </TouchableOpacity>
-          <View style={styles.titleWrap}>
-            <Text style={styles.title}>Help & Support</Text>
-          </View>
+      <View style={styles.pageHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
+          <Image source={require('../../assets/icons/Terug.png')} style={[styles.arrowIcon, { tintColor: COLORS.foreground }]} />
+        </TouchableOpacity>
+        <View style={styles.titleWrap}>
+          <Text style={styles.pageTitle}>Help & Support</Text>
         </View>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.subtitle}>Heb je een vraag of probleem? We helpen je graag verder.</Text>
 
         <View style={styles.card}>
           <View style={styles.leftRow}>
-            <Image source={require('../../assets/icons/Mail.png')} style={[styles.icon, { tintColor: theme.color }]} />
+            <View style={styles.iconCircleSmall}>
+              <Image source={require('../../assets/icons/Mail.png')} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.cardTitle}>Contact opnemen</Text>
               <Text style={styles.cardText}>Heb je een probleem met de app, een vraag of wil je feedback geven? Stuur ons een e-mail en we antwoorden zo snel mogelijk.</Text>
             </View>
           </View>
-          <TouchableOpacity style={[styles.button, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:dewulflof@gmail.com')}>
+          <TouchableOpacity style={[styles.pillButton, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:dewulflof@gmail.com')}>
+            <Image source={require('../../assets/icons/Mail.png')} style={[styles.buttonIcon, { tintColor: '#fff' }]} />
             <Text style={styles.buttonText}>dewulflof@gmail.com</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.card}>
           <View style={styles.leftRow}>
-            <Image source={require('../../assets/icons/Melden.png')} style={[styles.icon, { tintColor: theme.color }]} />
+            <View style={styles.iconCircleSmall}>
+              <Image source={require('../../assets/icons/Melden.png')} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.cardTitle}>Wat kan je melden?</Text>
               <View style={{ height: 8 }} />
@@ -105,17 +109,19 @@ const styles = StyleSheet.create({
   iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
   iconImage: { width: 20, height: 20, resizeMode: 'contain' },
   content: { padding: 24, gap: 16, paddingBottom: themeConstants.sizes.tabBarHeight + 40 },
-  pageHeader: { marginTop: 144, marginBottom: 8, paddingHorizontal: 0, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
+  pageHeader: { marginTop: 144, marginBottom: 8, paddingHorizontal: 24, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.foreground },
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
   arrowIcon: { width: 22, height: 22, resizeMode: 'contain' },
   subtitle: { marginTop: 12, color: COLORS.mutedForeground, fontSize: 14 },
-  card: { marginTop: 20, backgroundColor: COLORS.card, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: COLORS.border },
+  card: { marginTop: 20, backgroundColor: COLORS.card, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
   leftRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  icon: { width: 28, height: 28, resizeMode: 'contain' },
+  icon: { width: 20, height: 20, resizeMode: 'contain' },
+  iconCircleSmall: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(99, 84, 255, 0.08)', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   cardTitle: { fontSize: 16, fontWeight: '700', color: COLORS.foreground, marginBottom: 6 },
   cardText: { fontSize: 14, color: COLORS.mutedForeground },
-  button: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 20, alignSelf: 'flex-start' },
+  pillButton: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 24, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center' },
+  buttonIcon: { width: 16, height: 16, marginRight: 8, resizeMode: 'contain' },
   buttonText: { color: '#fff', fontWeight: '700' },
   bulletRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 6 },
   bullet: { color: COLORS.mutedForeground, marginRight: 6 },
