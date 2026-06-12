@@ -32,6 +32,18 @@ const CARD_MAX_WIDTH = 393;
 function HomeContent() {
   const navigation = useNavigation<any>();
   const theme = useAppTheme();
+  const hexToRgba = (hex: string, alpha = 1) => {
+    try {
+      const h = hex.replace('#', '');
+      const bigint = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    } catch (e) {
+      return `rgba(0,0,0,${alpha})`;
+    }
+  };
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
   const [bgLoaded, setBgLoaded] = useState(false);
@@ -297,7 +309,10 @@ function HomeContent() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         disabled={recentRating === 0}
-                        style={[styles.recentPrimary, recentRating === 0 ? styles.recentPrimaryDisabled : null]}
+                        style={[
+                          styles.recentPrimary,
+                          { backgroundColor: recentRating === 0 ? hexToRgba(theme.color, 0.18) : theme.color },
+                        ]}
                         onPress={async () => {
                           if (recentRating === 0 || !recentCompletion) return;
                           try {
@@ -327,7 +342,7 @@ function HomeContent() {
                           }
                         }}
                       >
-                        <Text style={[styles.recentPrimaryText, recentRating === 0 ? styles.recentPrimaryTextDisabled : null]}>Opslaan</Text>
+                        <Text style={[styles.recentPrimaryText, { color: recentRating === 0 ? theme.color : '#fff' }]}>Opslaan</Text>
                       </TouchableOpacity>
                     </View>
                   </>
