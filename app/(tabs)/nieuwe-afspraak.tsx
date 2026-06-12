@@ -285,7 +285,7 @@ export default function NieuweAfspraak() {
           onPress={() => (navigation as any).navigate('Profiel')}
         >
             <View style={[styles.iconCircle, styles.iconCircleShadow]}>
-            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

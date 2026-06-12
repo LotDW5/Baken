@@ -188,11 +188,11 @@ export default function ProfileScreen() {
       
       {/* HEADER */}
       <View style={styles.topIconsRow}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
-          <View style={styles.iconCircle}>
-                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
-          </View>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+            <View style={styles.iconCircle}>
+              <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
+            </View>
+          </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
           <View style={styles.iconCircle}>
             <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: uiTheme.color }]} />
@@ -224,7 +224,7 @@ export default function ProfileScreen() {
                   {profileImage ? (
                     <Image source={{ uri: profileImage }} style={styles.avatarImage} />
                   ) : (
-                    <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.avatarImage} />
+                    <Image source={require('../../assets/personage/Personage.png')} style={styles.avatarImage} />
                   )}
                 </View>
               </TouchableOpacity>

@@ -6,15 +6,15 @@ import { useNavigation } from '@react-navigation/native';
 import { isRunningInExpoGo } from 'expo';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  Image,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import DateTimePickerShim from './DateTimePickerShim';
 
@@ -174,7 +174,7 @@ export default function SettingsScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

@@ -234,9 +234,9 @@ function HomeContent() {
         )}
         {/* Header with profile and settings */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel' as any)}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel' as any)}>
             <View style={styles.iconCircle}>
-              <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+              <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
             </View>
           </TouchableOpacity>
 
@@ -252,7 +252,7 @@ function HomeContent() {
           <View style={styles.recentWrapper}>
             <View style={styles.recentRow}>
               <View style={styles.recentAvatarWrap}>
-                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.recentAvatar} />
+                <Image source={require('../../assets/personage/Personage.png')} style={styles.recentAvatar} />
               </View>
               <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                 <View style={styles.recentTail} />
@@ -269,8 +269,8 @@ function HomeContent() {
           <View style={styles.recentWrapper}>
             <View style={styles.recentRow}>
               <View style={styles.recentAvatarWrap}>
-                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.recentAvatar} />
-              </View>
+                  <Image source={require('../../assets/personage/Personage.png')} style={styles.recentAvatar} />
+                </View>
               <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
                 <View style={styles.recentTail} />
                 {recentCompletion.message ? (

@@ -118,7 +118,7 @@ export default function ContactForm() {
       <View style={styles.formTopBar}>
         <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

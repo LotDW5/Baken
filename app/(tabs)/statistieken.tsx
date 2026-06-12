@@ -44,7 +44,7 @@ export default function StatistiekenScreen() {
 
 
   const MAX_RATING = 5;
-  const PIXELS_PER_STAR = 64; // pixels of height per 1-star average
+  const PIXELS_PER_STAR = 40; // pixels of height per 1-star average
   const maxBarHeight = PIXELS_PER_STAR * MAX_RATING;
   const maxPillHeight = 36;
   const barsToShow = useMemo(() => {
@@ -157,7 +157,7 @@ export default function StatistiekenScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 

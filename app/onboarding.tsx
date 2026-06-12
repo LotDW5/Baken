@@ -178,26 +178,26 @@ export default function OnboardingScreen() {
 
   // Avatar/personage assets
   const HEADS = [
-    { name: 'Hoofd bruin', src: require('../assets/personage/hoofdbruin.png') },
-    { name: 'Hoofd donker', src: require('../assets/personage/hoofddonker.png') },
-    { name: 'Hoofd wit', src: require('../assets/personage/hoofdwit.png') },
+    { name: 'Hoofd 1', src: require('../assets/personage/Personage.png') },
+    { name: 'Hoofd 2', src: require('../assets/personage/Personage.png') },
+    { name: 'Hoofd 3', src: require('../assets/personage/Personage.png') },
   ];
   const SKIN_COLORS = ['#8B5F3C', '#5A3420', '#F0C8B3'];
   const HAIRS = [
-    { name: 'Lang haar bruin', src: require('../assets/personage/langhaarbruin.png') },
-    { name: 'Lang haar donker', src: require('../assets/personage/langhaardonker.png') },
-    { name: 'Lang haar wit', src: require('../assets/personage/langhaarwit.png') },
+    { name: 'Haar 1', src: require('../assets/personage/Personage.png') },
+    { name: 'Haar 2', src: require('../assets/personage/Personage.png') },
+    { name: 'Haar 3', src: require('../assets/personage/Personage.png') },
   ];
   const TOPS = [
-    { name: 'Bovenstuk 1', src: require('../assets/personage/bovenstuk1.png') },
-    { name: 'Bovenstuk 2', src: require('../assets/personage/bovenstuk2.png') },
-    { name: 'Bovenstuk 3', src: require('../assets/personage/bovenstuk3.png') },
+    { name: 'Top 1', src: require('../assets/personage/Personage.png') },
+    { name: 'Top 2', src: require('../assets/personage/Personage.png') },
+    { name: 'Top 3', src: require('../assets/personage/Personage.png') },
   ];
   const BOTTOMS = [
-    { name: 'Onderstuk 1', src: require('../assets/personage/onderstuk1.png') },
+    { name: 'Onderstuk 1', src: require('../assets/personage/Personage.png') },
   ];
   const SHOES = [
-    { name: 'Schoenen 1', src: require('../assets/personage/schoenen1.png') },
+    { name: 'Schoenen 1', src: require('../assets/personage/Personage.png') },
   ];
 
   const [headIndex, setHeadIndex] = useState(0);

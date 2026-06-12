@@ -119,7 +119,7 @@ export default function NonverbaalMessage() {
               {profileImage ? (
                 <Image source={{ uri: profileImage }} style={styles.avatarImage} />
               ) : (
-                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.avatarImage} />
+                <Image source={require('../../assets/personage/Personage.png')} style={styles.avatarImage} />
               )}
             </View>
           </TouchableOpacity>

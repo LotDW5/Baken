@@ -23,7 +23,7 @@ export default function HelpSupportScreen() {
       <View style={styles.topIconsRow}>
         <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
           <View style={styles.iconCircle}>
-            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+            <Image source={require('../../assets/personage/Personage.png')} style={styles.iconImage} />
           </View>
         </TouchableOpacity>
 
