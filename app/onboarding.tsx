@@ -156,6 +156,19 @@ export default function OnboardingScreen() {
   const [selectedBackground, setSelectedBackground] = useState('butterfly');
   const displayColor = getTheme(selectedTheme).color;
   const displayBg = getTheme(selectedTheme).bgColor || '#F4F2FF';
+
+  const hexToRgba = (hex: string, alpha = 1) => {
+    try {
+      const h = hex.replace('#', '');
+      const bigint = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    } catch (e) {
+      return `rgba(107,92,231,${alpha})`;
+    }
+  };
   const [customBackgrounds, setCustomBackgrounds] = useState<{id:string; uri:string}[]>([]);
   const [showCustomActivity, setShowCustomActivity] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -759,41 +772,41 @@ export default function OnboardingScreen() {
                 {/** Left/right arrow pairs (top, middle, bottom) — closer to the avatar and styled like design */}
                 <TouchableOpacity
                   onPress={() => setHairIndex(cycle(hairIndex, HAIR_KEYS.length, -1))}
-                  style={{ position: 'absolute', left: 24, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: 24, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setHairIndex(cycle(hairIndex, HAIR_KEYS.length, 1))}
-                  style={{ position: 'absolute', right: 24, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: 24, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setSkinIndex(cycle(skinIndex, SKIN_KEYS.length, -1))}
-                  style={{ position: 'absolute', left: 24, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: 24, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setSkinIndex(cycle(skinIndex, SKIN_KEYS.length, 1))}
-                  style={{ position: 'absolute', right: 24, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: 24, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setClothingIndex(cycle(clothingIndex, CLOTHING_KEYS.length, -1))}
-                  style={{ position: 'absolute', left: 24, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', left: 24, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-back" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setClothingIndex(cycle(clothingIndex, CLOTHING_KEYS.length, 1))}
-                  style={{ position: 'absolute', right: 24, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ position: 'absolute', right: 24, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: hexToRgba(displayColor || '#6B5CE7', 0.12), alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
+                  <Ionicons name="chevron-forward" size={16} color={displayColor || '#6B5CE7'} />
                 </TouchableOpacity>
               </View>
 
