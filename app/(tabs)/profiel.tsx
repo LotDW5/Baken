@@ -51,6 +51,16 @@ export default function ProfileScreen() {
 
   const uiTheme = selectedTheme ? getTheme(selectedTheme) : globalTheme;
 
+  const hexToRgba = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(99,84,255,${alpha})`;
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
+
   useEffect(() => {
     loadPreferences();
   }, []);
@@ -202,7 +212,7 @@ export default function ProfileScreen() {
         <View style={styles.cardProfile}>
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.profileEditBtn, { backgroundColor: '#FAF9FD', width: 36, height: 36, borderRadius: 18 }]}
+            style={[styles.profileEditBtn, { backgroundColor: hexToRgba(uiTheme.color, 0.08), width: 36, height: 36, borderRadius: 18 }]}
             onPress={() => (navigation as any).navigate('Onboarding', { fromProfile: true, step: 'avatar' })}
           >
             <Image source={require('../../assets/icons/Aanpassen.png')} style={[styles.editIcon, { tintColor: uiTheme.color }]} />
