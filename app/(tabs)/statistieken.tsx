@@ -44,7 +44,7 @@ export default function StatistiekenScreen() {
 
 
   const MAX_RATING = 5;
-  const PIXELS_PER_STAR = 64; // pixels of height per 1-star average (increased)
+  const PIXELS_PER_STAR = 80; // pixels of height per 1-star average (increased)
   const maxBarHeight = PIXELS_PER_STAR * MAX_RATING;
   const maxPillHeight = 36;
   const barsToShow = useMemo(() => {
