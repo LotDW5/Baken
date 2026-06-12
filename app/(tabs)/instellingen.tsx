@@ -55,36 +55,34 @@ export default function SettingsScreen() {
       }
     }
   };
+  const openTimePicker = async () => {
+    if (Platform.OS === 'web') {
+      const defaultValue = dailyTime || '';
+      const v = prompt('Om hoelaat wil je elke dag een herinnering krijgen? (GG:MM)', defaultValue);
+      if (v) {
+        await AsyncStorage.setItem('daily_reminder_time', v);
+        await AsyncStorage.setItem('notifications_enabled', 'true');
+        setDailyTime(v);
+        setNotificationsEnabled(true);
+        await scheduleDailyNotification(v);
+      }
+    } else {
+      if (dailyTime && /^\d{1,2}:\d{2}$/.test(dailyTime)) {
+        const [hh, mm] = dailyTime.split(':').map(Number);
+        const d = new Date();
+        d.setHours(hh, mm, 0, 0);
+        setTimeDate(d);
+      } else {
+        setTimeDate(new Date());
+      }
+      if (!DateTimePickerComponent) setDateTimePickerComponent(() => DateTimePickerShim);
+      setShowTimePicker(true);
+    }
+  };
 
   const handleNotificationsChange = async (value: boolean) => {
     // If enabling, ask what time user wants the daily reminder
     if (value) {
-      const openPicker = async () => {
-        if (Platform.OS === 'web') {
-          const defaultValue = dailyTime || '';
-          const v = prompt('Om hoelaat wil je elke dag een herinnering krijgen? (GG:MM)', defaultValue);
-          if (v) {
-            await AsyncStorage.setItem('daily_reminder_time', v);
-            await AsyncStorage.setItem('notifications_enabled', 'true');
-            setDailyTime(v);
-            setNotificationsEnabled(true);
-          }
-        } else {
-          // set initial time for picker from saved value if present
-          if (dailyTime && /^\d{1,2}:\d{2}$/.test(dailyTime)) {
-            const [hh, mm] = dailyTime.split(':').map(Number);
-            const d = new Date();
-            d.setHours(hh, mm, 0, 0);
-            setTimeDate(d);
-          } else {
-            setTimeDate(new Date());
-          }
-          if (!DateTimePickerComponent) setDateTimePickerComponent(() => DateTimePickerShim);
-          setShowTimePicker(true);
-        }
-      };
-
-      // show a popup first
       Alert.alert(
         'Herinnering instellen',
         'Om hoelaat wil je elke dag een herinnering krijgen?',
@@ -94,7 +92,7 @@ export default function SettingsScreen() {
             await AsyncStorage.setItem('notifications_enabled', 'false');
             setNotificationsEnabled(false);
           }},
-          { text: 'Kies tijd', onPress: openPicker },
+          { text: 'Kies tijd', onPress: openTimePicker },
         ],
         { cancelable: true }
       );
@@ -114,7 +112,6 @@ export default function SettingsScreen() {
       }
     }
   };
-
   const ensurePermissions = async () => {
     // Avoid loading expo-notifications inside Expo Go to prevent known crash
     if (isRunningInExpoGo()) return false;
@@ -210,7 +207,14 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         {/* NOTIFICATIES */}
-        <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          activeOpacity={0.9}
+          onPress={() => {
+            if (notificationsEnabled) openTimePicker();
+            else handleNotificationsChange(true);
+          }}
+        >
           <View style={styles.left}>
             <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }]}>
               <Image source={settingsIcons.notifications} style={[styles.icon, { tintColor: theme.color }]} />
@@ -228,7 +232,7 @@ export default function SettingsScreen() {
           >
             <View style={[styles.webSwitchThumb, notificationsEnabled && { transform: [{ translateX: 26 }] }]} />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
 
         {/* ACTIVITEITEN AANPASSEN */}
         <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good', fromSettings: true })}>
