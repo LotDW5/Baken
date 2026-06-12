@@ -151,11 +151,11 @@ export default function ActivityComplete() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white, alignItems: 'center', paddingHorizontal: 24 },
-  bubbleWrap: { position: 'absolute', left: 0, right: 0, top: 120, alignItems: 'center', zIndex: 3000 },
+  bubbleWrap: { position: 'absolute', left: 0, right: 0, top: 160, alignItems: 'center', zIndex: 3000 },
   bubble: { backgroundColor: COLORS.white, padding: 18, borderRadius: 18, alignSelf: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 16, marginBottom: 6, zIndex: 3 },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
-  avatar: { width: 220, height: 320, marginTop: 18, zIndex: 1 },
+  avatar: { width: 260, height: 380, marginTop: 24, zIndex: 1 },
   topBar: {
     position: 'absolute',
     top: 56,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     height: 22,
     backgroundColor: COLORS.white,
     // nudge the tail to the right relative to center (was translateX: -11)
-    transform: [{ translateX: 13 }, { rotate: '45deg' }],
+    transform: [{ translateX: 6 }, { rotate: '45deg' }],
     // place behind the bubble
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
