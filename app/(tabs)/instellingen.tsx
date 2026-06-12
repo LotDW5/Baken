@@ -3,6 +3,7 @@ import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { isRunningInExpoGo } from 'expo';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -106,6 +107,8 @@ export default function SettingsScreen() {
   };
 
   const ensurePermissions = async () => {
+    // Avoid loading expo-notifications inside Expo Go to prevent known crash
+    if (isRunningInExpoGo()) return false;
     try {
       const Notifications = require('expo-notifications');
       const { status } = await Notifications.getPermissionsAsync();
@@ -115,13 +118,16 @@ export default function SettingsScreen() {
       }
       return true;
     } catch (e) {
-      // expo-notifications not available in Expo Go; inform caller
       return false;
     }
   };
 
   const scheduleDailyNotification = async (timeStr: string) => {
     if (!timeStr || !/^\d{1,2}:\d{2}$/.test(timeStr)) return null;
+    if (isRunningInExpoGo()) {
+      Alert.alert('Notificaties niet beschikbaar', 'Notificaties zijn niet beschikbaar in Expo Go. Bouw een development build om notificaties te testen.');
+      return null;
+    }
     const ok = await ensurePermissions();
     if (!ok) {
       Alert.alert('Notificaties niet beschikbaar', 'Notificaties zijn niet beschikbaar in deze omgeving. Bouw een development build om notificaties te testen.');
