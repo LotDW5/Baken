@@ -339,7 +339,7 @@ const styles = StyleSheet.create<any>({
     overflow: 'hidden',
   },
   pageHeader: {
-    marginTop: 110,
+    marginTop: 144,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
@@ -373,6 +373,7 @@ const styles = StyleSheet.create<any>({
   },
   chartCard: {
     paddingTop: 8,
+    marginTop: -40,
     marginBottom: 22,
     paddingHorizontal: 24,
   },
