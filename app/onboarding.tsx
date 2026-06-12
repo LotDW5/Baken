@@ -201,23 +201,74 @@ export default function OnboardingScreen() {
   ];
 
   const [headIndex, setHeadIndex] = useState(0);
-  const [hairIndex, setHairIndex] = useState(0);
   const [topIndex, setTopIndex] = useState(0);
   const [bottomIndex, setBottomIndex] = useState(0);
   const [shoesIndex, setShoesIndex] = useState(0);
   const [activePart, setActivePart] = useState<string | null>(null);
 
-  // Composite images to cycle through on the avatar page
-  const COMPOSITES = [
-    require('../assets/personage/krullen-wit-vest.png'),
-    require('../assets/personage/krullen-bruin-vest.png'),
-    require('../assets/personage/krullen-donker-vest.png'),
-    require('../assets/personage/lang-bruin-shirt.png'),
-    require('../assets/personage/lang-donker-shirt.png'),
-    require('../assets/personage/kort-bruin-shirt.png'),
-    require('../assets/personage/lang-wit-shirt.png'),
-  ];
-  const [compositeIndex, setCompositeIndex] = useState(0);
+  // avatar option keys (match asset filenames like `${hair}-${skin}-${clothing}.png`)
+  const HAIR_KEYS = ['krullen', 'kort', 'lang'];
+  const SKIN_KEYS = ['wit', 'bruin', 'donker'];
+  const CLOTHING_KEYS = ['vest', 'shirt', 'hemd'];
+
+  // Static composite map so Metro can resolve all requires at bundle-time
+  const COMPOSITE_MAP: Record<string, Record<string, Record<string, any>>> = {
+    krullen: {
+      wit: {
+        vest: require('../assets/personage/krullen-wit-vest.png'),
+        shirt: require('../assets/personage/krullen-wit-shirt.png'),
+        hemd: require('../assets/personage/krullen-wit-hemd.png'),
+      },
+      bruin: {
+        vest: require('../assets/personage/krullen-bruin-vest.png'),
+        shirt: require('../assets/personage/krullen-bruin-shirt.png'),
+        hemd: require('../assets/personage/krullen-bruin-hemd.png'),
+      },
+      donker: {
+        vest: require('../assets/personage/krullen-donker-vest.png'),
+        shirt: require('../assets/personage/krullen-donker-shirt.png'),
+        hemd: require('../assets/personage/krullen-donker-hemd.png'),
+      }
+    },
+    kort: {
+      wit: {
+        vest: require('../assets/personage/kort-wit-vest.png'),
+        shirt: require('../assets/personage/kort-wit-shirt.png'),
+        hemd: require('../assets/personage/kort-wit-hemd.png'),
+      },
+      bruin: {
+        vest: require('../assets/personage/kort-bruin-vest.png'),
+        shirt: require('../assets/personage/kort-bruin-shirt.png'),
+        hemd: require('../assets/personage/kort-bruin-hemd.png'),
+      },
+      donker: {
+        vest: require('../assets/personage/kort-donker-vest.png'),
+        shirt: require('../assets/personage/kort-donker-shirt.png'),
+        hemd: require('../assets/personage/kort-donker-hemd.png'),
+      }
+    },
+    lang: {
+      wit: {
+        vest: require('../assets/personage/lang-wit-vest.png'),
+        shirt: require('../assets/personage/lang-wit-shirt.png'),
+        hemd: require('../assets/personage/lang-wit-hemd.png'),
+      },
+      bruin: {
+        vest: require('../assets/personage/lang-bruin-vest.png'),
+        shirt: require('../assets/personage/lang-bruin-shirt.png'),
+        hemd: require('../assets/personage/lang-bruin-hemd.png'),
+      },
+      donker: {
+        vest: require('../assets/personage/lang-donker-vest.png'),
+        shirt: require('../assets/personage/lang-donker-shirt.png'),
+        hemd: require('../assets/personage/lang-donker-hemd.png'),
+      }
+    }
+  };
+
+  const [hairIndex, setHairIndex] = useState(0);
+  const [skinIndex, setSkinIndex] = useState(0);
+  const [clothingIndex, setClothingIndex] = useState(0);
 
   const cycle = (idx: number, max: number, delta: number) => {
     return (idx + delta + max) % max;
@@ -415,10 +466,11 @@ export default function OnboardingScreen() {
         // save selected avatar if any
         const avatarData = {
           head: HEADS?.[headIndex]?.name || null,
-          hair: HAIRS?.[hairIndex]?.name || null,
-          top: TOPS?.[topIndex]?.name || null,
-          bottom: BOTTOMS?.[bottomIndex]?.name || null,
-          shoes: SHOES?.[shoesIndex]?.name || null,
+          hair: HAIR_KEYS?.[hairIndex] || null,
+          skin: SKIN_KEYS?.[skinIndex] || null,
+          clothing: CLOTHING_KEYS?.[clothingIndex] || null,
+          // include the image filename used so other screens can render the same composite
+          composite: `${HAIR_KEYS?.[hairIndex] || 'krullen'}-${SKIN_KEYS?.[skinIndex] || 'wit'}-${CLOTHING_KEYS?.[clothingIndex] || 'vest'}.png`,
         };
 
         await AsyncStorage.setItem('user_data', JSON.stringify({
@@ -679,6 +731,13 @@ export default function OnboardingScreen() {
   }
 
       if (currentStep === 'avatar') {
+        const hairKey = HAIR_KEYS[hairIndex];
+        const skinKey = SKIN_KEYS[skinIndex];
+        const clothingKey = CLOTHING_KEYS[clothingIndex];
+        const compositeSource = (
+          COMPOSITE_MAP?.[hairKey]?.[skinKey]?.[clothingKey]
+        ) || require('../assets/personage/Personage.png');
+
         return (
           <SafeAreaView style={styles.safeArea}>
             <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 0 }}>
@@ -692,46 +751,46 @@ export default function OnboardingScreen() {
 
               <View style={{ alignItems: 'center', marginTop: 16, position: 'relative' }}>
                 <Image
-                  source={COMPOSITES[compositeIndex]}
+                  source={compositeSource}
                   style={{ width: 240, height: 480, resizeMode: 'contain' }}
                 />
 
                 {/* arrow controls around the avatar */}
                 {/** Left/right arrow pairs (top, middle, bottom) — closer to the avatar and styled like design */}
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  onPress={() => setHairIndex(cycle(hairIndex, HAIR_KEYS.length, -1))}
                   style={{ position: 'absolute', left: -2, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  onPress={() => setHairIndex(cycle(hairIndex, HAIR_KEYS.length, 1))}
                   style={{ position: 'absolute', right: -2, top: 36, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  onPress={() => setSkinIndex(cycle(skinIndex, SKIN_KEYS.length, -1))}
                   style={{ position: 'absolute', left: -2, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  onPress={() => setSkinIndex(cycle(skinIndex, SKIN_KEYS.length, 1))}
                   style={{ position: 'absolute', right: -2, top: 120, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex - 1 + COMPOSITES.length) % COMPOSITES.length)}
+                  onPress={() => setClothingIndex(cycle(clothingIndex, CLOTHING_KEYS.length, -1))}
                   style={{ position: 'absolute', left: -2, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-back" size={16} color={'#6B5CE7'} />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setCompositeIndex((compositeIndex + 1) % COMPOSITES.length)}
+                  onPress={() => setClothingIndex(cycle(clothingIndex, CLOTHING_KEYS.length, 1))}
                   style={{ position: 'absolute', right: -2, top: 200, width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(107,92,231,0.12)', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Ionicons name="chevron-forward" size={16} color={'#6B5CE7'} />
