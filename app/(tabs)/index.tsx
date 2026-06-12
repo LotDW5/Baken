@@ -86,12 +86,13 @@ function HomeContent() {
         if (!seen) {
           setShowWelcome(true);
         }
-        // try to load profile name
-        const prof = await AsyncStorage.getItem('profile');
+        // try to load profile name (onboarding saves to `user_data`)
+        let prof = await AsyncStorage.getItem('profile');
+        if (!prof) prof = await AsyncStorage.getItem('user_data');
         if (prof) {
           try {
             const parsed = JSON.parse(prof);
-            setUserName(parsed?.name || parsed?.firstName || null);
+            setUserName(parsed?.name || parsed?.firstName || parsed?.firstName || null);
           } catch { setUserName(null); }
         }
       } catch (e) { console.error('welcome check failed', e); }
