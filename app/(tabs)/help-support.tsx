@@ -44,12 +44,13 @@ export default function HelpSupportScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.cardTitle}>Contact opnemen</Text>
               <Text style={styles.cardText}>Heb je een probleem met de app, een vraag of wil je feedback geven? Stuur ons een e-mail en we antwoorden zo snel mogelijk.</Text>
+              <View style={{ height: 12 }} />
+              <TouchableOpacity style={[styles.pillButton, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:dewulflof@gmail.com')}>
+                <Image source={require('../../assets/icons/Mail.png')} style={[styles.buttonIcon, { tintColor: '#fff' }]} />
+                <Text style={styles.buttonText}>dewulflof@gmail.com</Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={[styles.pillButton, { backgroundColor: theme.color }]} onPress={() => Linking.openURL('mailto:dewulflof@gmail.com')}>
-            <Image source={require('../../assets/icons/Mail.png')} style={[styles.buttonIcon, { tintColor: '#fff' }]} />
-            <Text style={styles.buttonText}>dewulflof@gmail.com</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.card}>
@@ -109,18 +110,18 @@ const styles = StyleSheet.create({
   iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
   iconImage: { width: 20, height: 20, resizeMode: 'contain' },
   content: { padding: 24, gap: 16, paddingBottom: themeConstants.sizes.tabBarHeight + 40 },
-  pageHeader: { marginTop: 144, marginBottom: 8, paddingHorizontal: 24, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
+  pageHeader: { marginTop: 144, marginBottom: 16, paddingHorizontal: 24, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
   arrowIcon: { width: 22, height: 22, resizeMode: 'contain' },
-  subtitle: { marginTop: 12, color: COLORS.mutedForeground, fontSize: 14 },
-  card: { marginTop: 20, backgroundColor: COLORS.card, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
+  subtitle: { marginTop: 16, color: COLORS.mutedForeground, fontSize: 14 },
+  card: { marginTop: 16, backgroundColor: COLORS.card, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
   leftRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   icon: { width: 20, height: 20, resizeMode: 'contain' },
   iconCircleSmall: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(99, 84, 255, 0.08)', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   cardTitle: { fontSize: 16, fontWeight: '700', color: COLORS.foreground, marginBottom: 6 },
   cardText: { fontSize: 14, color: COLORS.mutedForeground },
-  pillButton: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 24, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center' },
+  pillButton: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 24, alignSelf: 'center', flexDirection: 'row', alignItems: 'center' },
   buttonIcon: { width: 16, height: 16, marginRight: 8, resizeMode: 'contain' },
   buttonText: { color: '#fff', fontWeight: '700' },
   bulletRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 6 },
