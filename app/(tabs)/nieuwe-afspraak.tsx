@@ -6,15 +6,15 @@ import useAppTheme from '@/hooks/use-app-theme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Linking, Platform, SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  Linking, Platform, SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePickerShim from './DateTimePickerShim';
@@ -111,53 +111,31 @@ export default function NieuweAfspraak() {
       if (addToGoogle) {
         if (Platform.OS !== 'web') {
           try {
-            if (!Calendar) {
-              Calendar = await import('expo-calendar');
-            }
-            // request permissions and create event
-            const status = await Calendar.requestCalendarPermissionsAsync();
-            if (status.granted) {
-              // find default calendar
-              const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT) || [];
-              const defaultCalendar = (calendars.length > 0)
-                ? (calendars.find((c: any) => c.allowsModifications) || calendars[0])
-                : null;
-              if (!defaultCalendar) {
-                Alert.alert('Geen kalender', 'Er zijn geen beschikbare kalenders om het evenement aan toe te voegen.');
-                return;
-              }
-              // create start/end
-              let start: Date;
-              let end: Date;
-              if (time && /^(\d{1,2}):(\d{2})$/.test(time) && /\d{4}-\d{2}-\d{2}/.test(date)) {
-                const [hh, mm] = time.split(':').map(Number);
-                start = new Date(`${date}T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:00`);
-                end = new Date(start.getTime() + 60 * 60000);
-              } else if (/\d{4}-\d{2}-\d{2}/.test(date)) {
-                const parts = date.split('-').map(Number);
-                start = new Date(parts[0], parts[1] - 1, parts[2]);
-                end = new Date(parts[0], parts[1] - 1, parts[2] + 1);
-              } else {
-                start = new Date();
-                end = new Date(start.getTime() + 60 * 60000);
-              }
-              await Calendar.createEventAsync(defaultCalendar.id, {
-                title: title.trim(),
-                startDate: start,
-                endDate: end,
-                timeZone: 'Europe/Amsterdam',
-                location: location || undefined,
-                notes: notes || undefined,
-              });
+            // Do NOT create the event automatically in the device calendar.
+            // Instead, open the native calendar app with prefilled fields so the user must explicitly save.
+            let start: Date;
+            let end: Date;
+            if (time && /^(\d{1,2}):(\d{2})$/.test(time) && /\d{4}-\d{2}-\d{2}/.test(date)) {
+              const [hh, mm] = time.split(':').map(Number);
+              start = new Date(`${date}T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:00`);
+              end = new Date(start.getTime() + 60 * 60000);
+            } else if (/\d{4}-\d{2}-\d{2}/.test(date)) {
+              const parts = date.split('-').map(Number);
+              start = new Date(parts[0], parts[1] - 1, parts[2]);
+              end = new Date(parts[0], parts[1] - 1, parts[2] + 1);
             } else {
-              // user denied permissions: turn off the toggle and return to the form
-              setAddToGoogle(false);
-              Alert.alert('Geen permissie', 'Geen permissie om agenda te wijzigen');
-              return;
+              start = new Date();
+              end = new Date(start.getTime() + 60 * 60000);
+            }
+            try {
+              await openNativeCalendarApp({ start, end, title: title.trim(), notes: notes || undefined, location: location || undefined });
+            } catch (err) {
+              console.error('Failed to open calendar intent', err);
+              Alert.alert('Fout', 'Kon Google Agenda niet openen');
             }
           } catch (err) {
             console.error(err);
-            Alert.alert('Fout', 'Kon event niet toevoegen aan de agenda');
+            Alert.alert('Fout', 'Kon Google Agenda niet openen');
           }
         } else {
           const url = buildGoogleCalendarUrl(title.trim(), date.trim(), time || undefined, 60, notes || undefined, location || undefined);
@@ -168,7 +146,7 @@ export default function NieuweAfspraak() {
             Alert.alert('Fout', 'Kon Google Calendar niet openen');
           }
         }
-      }
+        }
       (navigation as any).navigate('Agenda');
     } catch (e) {
       console.error(e);
@@ -203,6 +181,73 @@ export default function NieuweAfspraak() {
     }
     const ctz = '&ctz=Europe%2FAmsterdam';
     return `${base}${text}${dates}${detailsParam}${locationParam}${ctz}`;
+  };
+
+  // attempt to open the native calendar app (prefer Google Calendar when available)
+  const openNativeCalendarApp = async ({ start, end, title: t, notes: n, location: loc }: { start: Date; end: Date; title: string; notes?: string; location?: string; }) => {
+    try {
+      if (Platform.OS === 'android') {
+        // 1) Try to open an INSERT intent prefilled with event data for Google Calendar (preferred)
+        try {
+          const pkgPart = 'package=com.google.android.calendar;';
+          const intentUri = `intent://#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.item/event;S.title=${encodeURIComponent(t || '')};S.description=${encodeURIComponent(n || '')};S.eventLocation=${encodeURIComponent(loc || '')};long.beginTime=${start.getTime()};long.endTime=${end.getTime()};${pkgPart}end`;
+          await Linking.openURL(intentUri);
+          return true;
+        } catch (e) {
+          // continue to next fallback
+        }
+
+        // 2) Try a generic INSERT intent without package (may open default calendar app)
+        try {
+          const intentUri2 = `intent://#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.item/event;S.title=${encodeURIComponent(t || '')};S.description=${encodeURIComponent(n || '')};S.eventLocation=${encodeURIComponent(loc || '')};long.beginTime=${start.getTime()};long.endTime=${end.getTime()};end`;
+          await Linking.openURL(intentUri2);
+          return true;
+        } catch (e) {
+          // continue to next fallback
+        }
+
+        // 3) Fallback to web prefilled form
+        try {
+          const webUrl = buildGoogleCalendarUrl(t || '', date.trim(), time || undefined, Math.max(60, Math.round((end.getTime() - start.getTime()) / 60000)), n || undefined, loc || undefined);
+          await Linking.openURL(webUrl);
+          return true;
+        } catch (e) {
+          console.warn('All calendar open attempts failed on Android', e);
+          return false;
+        }
+      } else if (Platform.OS === 'ios') {
+        // 1) Try Google Calendar app scheme with parameters if supported
+        try {
+          // Google Calendar iOS scheme doesn't document prefill reliably; try opening app first
+          await Linking.openURL('comgooglecalendar://');
+          return true;
+        } catch (e) {
+          // continue to next fallback
+        }
+
+        // 2) Try native iOS calendar show URL (opens Calendar app)
+        try {
+          const calUrl = `calshow:${Math.floor(start.getTime() / 1000)}`;
+          await Linking.openURL(calUrl);
+          return true;
+        } catch (e) {
+          // continue to next fallback
+        }
+
+        // 3) Fallback to web prefilled form
+        try {
+          const webUrl = buildGoogleCalendarUrl(t || '', date.trim(), time || undefined, Math.max(60, Math.round((end.getTime() - start.getTime()) / 60000)), n || undefined, loc || undefined);
+          await Linking.openURL(webUrl);
+          return true;
+        } catch (e) {
+          console.warn('All calendar open attempts failed on iOS', e);
+          return false;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not open calendar app', err);
+      return false;
+    }
   };
 
   const handleToggleGoogle = () => {
