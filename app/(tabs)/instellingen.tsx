@@ -5,19 +5,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+  Alert,
 } from 'react-native';
+import DateTimePickerShim from './DateTimePickerShim';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const theme = useAppTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [timeDate, setTimeDate] = useState<Date>(new Date());
+  const [dailyTime, setDailyTime] = useState<string>('');
+  const [DateTimePickerComponent, setDateTimePickerComponent] = useState<any>(null);
 
   useEffect(() => {
     loadSettings();
@@ -28,12 +35,57 @@ export default function SettingsScreen() {
     if (saved !== null) {
       setNotificationsEnabled(saved === 'true');
     }
-    // nonverbal setting removed
+    const savedTime = await AsyncStorage.getItem('daily_reminder_time');
+    if (savedTime) setDailyTime(savedTime);
   };
 
   const handleNotificationsChange = async (value: boolean) => {
-    setNotificationsEnabled(value);
-    await AsyncStorage.setItem('notifications_enabled', String(value));
+    // If enabling, ask what time user wants the daily reminder
+    if (value) {
+      const openPicker = async () => {
+        if (Platform.OS === 'web') {
+          const defaultValue = dailyTime || '';
+          const v = prompt('Om hoelaat wil je elke dag een herinnering krijgen? (GG:MM)', defaultValue);
+          if (v) {
+            await AsyncStorage.setItem('daily_reminder_time', v);
+            await AsyncStorage.setItem('notifications_enabled', 'true');
+            setDailyTime(v);
+            setNotificationsEnabled(true);
+          }
+        } else {
+          // set initial time for picker from saved value if present
+          if (dailyTime && /^\d{1,2}:\d{2}$/.test(dailyTime)) {
+            const [hh, mm] = dailyTime.split(':').map(Number);
+            const d = new Date();
+            d.setHours(hh, mm, 0, 0);
+            setTimeDate(d);
+          } else {
+            setTimeDate(new Date());
+          }
+          if (!DateTimePickerComponent) setDateTimePickerComponent(() => DateTimePickerShim);
+          setShowTimePicker(true);
+        }
+      };
+
+      // show a popup first
+      Alert.alert(
+        'Herinnering instellen',
+        'Om hoelaat wil je elke dag een herinnering krijgen?',
+        [
+          { text: 'Annuleer', style: 'cancel', onPress: async () => {
+            // do not enable
+            await AsyncStorage.setItem('notifications_enabled', 'false');
+            setNotificationsEnabled(false);
+          }},
+          { text: 'Kies tijd', onPress: openPicker },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      // disabling notifications
+      setNotificationsEnabled(false);
+      await AsyncStorage.setItem('notifications_enabled', 'false');
+    }
   };
 
   const settingsIcons = {
@@ -87,7 +139,7 @@ export default function SettingsScreen() {
             <Image source={settingsIcons.notifications} style={[styles.rowIcon, { tintColor: theme.color }]} />
             <View>
               <Text style={styles.cardTitle}>Notificaties</Text>
-              <Text style={styles.cardSubtitle}>Beheer je meldingen</Text>
+              <Text style={styles.cardSubtitle}>Krijg één keer per dag een herinnering om in te checken .</Text>
             </View>
           </View>
 
@@ -136,6 +188,29 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
       </ScrollView>
+      {showTimePicker && Platform.OS !== 'web' && DateTimePickerComponent && (
+        <DateTimePickerComponent
+          value={timeDate}
+          mode="time"
+          is24Hour={true}
+          display="spinner"
+          onChange={async (event: any, selectedDate?: Date) => {
+            setShowTimePicker(false);
+            if (selectedDate) {
+              const hh = String(selectedDate.getHours()).padStart(2, '0');
+              const mm = String(selectedDate.getMinutes()).padStart(2, '0');
+              const v = `${hh}:${mm}`;
+              await AsyncStorage.setItem('daily_reminder_time', v);
+              await AsyncStorage.setItem('notifications_enabled', 'true');
+              setDailyTime(v);
+              setNotificationsEnabled(true);
+            } else {
+              await AsyncStorage.setItem('notifications_enabled', 'false');
+              setNotificationsEnabled(false);
+            }
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
