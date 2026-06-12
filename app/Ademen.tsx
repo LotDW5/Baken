@@ -60,8 +60,8 @@ export default function Ademen() {
 
     // compute where the circle's center will be on screen and position text just above the top edge
     const circleCenterY = height / 2 + (circleTranslateY + circleYOffset);
-    const textTop = circleCenterY - (outerSize / 2) - 120 + 20; // move instruction text 20px down
-    const translateXOffset = -width * 0.01 + 8; // nudge logo 8px to the right (was 6px) — +2px shift
+    const textTop = circleCenterY - (outerSize / 2) - 120 + 30; // move instruction text 30px down (20 + 10)
+    const translateXOffset = -width * 0.01 + 10; // nudge logo 10px to the right (was 8px) — +2px shift
 
   return (
     <View style={styles.container}>
