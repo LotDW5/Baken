@@ -136,13 +136,13 @@ export default function NonverbaalMessage() {
         </View>
       </ScrollView>
 
-      <View style={[styles.formFooter, { position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight + 24 }]}> 
+      <View style={[styles.formFooter, { position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight - 31 }]}> 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } }]} onPress={save}>
+          <TouchableOpacity style={[styles.modalPrimaryButton, { backgroundColor: theme.color, shadowColor: theme.color, shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, flex: 1 }]} onPress={save}>
             <Text style={styles.modalPrimaryText}>Opslaan</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.modalSecondaryButton, { marginLeft: 8 }]} onPress={() => (navigation as any).navigate('Nonverbaal')}>
+          <TouchableOpacity style={[styles.modalSecondaryButton, { flex: 1, marginLeft: 12 }]} onPress={() => (navigation as any).navigate('Nonverbaal')}>
             <Text style={styles.modalSecondaryText}>Annuleren</Text>
           </TouchableOpacity>
         </View>

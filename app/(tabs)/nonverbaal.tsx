@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/colors';
-import themeConstants from '@/constants/theme';
+import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -88,11 +88,19 @@ export default function NonverbaalScreen() {
         )}
       </ScrollView>
 
-      <View style={[styles.buttonWrap, { bottom: insets.bottom + themeConstants.sizes.tabBarHeight + 48 }]}> 
-        <TouchableOpacity style={[styles.landingButton, { backgroundColor: theme.color }]} onPress={() => (navigation as any).navigate('NonverbaalMessage')}>
-          <Image source={require('../../assets/icons/Plus.png')} style={styles.plusIcon as any} />
-          <Text style={styles.landingButtonText}>Nieuw bericht</Text>
-        </TouchableOpacity>
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight - 31, zIndex: 30 }}>
+        <View style={[{ paddingHorizontal: 24, paddingBottom: 24, paddingTop: 12, gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: 'transparent' }]}>
+          {/* invisible save/cancel row to match layout height when editing */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[{ paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: COLORS.card, flex: 1, opacity: 0 }]} />
+            <View style={[{ paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', flex: 1, opacity: 0, marginLeft: 12 }]} />
+          </View>
+
+          <TouchableOpacity style={[{ paddingVertical: 14, borderRadius: 20, backgroundColor: theme.color, width: '100%', marginTop: 12, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }]} onPress={() => (navigation as any).navigate('NonverbaalMessage')}>
+            <Image source={require('../../assets/icons/Plus.png')} style={styles.plusIcon as any} />
+            <Text style={[styles.landingButtonText, { marginLeft: 8 }]}>Nieuw bericht</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Bottom tab is provided by the shared BottomTabBar */}
@@ -102,7 +110,7 @@ export default function NonverbaalScreen() {
             style={[styles.iconCircle, styles.previewClose, { padding: 12 }]}
             onPress={() => { setPreview(null); (navigation as any).setParams?.({ previewMessage: undefined }); }}
           >
-            <Text style={{ color: theme.color, fontSize: 20, fontWeight: '700' }}>✕</Text>
+            <Image source={require('../../assets/icons/Kruis.png')} style={{ width: 20, height: 20, tintColor: theme.color }} />
           </TouchableOpacity>
 
           <View style={styles.previewContainer}>
@@ -155,29 +163,29 @@ const styles = StyleSheet.create({
   backIconHeader: { width: 20, height: 20, resizeMode: 'contain' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left', flexShrink: 1 },
-  content: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: themeConstants.sizes.tabBarHeight + 48, gap: 16, alignItems: 'stretch' },
+  content: { paddingHorizontal: 24, paddingTop: 0, paddingBottom: THEME.sizes.tabBarHeight + 48, gap: 16, alignItems: 'stretch' },
   emptyState: { alignItems: 'center', marginTop: 40 },
   emptyIconWrap: { width: 86, height: 86, borderRadius: 43, backgroundColor: '#F7F5FB', alignItems: 'center', justifyContent: 'center' },
   emptyIcon: { width: 34, height: 34, resizeMode: 'contain' },
   emptyTitle: { marginTop: 24, fontSize: 16, fontWeight: '700', color: COLORS.foreground },
   emptySubtitle: { marginTop: 8, fontSize: 13, color: COLORS.mutedForeground, textAlign: 'center', maxWidth: 300 },
   modalPrimaryButton: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: COLORS.card, alignSelf: 'stretch', marginTop: 12, marginHorizontal: 0, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8, flexDirection: 'row', justifyContent: 'center' },
-  landingButton: { paddingVertical: 14, paddingHorizontal: 28, borderRadius: 20, backgroundColor: COLORS.card, width: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
-  landingButtonText: { color: COLORS.white, fontWeight: '700', fontSize: 16, marginLeft: 10 },
+  landingButton: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 20, backgroundColor: COLORS.card, width: '100%', maxWidth: 520, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  landingButtonText: { color: COLORS.white, fontWeight: '700', fontSize: 16, marginLeft: 8 },
     /* bottomWrapper, separator and fab styles removed - use shared BottomTabBar instead */
   bottomContainer: {
     width: '100%',
-    minHeight: themeConstants.sizes.tabBarHeight,
+    minHeight: THEME.sizes.tabBarHeight,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: themeConstants.spacing.s,
-    paddingTop: themeConstants.spacing.s,
-    paddingBottom: themeConstants.spacing.m,
+    paddingHorizontal: THEME.spacing.s,
+    paddingTop: THEME.spacing.s,
+    paddingBottom: THEME.spacing.m,
   },
-  buttonWrap: { position: 'absolute', left: 24, right: 24, bottom: themeConstants.sizes.tabBarHeight + 24, zIndex: 30 },
-  plusIcon: { width: 20, height: 20, resizeMode: 'contain', marginRight: 12, tintColor: '#FFF' },
+  buttonWrap: { position: 'absolute', left: 48, right: 48, bottom: THEME.sizes.tabBarHeight + 24, zIndex: 30 },
+  plusIcon: { width: 20, height: 20, resizeMode: 'contain', marginRight: 8, tintColor: '#FFF' },
   modalPrimaryText: { color: COLORS.white, fontWeight: '700', fontSize: 16, textAlign: 'center' },
   tabItem: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 4 },
   iconWrap: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
@@ -192,6 +200,6 @@ const styles = StyleSheet.create({
   messageCard: { backgroundColor: COLORS.card, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16, marginBottom: 16, width: '100%', marginHorizontal: 0, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 4, position: 'relative', boxShadow: Platform.OS === 'web' ? '0px 6px 14px rgba(0,0,0,0.04)' : undefined },
   messageCardText: { color: COLORS.foreground, fontSize: 16, fontWeight: '600' },
   messageCardInner: { flex: 1, paddingRight: 56 },
-  editButton: { position: 'absolute', right: 16, top: 16, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F5FB' },
+  editButton: { position: 'absolute', right: 16, top: '50%', transform: [{ translateY: -20 }], width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F5FB' },
     /* bottomCover removed; fab styles removed */
 });
