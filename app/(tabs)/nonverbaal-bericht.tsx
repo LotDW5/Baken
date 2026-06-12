@@ -201,7 +201,7 @@ const styles = StyleSheet.create<any>({
     borderColor: '#E0E0E0',
     overflow: 'hidden',
   },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   avatarImage: { width: 36, height: 36, borderRadius: 18, resizeMode: 'cover' },
   pageHeader: {
     marginTop: 144,

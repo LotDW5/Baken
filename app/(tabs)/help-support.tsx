@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   iconButton: { padding: 4 },
   iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   content: { padding: 24, gap: 16, paddingBottom: themeConstants.sizes.tabBarHeight + 40 },
   pageHeader: { marginTop: 144, marginBottom: 0, paddingHorizontal: 24, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
   titleWrap: { flex: 1, alignItems: 'flex-start' },

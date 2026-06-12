@@ -347,8 +347,8 @@ const styles = StyleSheet.create({
   },
   
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
 

@@ -324,8 +324,8 @@ const styles = StyleSheet.create<any>({
     borderColor: '#E0E0E0',
   },
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
   content: {

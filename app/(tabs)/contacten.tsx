@@ -290,7 +290,7 @@ const styles = StyleSheet.create<any>({
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
   },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.foreground, textAlign: 'left' },
   emptyState: { flex: 1, alignItems: 'center', paddingHorizontal: 24, gap: 16, paddingBottom: THEME.sizes.tabBarHeight + 48 },
   emptyCard: {

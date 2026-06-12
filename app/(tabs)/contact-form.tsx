@@ -266,7 +266,7 @@ const styles = StyleSheet.create<any>({
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
   },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   formHeader: {
     marginTop: 144,
     marginBottom: 24,

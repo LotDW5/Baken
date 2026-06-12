@@ -614,8 +614,8 @@ const styles = StyleSheet.create({
     color: COLORS.mutedForeground,
   },
   iconImage: {
-    width: THEME.sizes.iconSmall,
-    height: THEME.sizes.iconSmall,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
 });

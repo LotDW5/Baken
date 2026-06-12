@@ -213,9 +213,10 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     tintColor: COLORS.foreground,
+    resizeMode: 'contain',
   },
   headerTitle: {
     fontSize: 20,

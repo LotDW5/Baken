@@ -222,8 +222,8 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   iconImage: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
   header: {

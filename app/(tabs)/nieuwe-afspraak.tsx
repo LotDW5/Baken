@@ -497,7 +497,7 @@ const styles = StyleSheet.create<any>({
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
-  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   formHeader: {
     marginTop: 144,
     marginBottom: 24,
