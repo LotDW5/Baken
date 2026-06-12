@@ -5,6 +5,7 @@ import 'react-native-gesture-handler';
 import Agenda from './app/(tabs)/agenda';
 import ContactForm from './app/(tabs)/contact-form';
 import Contacten from './app/(tabs)/contacten';
+import HelpSupport from './app/(tabs)/help-support';
 import CheckInStack from './app/(tabs)/index';
 import Instellingen from './app/(tabs)/instellingen';
 import NieuweAfspraak from './app/(tabs)/nieuwe-afspraak';
@@ -15,7 +16,6 @@ import Statistieken from './app/(tabs)/statistieken';
 import Ademen from './app/Ademen';
 import Onboarding from './app/onboarding';
 import BottomTabBar from './components/ui/bottom-tab-bar';
-import HelpSupport from './app/(tabs)/help-support';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

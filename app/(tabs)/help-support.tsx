@@ -1,8 +1,9 @@
 import { COLORS } from '@/constants/colors';
+import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Linking, Platform } from 'react-native';
 
 export default function HelpSupportScreen() {
   const navigation = useNavigation<any>();
@@ -10,12 +11,28 @@ export default function HelpSupportScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.topIconsRow}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.iconImage} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
+          <View style={styles.iconCircle}>
+            <Image source={require('../../assets/icons/Instellingen.png')} style={[styles.iconImage, { tintColor: theme.color }]} />
+          </View>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backArrow}>←</Text>
+        <View style={styles.pageHeader}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
+            <Image source={require('../../assets/icons/Terug.png')} style={[styles.arrowIcon, { tintColor: theme.color }]} />
           </TouchableOpacity>
-          <Text style={styles.title}>Help & Support</Text>
+          <View style={styles.titleWrap}>
+            <Text style={styles.title}>Help & Support</Text>
+          </View>
         </View>
 
         <Text style={styles.subtitle}>Heb je een vraag of probleem? We helpen je graag verder.</Text>
@@ -47,16 +64,51 @@ export default function HelpSupportScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <View style={styles.bottomNav} pointerEvents="box-none">
+        <View style={styles.bottomInner}>
+          <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Check-in' })} style={styles.bottomItem}>
+            <Image source={require('../../assets/icons/Check-in.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <Text style={styles.bottomLabel}>Check-in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Contacten' })} style={styles.bottomItem}>
+            <Image source={require('../../assets/icons/Contacten.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <Text style={styles.bottomLabel}>Contacten</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Agenda' })} style={styles.bottomItem}>
+            <Image source={require('../../assets/icons/Agenda.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <Text style={styles.bottomLabel}>Agenda</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => (navigation as any).navigate('Main', { screen: 'Statistieken' })} style={styles.bottomItem}>
+            <Image source={require('../../assets/icons/Statistieken.png')} style={[styles.bottomIcon, { tintColor: COLORS.mutedForeground }]} />
+            <Text style={styles.bottomLabel}>Statistieken</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white },
-  content: { padding: 24, gap: 16, paddingBottom: 120 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backArrow: { fontSize: 20, color: COLORS.foreground, marginRight: 8 },
-  title: { fontSize: 20, fontWeight: '700', color: COLORS.foreground },
+  topIconsRow: {
+    position: 'absolute',
+    top: 56,
+    left: 24,
+    right: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  iconButton: { padding: 4 },
+  iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.95)', alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: '#E0E0E0' },
+  iconImage: { width: 20, height: 20, resizeMode: 'contain' },
+  content: { padding: 24, gap: 16, paddingBottom: themeConstants.sizes.tabBarHeight + 40 },
+  pageHeader: { marginTop: 144, marginBottom: 8, paddingHorizontal: 0, zIndex: 20, flexDirection: 'row', alignItems: 'center' },
+  titleWrap: { flex: 1, alignItems: 'flex-start' },
+  title: { fontSize: 24, fontWeight: '700', color: COLORS.foreground },
+  arrowIcon: { width: 22, height: 22, resizeMode: 'contain' },
   subtitle: { marginTop: 12, color: COLORS.mutedForeground, fontSize: 14 },
   card: { marginTop: 20, backgroundColor: COLORS.card, borderRadius: 16, padding: 18, borderWidth: 1, borderColor: COLORS.border },
   leftRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -67,4 +119,9 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: '700' },
   bulletRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 6 },
   bullet: { color: COLORS.mutedForeground, marginRight: 6 },
+  bottomNav: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'transparent' },
+  bottomInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: Platform.OS === 'ios' ? 16 : 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.border },
+  bottomItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  bottomIcon: { width: 22, height: 22, resizeMode: 'contain' },
+  bottomLabel: { marginTop: 2, fontSize: 11, color: COLORS.mutedForeground },
 });
