@@ -88,15 +88,9 @@ export default function NonverbaalScreen() {
         )}
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight - 31, zIndex: 30 }}>
-        <View style={[{ paddingHorizontal: 24, paddingBottom: 24, paddingTop: 12, gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: 'transparent' }]}>
-          {/* invisible save/cancel row to match layout height when editing */}
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={[{ paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: COLORS.card, flex: 1, opacity: 0 }]} />
-            <View style={[{ paddingVertical: 14, paddingHorizontal: 24, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 0.5, borderColor: '#E0E0E0', flex: 1, opacity: 0, marginLeft: 12 }]} />
-          </View>
-
-          <TouchableOpacity style={[{ paddingVertical: 14, borderRadius: 20, backgroundColor: theme.color, width: '100%', marginTop: 12, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }]} onPress={() => (navigation as any).navigate('NonverbaalMessage')}>
+      <View style={[styles.formFooter, { position: 'absolute', left: 0, right: 0, bottom: insets.bottom + THEME.sizes.tabBarHeight - 31, zIndex: 30 }]}> 
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={[{ flex: 1, paddingVertical: 14, borderRadius: 20, backgroundColor: theme.color, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }]} onPress={() => (navigation as any).navigate('NonverbaalMessage')}>
             <Image source={require('../../assets/icons/Plus.png')} style={styles.plusIcon as any} />
             <Text style={[styles.landingButtonText, { marginLeft: 8 }]}>Nieuw bericht</Text>
           </TouchableOpacity>
@@ -137,8 +131,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
   },
-  iconButton: { padding: 4 },
-  iconCircle: {
+    formFooter: { paddingHorizontal: 24, paddingBottom: 24, paddingTop: 12, gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: 'transparent' },
+    buttonRow: { flexDirection: 'row', alignItems: 'center' },
+    iconButton: { padding: 4 },
+    iconCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -200,6 +196,6 @@ const styles = StyleSheet.create({
   messageCard: { backgroundColor: COLORS.card, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16, marginBottom: 16, width: '100%', marginHorizontal: 0, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 4, position: 'relative', boxShadow: Platform.OS === 'web' ? '0px 6px 14px rgba(0,0,0,0.04)' : undefined },
   messageCardText: { color: COLORS.foreground, fontSize: 16, fontWeight: '600' },
   messageCardInner: { flex: 1, paddingRight: 56 },
-  editButton: { position: 'absolute', right: 16, top: '50%', transform: [{ translateY: -20 }], width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F5FB' },
+  editButton: { position: 'absolute', right: 16, top: '50%', marginTop: -6, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F5FB' },
     /* bottomCover removed; fab styles removed */
 });

@@ -38,6 +38,8 @@ function HomeContent() {
   const [weekCount, setWeekCount] = useState(0);
   const [recentCompletion, setRecentCompletion] = useState<{ activity: string; timestamp: string; message?: string } | null>(null);
   const [recentRating, setRecentRating] = useState<number>(0);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   const loadPreferences = useCallback(async () => {
     try {
@@ -63,6 +65,26 @@ function HomeContent() {
   useEffect(() => {
     // load preferences on mount
     loadPreferences();
+
+    // check whether we've shown the welcome bubble before
+    const checkWelcome = async () => {
+      try {
+        const seen = await AsyncStorage.getItem('seenWelcome');
+        if (!seen) {
+          // only show welcome if onboarding presumably completed (optional)
+          setShowWelcome(true);
+        }
+        // try to load profile name
+        const prof = await AsyncStorage.getItem('profile');
+        if (prof) {
+          try {
+            const parsed = JSON.parse(prof);
+            setUserName(parsed?.name || parsed?.firstName || null);
+          } catch { setUserName(null); }
+        }
+      } catch (e) { console.error('welcome check failed', e); }
+    };
+    checkWelcome();
 
     // load mood check-ins for week tracker
     const loadWeekChecks = async () => {
@@ -226,7 +248,24 @@ function HomeContent() {
         </View>
 
         {/* Week tracker (positioned above card) */}
-        {recentCompletion ? (
+        {showWelcome ? (
+          <View style={styles.recentWrapper}>
+            <View style={styles.recentRow}>
+              <View style={styles.recentAvatarWrap}>
+                <Image source={require('../../assets/personage/langhaarbruin.png')} style={styles.recentAvatar} />
+              </View>
+              <View style={[styles.recentBubble, { maxWidth: Math.min(320, Math.max(0, screenWidth - 120)) }]}>
+                <View style={styles.recentTail} />
+                <Text style={styles.recentText}>Dag {userName ? userName : ''}! Welkom bij BAKEN</Text>
+                <Text style={[styles.recentText, { marginTop: 8, fontSize: 13, color: COLORS.mutedForeground }]}>Hier vind je dagelijks check-ins en activiteiten om je te ondersteunen. Veeg omhoog om te beginnen.</Text>
+                <View style={{ height: 6 }} />
+                <TouchableOpacity style={[styles.recentPrimary, { alignSelf: 'flex-end', marginTop: 8 }]} onPress={async () => { await AsyncStorage.setItem('seenWelcome', '1'); setShowWelcome(false); }}>
+                  <Text style={styles.recentPrimaryText}>Begrepen</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ) : recentCompletion ? (
           <View style={styles.recentWrapper}>
             <View style={styles.recentRow}>
               <View style={styles.recentAvatarWrap}>
