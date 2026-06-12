@@ -31,6 +31,15 @@ const STORAGE_KEY = 'calendar_events';
 export default function AgendaScreen() {
   const navigation = useNavigation();
   const theme = useAppTheme();
+  const hexToRgba = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(99,84,255,${alpha})`;
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
   const insets = useSafeAreaInsets();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [date, setDate] = useState('');
@@ -270,7 +279,7 @@ export default function AgendaScreen() {
                         ) : null}
                       </View>
 
-                      <TouchableOpacity style={styles.editCircle} onPress={() => {
+                      <TouchableOpacity style={[styles.editCircle, { backgroundColor: hexToRgba(theme.color, 0.08) }]} onPress={() => {
                         setEditingId(event.id);
                         (navigation as any).navigate('NieuweAfspraak', { event });
                       }}>
