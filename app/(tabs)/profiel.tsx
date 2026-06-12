@@ -212,7 +212,7 @@ export default function ProfileScreen() {
         <View style={styles.cardProfile}>
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.profileEditBtn, { backgroundColor: hexToRgba(uiTheme.color, 0.08), width: 36, height: 36, borderRadius: 18 }]}
+            style={[styles.profileEditBtn, { backgroundColor: hexToRgba(uiTheme.color, 0.08) }]}
             onPress={() => (navigation as any).navigate('Onboarding', { fromProfile: true, step: 'avatar' })}
           >
             <Image source={require('../../assets/icons/Aanpassen.png')} style={[styles.editIcon, { tintColor: uiTheme.color }]} />
@@ -490,16 +490,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     top: 16,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
     zIndex: 30,
   },
 
