@@ -21,6 +21,15 @@ import DateTimePickerShim from './DateTimePickerShim';
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const theme = useAppTheme();
+  const hexToRgba = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(99,84,255,${alpha})`;
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h.length === 3 ? h.split('').map(c => c+c).join('') : h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [timeDate, setTimeDate] = useState<Date>(new Date());
@@ -190,7 +199,9 @@ export default function SettingsScreen() {
         {/* NONVERBAAL */}
         <TouchableOpacity style={styles.card} onPress={() => { const parent = (navigation as any).getParent && (navigation as any).getParent(); (parent || navigation).navigate('Nonverbaal'); }}>
           <View style={styles.left}>
-            <Image source={settingsIcons.nonverbal} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }]}>
+              <Image source={settingsIcons.nonverbal} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View>
               <Text style={styles.cardTitle}>Nonverbale modus</Text>
               <Text style={styles.cardSubtitle}>Communiceer via tekst</Text>
@@ -201,7 +212,9 @@ export default function SettingsScreen() {
         {/* NOTIFICATIES */}
         <View style={styles.card}>
           <View style={styles.left}>
-            <Image source={settingsIcons.notifications} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }]}>
+              <Image source={settingsIcons.notifications} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View>
               <Text style={styles.cardTitle}>Notificaties</Text>
               <Text style={styles.cardSubtitle}>Krijg één keer per dag een herinnering om in te checken</Text>
@@ -220,7 +233,9 @@ export default function SettingsScreen() {
         {/* ACTIVITEITEN AANPASSEN */}
         <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Onboarding', { step: 'good', fromSettings: true })}>
           <View style={styles.left}>
-            <Image source={settingsIcons.adjust} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }]}>
+              <Image source={settingsIcons.adjust} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View>
               <Text style={styles.cardTitle}>Activiteiten aanpassen</Text>
               <Text style={styles.cardSubtitle}>Pas je gekozen activiteiten per emotie aan</Text>
@@ -231,7 +246,9 @@ export default function SettingsScreen() {
         {/* HELP & SUPPORT */}
         <TouchableOpacity style={styles.card} onPress={() => (navigation as any).navigate('Help')}>
           <View style={styles.left}>
-            <Image source={settingsIcons.help} style={[styles.rowIcon, { tintColor: theme.color }]} />
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(theme.color, 0.08) }]}>
+              <Image source={settingsIcons.help} style={[styles.icon, { tintColor: theme.color }]} />
+            </View>
             <View>
               <Text style={styles.cardTitle}>Help & Support</Text>
               <Text style={styles.cardSubtitle}>Krijg hulp bij de app</Text>
@@ -242,7 +259,9 @@ export default function SettingsScreen() {
         {/* RESET APP */}
         <TouchableOpacity style={styles.card}>
           <View style={styles.left}>
-            <Image source={settingsIcons.reset} style={[styles.rowIcon, { tintColor: COLORS.destructive }]} />
+            <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(COLORS.destructive, 0.12) }]}>
+              <Image source={settingsIcons.reset} style={[styles.icon, { tintColor: COLORS.destructive }]} />
+            </View>
             <View>
               <Text style={[styles.cardTitle, { color: COLORS.destructive }]}>
                 Reset app
@@ -373,6 +392,8 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
   },
+  icon: { width: 20, height: 20, resizeMode: 'contain' },
+  iconCircleSmall: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(99, 84, 255, 0.08)', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
 
   cardTitle: {
     fontSize: 16,
