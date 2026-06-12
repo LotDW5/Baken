@@ -194,10 +194,14 @@ export default function SettingsScreen() {
               console.error('Failed to reset app data', e);
             }
             try {
-              // Navigate to onboarding to restart the flow
-              (navigation as any).navigate('Onboarding', { step: 'welcome', fromSettings: true });
+              // Reset navigation stack and open onboarding at the welcome step so user goes through full flow
+              if ((navigation as any).reset) {
+                (navigation as any).reset({ index: 0, routes: [{ name: 'Onboarding', params: { step: 'welcome' } }] });
+              } else if ((navigation as any).navigate) {
+                (navigation as any).navigate('Onboarding', { step: 'welcome' });
+              }
             } catch (e) {
-              try { (navigation as any).reset?.({ index: 0, routes: [{ name: 'Onboarding' }] }); } catch (e2) { /* ignore */ }
+              try { (navigation as any).navigate('Onboarding', { step: 'welcome' }); } catch (e2) { /* ignore */ }
             }
           },
         },
