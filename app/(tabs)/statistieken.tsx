@@ -165,7 +165,22 @@ export default function StatistiekenScreen() {
   const topActivities = useMemo(() => {
     if (!activityStats || activityStats.length === 0) return [];
     const sorted = activityStats.slice().sort((a, b) => (b.avg - a.avg) || (b.count - a.count));
-    return sorted.slice(0, 6);
+    // Helper: find a key in ACTIVITY_ICON_MAP that corresponds to a label (case-insensitive, prefix match)
+    const findIconKey = (label: string) => {
+      if (!label) return undefined;
+      const l = String(label).trim();
+      if (l.toLowerCase() === 'onbekend') return undefined;
+      const keys = Object.keys(ACTIVITY_ICON_MAP);
+      // exact match
+      let k = keys.find(k => k.toLowerCase() === l.toLowerCase());
+      if (k) return k;
+      // startsWith or includes fallback
+      k = keys.find(k => l.toLowerCase().startsWith(k.toLowerCase()) || k.toLowerCase().startsWith(l.toLowerCase()) || l.toLowerCase().includes(k.toLowerCase()));
+      return k;
+    };
+
+    const candidates = sorted.filter(a => !!findIconKey(a.label));
+    return candidates.slice(0, 6);
   }, [activityStats]);
 
   return (
@@ -248,7 +263,18 @@ export default function StatistiekenScreen() {
           {topActivities && topActivities.length > 0 ? (
             topActivities.map((activity: any, index: number) => {
             const isSelected = expandedActivity === activity.label;
-            const iconAsset = ACTIVITY_ICON_MAP[activity.label];
+            // resolve icon key using fuzzy matching to avoid unknown/misaligned labels
+            const resolveIconKey = (label: string) => {
+              if (!label) return undefined;
+              const l = String(label).trim();
+              const keys = Object.keys(ACTIVITY_ICON_MAP);
+              let k = keys.find(k => k.toLowerCase() === l.toLowerCase());
+              if (k) return k;
+              k = keys.find(k => l.toLowerCase().startsWith(k.toLowerCase()) || k.toLowerCase().startsWith(l.toLowerCase()) || l.toLowerCase().includes(k.toLowerCase()));
+              return k;
+            };
+            const iconKey = resolveIconKey(activity.label);
+            const iconAsset = iconKey ? ACTIVITY_ICON_MAP[iconKey] : null;
             return (
               <View key={activity.label} onLayout={(e) => { activityPositions.current[activity.label] = e.nativeEvent.layout.y; }}>
                 <TouchableOpacity
