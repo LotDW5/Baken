@@ -151,11 +151,11 @@ export default function ActivityComplete() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white, alignItems: 'center', paddingHorizontal: 24 },
-  bubbleWrap: { marginTop: 0, alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' },
+  bubbleWrap: { marginTop: -40, alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' },
   bubble: { backgroundColor: COLORS.white, padding: 22, borderRadius: 20, alignSelf: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 16, marginBottom: 6, zIndex: 2 },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 14, textAlign: 'center', color: COLORS.foreground },
-  avatar: { width: 280, height: 280, marginTop: 0 },
+  avatar: { width: 200, height: 200, marginTop: -20 },
   topBar: {
     position: 'absolute',
     top: 56,
