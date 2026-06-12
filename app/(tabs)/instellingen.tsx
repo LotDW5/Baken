@@ -168,6 +168,44 @@ export default function SettingsScreen() {
     reset: require('../../assets/icons/Reset.png'),
   };
 
+  const handleReset = () => {
+    Alert.alert(
+      'Reset app',
+      'Weet je zeker dat je alle app-gegevens wilt wissen? Dit kan niet ongedaan gemaakt worden.',
+      [
+        { text: 'Annuleer', style: 'cancel' },
+        {
+          text: 'Wis alles',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const existingId = await AsyncStorage.getItem('daily_reminder_notification_id');
+              if (existingId) {
+                try {
+                  const Notifications = require('expo-notifications');
+                  await Notifications.cancelScheduledNotificationAsync(existingId);
+                } catch (e) {
+                  // ignore
+                }
+              }
+              await AsyncStorage.clear();
+              try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+            } catch (e) {
+              console.error('Failed to reset app data', e);
+            }
+            try {
+              // Navigate to onboarding to restart the flow
+              (navigation as any).navigate('Onboarding', { step: 'welcome', fromSettings: true });
+            } catch (e) {
+              try { (navigation as any).reset?.({ index: 0, routes: [{ name: 'Onboarding' }] }); } catch (e2) { /* ignore */ }
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
@@ -262,7 +300,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         {/* RESET APP */}
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={handleReset}>
           <View style={styles.left}>
             <View style={[styles.iconCircleSmall, { backgroundColor: hexToRgba(COLORS.destructive, 0.12) }]}>
               <Image source={settingsIcons.reset} style={[styles.icon, { tintColor: COLORS.destructive }]} />
