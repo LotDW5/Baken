@@ -15,7 +15,7 @@
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/Logo 3.png"
       },
-      "package": "com.baken.baken"
+      "package": "be.lotdewulf.baken"
     },
     "web": {
       "output": "single",
