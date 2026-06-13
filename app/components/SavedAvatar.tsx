@@ -11,7 +11,6 @@ type AvatarData = {
 };
 
 const Fallback = require('../../assets/personage/krullen-wit-vest.png');
-
 function normalizeKey(v?: string | null) {
   if (!v) return '';
   return String(v).toLowerCase().trim();
