@@ -91,7 +91,7 @@ export default function ActivityComplete() {
       <View style={styles.bubbleWrap}>
             <View style={[styles.bubble, { width: Math.max(0, screenWidth - 48) }]}>
               <Text style={styles.title}>Veel plezier!</Text>
-              <Text style={styles.subtitle}>Ik hoop dat het {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
+              <Text style={styles.subtitle}>Ik hoop dat {String(activity).toLowerCase()} je een goed gevoel geeft</Text>
               <View style={styles.bubbleTail} />
             </View>
             <SavedAvatar style={styles.avatar as any} />
