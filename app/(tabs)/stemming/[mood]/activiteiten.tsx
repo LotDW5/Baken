@@ -137,6 +137,22 @@ export default function ActivitiesScreen() {
         const saved = await AsyncStorage.getItem('copingActivities');
         const copingActivities = saved ? JSON.parse(saved) : {};
         const moodSuggestions: string[] = (copingActivities && copingActivities[mood as string]) || [];
+        // normalize saved activity names to match built-in defaults/icons
+        const builtInNames: string[] = [
+          ...Object.values(DEFAULT_BY_MOOD).flat(),
+          ...Object.keys(ACTIVITY_ICON_SOURCES),
+        ];
+        const knownNames = Array.from(new Set(builtInNames.map(n => (n || '').toString())));
+        const normalize = (name: string) => {
+          if (!name) return name;
+          const trimmed = name.trim();
+          if (knownNames.includes(trimmed)) return trimmed;
+          const lower = trimmed.toLowerCase();
+          // try substring matches (either direction)
+          const found = knownNames.find(k => k.toLowerCase().includes(lower) || lower.includes(k.toLowerCase()));
+          return found || trimmed;
+        };
+        const normalizedMoodSuggestions = (moodSuggestions || []).map(normalize);
         // pick up to 4 random suggestions from onboarding selections for this mood
         const pickRandom = (arr: string[], n: number) => {
           const a = [...arr];
@@ -148,8 +164,8 @@ export default function ActivitiesScreen() {
         };
 
         let chosen: string[] = [];
-        if ((moodSuggestions || []).length > 0) {
-          chosen = pickRandom(moodSuggestions, 3);
+        if ((normalizedMoodSuggestions || []).length > 0) {
+          chosen = pickRandom(normalizedMoodSuggestions, 3);
         }
         // fill with defaults if less than 4
         const defaults = DEFAULT_BY_MOOD[mood as string] || [];
