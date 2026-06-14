@@ -4,7 +4,8 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import HeadAvatar from '../components/HeadAvatar';
 // eslint-disable-next-line import/no-named-as-default
 import applyShadow from '@/utils/shadow';

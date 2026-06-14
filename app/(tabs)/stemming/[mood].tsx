@@ -55,13 +55,12 @@ export default function MoodCheckInScreen() {
   const handleSave = async () => {
     try {
       await AsyncStorage.setItem('tempMoodNote', moodNote || '');
-      Alert.alert('Debug', 'handleSave called — navigating...');
+      console.debug('handleSave called — navigating...');
       const navAny: any = navigation;
       // First try to navigate within the current navigator
       try {
         console.log('Attempting navigation: navigation.navigate("Activiteiten")');
-        (navigation as any).navigate('Activiteiten', { mood: selectedMood.id });
-        Alert.alert('Debug', 'Tried navigation.navigate("Activiteiten")');
+        try { (navigation as any).navigate('Activiteiten', { mood: selectedMood.id }); } catch (e) { console.debug('navigation.navigate failed', e); }
       } catch (err) {
         console.warn('navigation.navigate("Activiteiten") threw:', err);
       }
@@ -73,8 +72,7 @@ export default function MoodCheckInScreen() {
           const state = parent.getState();
           if (state && Array.isArray(state.routeNames) && state.routeNames.includes('Check-in')) {
             console.log('Parent has Check-in tab — navigating into it');
-            Alert.alert('Debug', 'Parent has Check-in — navigating into Activiteiten');
-            parent.navigate('Check-in', { screen: 'Activiteiten', params: { mood: selectedMood.id } });
+            try { parent.navigate('Check-in', { screen: 'Activiteiten', params: { mood: selectedMood.id } }); } catch (e) { console.debug('parent.navigate failed', e); }
           }
         } catch (err) {
           console.warn('parent navigation attempt failed', err);

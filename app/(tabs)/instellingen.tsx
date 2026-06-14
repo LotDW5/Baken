@@ -155,7 +155,13 @@ export default function SettingsScreen() {
       await AsyncStorage.setItem('daily_reminder_notification_id', id);
       return id;
     } catch (e) {
-      Alert.alert('Fout bij notificatie', 'Kon notificatie niet plannen.');
+      console.error('scheduleDailyNotification failed', e);
+      try {
+        // persist the desired time so the app remembers the preference even if scheduling failed
+        await AsyncStorage.setItem('daily_reminder_time', timeStr);
+        await AsyncStorage.setItem('notifications_enabled', 'true');
+      } catch (err) { /* ignore persistence failure */ }
+      Alert.alert('Notificaties niet gepland', 'Kon notificatie niet plannen. De voorkeur is wel opgeslagen en wordt toegepast zodra notificaties beschikbaar zijn.');
       return null;
     }
   };
