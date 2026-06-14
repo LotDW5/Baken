@@ -115,16 +115,17 @@ export default function SettingsScreen() {
   };
   const ensurePermissions = async () => {
     // Avoid loading expo-notifications inside Expo Go to prevent known crash
-    if (isRunningInExpoGo()) return false;
     try {
       const Notifications = require('expo-notifications');
+      // if running in Expo Go, permission requests may behave differently but still try
       const { status } = await Notifications.getPermissionsAsync();
       if (status !== 'granted') {
-        const res = await Notifications.requestPermissionsAsync();
-        return res.status === 'granted';
+        const res = await Notifications.requestPermissionsAsync({ ios: { allowAlert: true, allowBadge: true, allowSound: true } });
+        return (res && (res.status === 'granted' || res.granted));
       }
       return true;
     } catch (e) {
+      console.error('ensurePermissions error', e);
       return false;
     }
   };
@@ -148,6 +149,20 @@ export default function SettingsScreen() {
     } as any;
     try {
       const Notifications = require('expo-notifications');
+      // ensure Android channel exists
+      try {
+        if (Platform.OS === 'android' && Notifications.setNotificationChannelAsync) {
+          const AndroidImportance = Notifications.AndroidImportance || (Notifications as any).AndroidImportance || { HIGH: 4 };
+          await Notifications.setNotificationChannelAsync('daily-reminder', {
+            name: 'Daily reminder',
+            importance: AndroidImportance.HIGH,
+            sound: 'default',
+          });
+        }
+      } catch (chErr) {
+        console.warn('Failed to create notification channel', chErr);
+      }
+
       const id = await Notifications.scheduleNotificationAsync({
         content,
         trigger: { hour: hh, minute: mm, repeats: true },
@@ -161,7 +176,7 @@ export default function SettingsScreen() {
         await AsyncStorage.setItem('daily_reminder_time', timeStr);
         await AsyncStorage.setItem('notifications_enabled', 'true');
       } catch (err) { /* ignore persistence failure */ }
-      Alert.alert('Notificaties niet gepland', 'Kon notificatie niet plannen. De voorkeur is wel opgeslagen en wordt toegepast zodra notificaties beschikbaar zijn.');
+      Alert.alert('Notificaties niet gepland', 'Kon notificatie niet plannen. De voorkeur is wel opgeslagen en wordt toegepast zodra notificaties beschikbaar zijn. Controleer toestemmingen of gebruik een development build.');
       return null;
     }
   };
