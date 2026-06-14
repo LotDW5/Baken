@@ -491,6 +491,12 @@ export default function OnboardingScreen() {
     } else if (currentStep === 'crisis') {
       // if opened from settings to edit activities, return to Instellingen after crisis
       if (openedFromSettings) {
+        try {
+          await AsyncStorage.setItem('copingActivities', JSON.stringify(selectedActivities));
+          try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+        } catch (e) {
+          console.warn('[onboarding] failed to persist copingActivities on exit from settings', e);
+        }
         (navigation as any).navigate('Instellingen');
         return;
       }
