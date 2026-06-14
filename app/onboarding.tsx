@@ -3,7 +3,7 @@ import useAppTheme from '@/hooks/use-app-theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -217,6 +217,8 @@ export default function OnboardingScreen() {
   const [bottomIndex, setBottomIndex] = useState(0);
   const [shoesIndex, setShoesIndex] = useState(0);
   const [activePart, setActivePart] = useState<string | null>(null);
+
+  const moodScrollRef = useRef<ScrollView | null>(null);
 
   // avatar option keys (match asset filenames like `${hair}-${skin}-${clothing}.png`)
   const HAIR_KEYS = ['krullen', 'kort', 'lang'];
@@ -460,10 +462,13 @@ export default function OnboardingScreen() {
       setCurrentStep('good');
     } else if (currentStep === 'good') {
       setCurrentStep('okay');
+      setTimeout(() => moodScrollRef.current?.scrollTo?.({ y: 0, animated: true }), 50);
     } else if (currentStep === 'okay') {
       setCurrentStep('bad');
+      setTimeout(() => moodScrollRef.current?.scrollTo?.({ y: 0, animated: true }), 50);
     } else if (currentStep === 'bad') {
       setCurrentStep('crisis');
+      setTimeout(() => moodScrollRef.current?.scrollTo?.({ y: 0, animated: true }), 50);
     } else if (currentStep === 'crisis') {
       // if opened from settings to edit activities, return to Instellingen after crisis
       if (openedFromSettings) {
@@ -980,6 +985,7 @@ export default function OnboardingScreen() {
             </View>
 
             <ScrollView
+              ref={moodScrollRef}
               style={styles.moodScroll}
               contentContainerStyle={[styles.activitiesScroll, { flexGrow: 1, paddingBottom: isKeyboardVisible ? insets.bottom + 24 : insets.bottom + MOOD_FOOTER_HEIGHT + 24 }]}
               keyboardShouldPersistTaps="handled"
