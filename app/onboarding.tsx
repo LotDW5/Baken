@@ -410,12 +410,24 @@ export default function OnboardingScreen() {
   }, []);
 
   const handleActivityToggle = (moodId: string, activityName: string) => {
-    setSelectedActivities(prev => ({
-      ...prev,
-      [moodId]: prev[moodId]?.includes(activityName)
-        ? prev[moodId].filter(a => a !== activityName)
-        : [...(prev[moodId] || []), activityName]
-    }));
+    setSelectedActivities(prev => {
+      const next = {
+        ...prev,
+        [moodId]: prev[moodId]?.includes(activityName)
+          ? prev[moodId].filter(a => a !== activityName)
+          : [...(prev[moodId] || []), activityName]
+      };
+      // persist immediately so edits remain visible in Check-in
+      (async () => {
+        try {
+          await AsyncStorage.setItem('copingActivities', JSON.stringify(next));
+          try { (await import('@/utils/data-events')).emitDataChange(); } catch (e) { /* ignore */ }
+        } catch (e) {
+          console.warn('[onboarding] failed to persist copingActivities on toggle', e);
+        }
+      })();
+      return next;
+    });
   };
 
   const handleAddCustomActivity = async () => {
