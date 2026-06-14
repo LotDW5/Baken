@@ -163,16 +163,52 @@ export default function SettingsScreen() {
         console.warn('Failed to create notification channel', chErr);
       }
 
-      const id = await Notifications.scheduleNotificationAsync({
-        content,
-        trigger: { hour: hh, minute: mm, repeats: true },
-      });
-      await AsyncStorage.setItem('daily_reminder_notification_id', id);
-      return id;
-    } catch (e) {
-      console.error('scheduleDailyNotification failed', e);
       try {
-        // persist the desired time so the app remembers the preference even if scheduling failed
+        const id = await Notifications.scheduleNotificationAsync({
+          content,
+          trigger: { hour: hh, minute: mm, repeats: true },
+        });
+        await AsyncStorage.setItem('daily_reminder_notification_id', id);
+        return id;
+      } catch (firstErr) {
+        console.warn('Repeating schedule failed, attempting short test schedule', firstErr);
+        try {
+          // try scheduling a one-off test notification in 10 seconds to validate scheduling capability
+          const testTrigger = new Date(Date.now() + 10000);
+          const testId = await Notifications.scheduleNotificationAsync({ content, trigger: testTrigger });
+          // cancel the test notification immediately
+          try { await Notifications.cancelScheduledNotificationAsync(testId); } catch (cErr) { /* ignore */ }
+          // if test succeeded, try scheduling repeating again
+          const id2 = await Notifications.scheduleNotificationAsync({ content, trigger: { hour: hh, minute: mm, repeats: true } });
+          await AsyncStorage.setItem('daily_reminder_notification_id', id2);
+          return id2;
+        } catch (secondErr) {
+          console.error('Scheduling failed after test attempt', secondErr);
+          try {
+            await AsyncStorage.setItem('daily_reminder_time', timeStr);
+            await AsyncStorage.setItem('notifications_enabled', 'true');
+          } catch (err) { /* ignore persistence failure */ }
+          // Offer user to open OS app settings to check notification permissions
+          try {
+            const { Alert, Linking } = require('react-native');
+            Alert.alert(
+              'Notificaties niet gepland',
+              'Kon notificatie niet plannen. De voorkeur is wel opgeslagen. Controleer notificatierechten in je apparaatinstellingen of gebruik een development build.',
+              [
+                { text: 'Open instellingen', onPress: () => { try { Linking.openSettings?.(); } catch (_) { /* ignore */ } } },
+                { text: 'OK', style: 'cancel' },
+              ],
+            );
+          } catch (alertErr) {
+            // fallback alert
+            Alert.alert('Notificaties niet gepland', 'Kon notificatie niet plannen. De voorkeur is wel opgeslagen.');
+          }
+          return null;
+        }
+      }
+    } catch (e) {
+      console.error('scheduleDailyNotification failed (outer)', e);
+      try {
         await AsyncStorage.setItem('daily_reminder_time', timeStr);
         await AsyncStorage.setItem('notifications_enabled', 'true');
       } catch (err) { /* ignore persistence failure */ }
