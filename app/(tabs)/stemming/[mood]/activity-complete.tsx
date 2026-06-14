@@ -4,7 +4,8 @@ import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import HeadAvatar from '../../../components/HeadAvatar';
 import SavedAvatar from '../../../components/SavedAvatar';
 

@@ -3,7 +3,8 @@ import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import applyShadow from '@/utils/shadow';
 import { useNavigation } from '@react-navigation/native';
-import { Image, Linking, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import HeadAvatar from '../components/HeadAvatar';
 
 export default function HelpSupportScreen() {

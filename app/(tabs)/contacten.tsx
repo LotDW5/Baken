@@ -9,14 +9,13 @@ import {
     Image,
     Linking,
     Platform,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+  import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import HeadAvatar from '../components/HeadAvatar';
 
 interface Contact {
