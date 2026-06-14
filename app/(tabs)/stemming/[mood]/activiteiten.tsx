@@ -53,6 +53,31 @@ const ACTIVITY_DESCRIPTIONS: Record<string, string> = {
   'Huisdier knuffelen': 'Knuffel of aai je huisdier voor troost',
   'Slapen': 'Ga even liggen om te rusten of te slapen',
   'Bidden': 'Neem even de tijd om te bidden',
+  'Een warme douche/ bad nemen': 'Neem een warme douche of bad om te ontspannen en je lichaam te kalmeren',
+  'Iemand knuffelen': 'Zoek fysieke nabijheid voor troost en geruststelling',
+  'Een sigaret roken': 'Roken kan ontspanning lijken, maar let op: het is schadelijk voor je gezondheid',
+  'Serie of film kijken': 'Kijk een favoriete serie of film om even afleiding te zoeken',
+  'Podcast luisteren': 'Luister naar een podcast die je interesseert of ontspant',
+  'Ademhalingsoefeningen': 'Doe rustige ademhalingsoefeningen om te kalmeren',
+  'Tekenen of schilderen': 'Gebruik tekenen of schilderen om je gedachten te uiten en te ontspannen',
+  'Iets opschrijven': 'Schrijf je gedachten of gevoelens op om ze te ordenen',
+  'Breien of haken': 'Doe rustig handwerk om je handen bezig te houden en te ontspannen',
+  'Knutselen': 'Maak iets met je handen om afleiding en voldoening te ervaren',
+  'Sporten': 'Doe een korte workout of bewegingsoefening om energie kwijt te raken',
+  'Yoga doen': 'Doe eenvoudige yoga- of stretchoefeningen om je lichaam en geest te ontspannen',
+  'Slapen of een dutje doen': 'Neem een korte rust of dutje om je batterij op te laden',
+  'Tuinieren': 'Breng tijd buiten door met planten en tuinwerk voor rust en focus',
+  'Contact opnemen met vrienden': 'Stuur een bericht of bel iemand om even contact te maken',
+  'Opruimen of schoonmaken': 'Ruim even op om je omgeving overzichtelijker en rustgevender te maken',
+  'Spelletjes spelen': 'Speel een spelletje om te ontspannen en plezier te hebben',
+  'Een buitenactiviteit doen': 'Doe iets buiten, zoals fietsen of een korte activiteit voor afleiding',
+  'Koken of bakken': 'Maak iets lekkers om je zinnen te verzetten en jezelf te verwennen',
+  'To-do lijst maken': 'Maak een korte takenlijst om overzicht en controle te krijgen',
+  'Planning maken': 'Maak een planning om je dag of taken te structureren',
+  'Je routine volgen': 'Volg je vertrouwde routine om veiligheid en voorspelbaarheid te ervaren',
+  'Dagboek schrijven': 'Schrijf in je dagboek om gevoelens te verwerken en reflecteren',
+  'Naar de kerk gaan': 'Bezoek een kerk of religieuze plek voor rust en verbinding',
+  'In de natuur zijn': 'Breng tijd door in de natuur om te kalmeren en te herstellen',
 };
 
 const ACTIVITY_ICON_SOURCES: Record<string, any> = {
@@ -435,7 +460,9 @@ export default function ActivitiesScreen() {
 
           {/* Show exactly 3 activities chosen from onboarding (or defaults filled) */}
           {suggestions.slice(0, 3).map((activity, idx) => {
-            const isCustom = !((DEFAULT_BY_MOOD[mood as string] || []).includes(activity));
+            const builtInForMood = (DEFAULT_BY_MOOD[mood as string] || []);
+            const isBuiltIn = !!(ACTIVITY_DESCRIPTIONS[activity] || ACTIVITY_ICON_SOURCES[activity] || builtInForMood.includes(activity));
+            const isCustom = !isBuiltIn;
             return (
             <View key={`sug-${idx}`}>
                 <TouchableOpacity
