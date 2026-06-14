@@ -384,6 +384,25 @@ export default function OnboardingScreen() {
             setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
           } catch { setCustomBackgrounds([]); }
         }
+        // load previously saved coping activities (selected activities)
+        try {
+          const savedCoping = await AsyncStorage.getItem('copingActivities');
+          if (savedCoping) {
+            const parsedCoping = JSON.parse(savedCoping) || { good: [], okay: [], bad: [], crisis: [] };
+            setSelectedActivities(parsedCoping);
+            // derive customActivities as those entries not present in built-in activity lists
+            const builtInNames = new Set<string>();
+            ACTIVITY_CATEGORIES.forEach(cat => cat.activities.forEach(a => builtInNames.add(a.name)));
+            const derivedCustom: Record<string, string[]> = { good: [], okay: [], bad: [], crisis: [] };
+            Object.keys(parsedCoping).forEach((k) => {
+              const arr = parsedCoping[k] || [];
+              derivedCustom[k] = arr.filter((name: string) => !builtInNames.has(name));
+            });
+            setCustomActivities(derivedCustom);
+          }
+        } catch (e) {
+          console.warn('[onboarding] failed to load copingActivities', e);
+        }
       } catch (err) {
         console.warn('[onboarding] failed to load saved theme/background', err);
       }
