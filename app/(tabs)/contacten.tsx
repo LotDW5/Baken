@@ -15,7 +15,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-  import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import HeadAvatar from '../components/HeadAvatar';
 
 interface Contact {
