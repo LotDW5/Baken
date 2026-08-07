@@ -2,6 +2,7 @@ import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
 import useAppTheme from '@/hooks/use-app-theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
@@ -963,7 +964,13 @@ export default function OnboardingScreen() {
                       const source = (bg as any).file ?? ONBOARD_BACKGROUNDS[0].file;
                       return (
                         <TouchableOpacity key={bg.id} style={[styles.bgThumbWrapper, isSelected && styles.bgThumbWrapperSelected]} onPress={() => handleBackgroundChange(bg.id)}>
-                          <Image source={source} style={styles.bgThumbImage} />
+                          <ExpoImage
+                            source={source as any}
+                            style={styles.bgThumbImage}
+                            contentFit="cover"
+                            cachePolicy="memory-disk"
+                            transition={120}
+                          />
                           {isSelected && (
                             <View style={styles.bgSelectedOverlay}>
                               <View style={styles.bgSelectedCircle}>
@@ -1745,12 +1752,13 @@ const styles = StyleSheet.create({
   bgGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    columnGap: 8,
     rowGap: 14,
   },
 
   bgThumbWrapper: {
-    width: '32%',
+    width: '31.5%',
     aspectRatio: 0.7,
     borderRadius: 14,
     borderWidth: 1.5,
