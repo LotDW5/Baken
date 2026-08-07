@@ -213,7 +213,7 @@ const styles = StyleSheet.create<any>({
     overflow: 'hidden',
   },
   iconImage: { width: 28, height: 28, resizeMode: 'contain' },
-  avatarImage: { width: 36, height: 36, borderRadius: 18, resizeMode: 'cover' },
+  avatarImage: { width: 28, height: 28, borderRadius: 14, resizeMode: 'contain' },
   pageHeader: {
     marginTop: 86,
     marginBottom: 24,
