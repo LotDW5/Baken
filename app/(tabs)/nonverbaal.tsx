@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   pageHeader: {
-    marginTop: 144,
+    marginTop: 86,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
