@@ -139,7 +139,7 @@ export default function ProfileScreen() {
     }
   };
 
-  // Build grid: fixed order — plus tile, then built-in backgrounds (excluding the 3rd one per request), then custom backgrounds
+  // Build grid: plus tile, then custom backgrounds, then built-in backgrounds.
   const removedBuiltInId = BACKGROUNDS[2]?.id; // third item (index 2)
   const builtInEntries = BACKGROUNDS
     .filter(b => b.id !== removedBuiltInId)
@@ -149,8 +149,8 @@ export default function ProfileScreen() {
 
   const displayBackgrounds = [
     { id: 'add' },
-    ...builtInEntries,
     ...customEntries,
+    ...builtInEntries,
   ];
 
   const handleAddBackground = async () => {

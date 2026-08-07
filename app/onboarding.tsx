@@ -896,7 +896,7 @@ export default function OnboardingScreen() {
       const removedBuiltInId = ONBOARD_BACKGROUNDS[2]?.id;
       const builtInEntries = ONBOARD_BACKGROUNDS.filter(b => b.id !== removedBuiltInId).map(b => ({ id: b.id, file: b.file }));
       const customEntries = customBackgrounds.map(c => ({ id: c.id, file: { uri: c.uri } }));
-      const displayBackgrounds = [ { id: 'add' }, ...builtInEntries, ...customEntries ];
+      const displayBackgrounds = [ { id: 'add' }, ...customEntries, ...builtInEntries ];
 
       return (
         <SafeAreaView style={styles.safeArea}>
