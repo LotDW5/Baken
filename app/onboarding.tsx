@@ -322,18 +322,23 @@ export default function OnboardingScreen() {
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
-      if (result && !(result as any).cancelled) {
-        const newId = `custom-${Date.now()}`;
-        // support both shapes
-        const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
-        const newEntry = { id: newId, uri };
-        const next = [newEntry, ...customBackgrounds];
-        setCustomBackgrounds(next);
-        await AsyncStorage.setItem('customBackgrounds', JSON.stringify(next));
-        // set selected to the new custom background
-        setSelectedBackground(newId);
-        await AsyncStorage.setItem('homeBackground', newId);
+      const cancelled = (result as any)?.canceled ?? (result as any)?.cancelled;
+      if (cancelled) return;
+
+      const uri = (result as any)?.assets?.[0]?.uri || (result as any)?.uri;
+      if (!uri) {
+        alert('Kon geen afbeelding ophalen uit je galerij. Probeer opnieuw.');
+        return;
       }
+
+      const newId = `custom-${Date.now()}`;
+      const newEntry = { id: newId, uri };
+      const next = [newEntry, ...customBackgrounds];
+      setCustomBackgrounds(next);
+      await AsyncStorage.setItem('customBackgrounds', JSON.stringify(next));
+      // set selected to the new custom background
+      setSelectedBackground(newId);
+      await AsyncStorage.setItem('homeBackground', newId);
     } catch (e) {
       console.warn('[onboarding] image picker error', e);
       alert('Kon de fotokeuze niet openen (image picker niet beschikbaar).');
@@ -381,7 +386,13 @@ export default function OnboardingScreen() {
         if (savedCustom) {
           try {
             const parsed = JSON.parse(savedCustom);
-            setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
+            const cleaned = (Array.isArray(parsed) ? parsed : []).filter(
+              (entry: any) => entry && typeof entry.id === 'string' && typeof entry.uri === 'string' && entry.uri.trim().length > 0
+            );
+            setCustomBackgrounds(cleaned);
+            if (cleaned.length !== (Array.isArray(parsed) ? parsed.length : 0)) {
+              await AsyncStorage.setItem('customBackgrounds', JSON.stringify(cleaned));
+            }
           } catch { setCustomBackgrounds([]); }
         }
         // load previously saved coping activities (selected activities)
@@ -895,7 +906,9 @@ export default function OnboardingScreen() {
       // build display backgrounds (add + builtins + customs)
       const removedBuiltInId = ONBOARD_BACKGROUNDS[2]?.id;
       const builtInEntries = ONBOARD_BACKGROUNDS.filter(b => b.id !== removedBuiltInId).map(b => ({ id: b.id, file: b.file }));
-      const customEntries = customBackgrounds.map(c => ({ id: c.id, file: { uri: c.uri } }));
+      const customEntries = customBackgrounds
+        .filter(c => c && typeof c.uri === 'string' && c.uri.trim().length > 0)
+        .map(c => ({ id: c.id, file: { uri: c.uri } }));
       const displayBackgrounds = [ { id: 'add' }, ...customEntries, ...builtInEntries ];
 
       return (
