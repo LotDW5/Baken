@@ -3,19 +3,19 @@ import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
-  Image,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import HeadAvatar from '../components/HeadAvatar';
  
@@ -67,6 +67,14 @@ export default function ProfileScreen() {
   useEffect(() => {
     loadPreferences();
   }, []);
+
+  useEffect(() => {
+    const uris = customBackgrounds
+      .map((entry) => entry?.uri)
+      .filter((uri): uri is string => typeof uri === 'string' && uri.trim().length > 0);
+    if (!uris.length) return;
+    ExpoImage.prefetch(uris).catch(() => {});
+  }, [customBackgrounds]);
 
   const loadPreferences = async () => {
     try {

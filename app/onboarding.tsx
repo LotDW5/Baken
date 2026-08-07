@@ -2,9 +2,9 @@ import { COLORS, THEME_COLORS, getTheme } from '@/constants/colors';
 import useAppTheme from '@/hooks/use-app-theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -189,6 +189,14 @@ export default function OnboardingScreen() {
     bad: [],
     crisis: []
   });
+
+  useEffect(() => {
+    const uris = customBackgrounds
+      .map((entry) => entry?.uri)
+      .filter((uri): uri is string => typeof uri === 'string' && uri.trim().length > 0);
+    if (!uris.length) return;
+    ExpoImage.prefetch(uris).catch(() => {});
+  }, [customBackgrounds]);
 
   // Avatar/personage assets
   const HEADS = [

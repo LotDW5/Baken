@@ -3,8 +3,9 @@ import THEME from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeadAvatar from '../components/HeadAvatar';
 // eslint-disable-next-line import/no-named-as-default
@@ -67,7 +68,13 @@ function HomeContent() {
       if (savedCustom) {
         try {
           const parsed = JSON.parse(savedCustom);
-          setCustomBackgrounds(Array.isArray(parsed) ? parsed : []);
+          const cleaned = (Array.isArray(parsed) ? parsed : []).filter(
+            (entry: any) => entry && typeof entry.id === 'string' && typeof entry.uri === 'string' && entry.uri.trim().length > 0
+          );
+          setCustomBackgrounds(cleaned);
+          if (cleaned.length !== (Array.isArray(parsed) ? parsed.length : 0)) {
+            await AsyncStorage.setItem('customBackgrounds', JSON.stringify(cleaned));
+          }
         } catch { setCustomBackgrounds([]); }
       }
       if (savedBg) setSelectedBackground(savedBg);
@@ -175,13 +182,13 @@ function HomeContent() {
     return unsub;
   }, [loadPreferences]);
 
-  let backgroundImage: any = BACKGROUND_IMAGES['butterfly'];
-  if (String(selectedBackground).startsWith('custom-')) {
-    const found = customBackgrounds.find(c => c.id === selectedBackground);
-    if (found && found.uri) backgroundImage = { uri: found.uri };
-  } else {
-    backgroundImage = BACKGROUND_IMAGES[selectedBackground as keyof typeof BACKGROUND_IMAGES] || BACKGROUND_IMAGES['butterfly'];
-  }
+  const backgroundImage = useMemo(() => {
+    if (String(selectedBackground).startsWith('custom-')) {
+      const found = customBackgrounds.find(c => c.id === selectedBackground && c.uri);
+      if (found) return { uri: found.uri };
+    }
+    return BACKGROUND_IMAGES[selectedBackground as keyof typeof BACKGROUND_IMAGES] || BACKGROUND_IMAGES['butterfly'];
+  }, [selectedBackground, customBackgrounds]);
 
   const iconMap: Record<string, any> = {
     good: require('../../assets/icons/Goed.png'),
@@ -196,6 +203,14 @@ function HomeContent() {
     // reset loaded flag when background changes so we show placeholder until loaded
     setBgLoaded(false);
   }, [selectedBackground]);
+
+  useEffect(() => {
+    const uris = customBackgrounds
+      .map((entry) => entry?.uri)
+      .filter((uri): uri is string => typeof uri === 'string' && uri.trim().length > 0);
+    if (!uris.length) return;
+    ExpoImage.prefetch(uris).catch(() => {});
+  }, [customBackgrounds]);
 
   useEffect(() => {
     // also refresh recentCompletion when navigating back to this screen
@@ -239,14 +254,16 @@ function HomeContent() {
   };
 
   return (
-    <ImageBackground 
-      source={backgroundImage} 
-      style={styles.backgroundImage}
-      resizeMode="cover"
-      blurRadius={0}
-      onLoadEnd={() => setBgLoaded(true)}
-      onError={() => setBgLoaded(true)}
-    >
+    <View style={styles.backgroundImage}>
+      <ExpoImage
+        source={backgroundImage as any}
+        style={styles.bgImageLayer}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={160}
+        onLoad={() => setBgLoaded(true)}
+        onError={() => setBgLoaded(true)}
+      />
       <SafeAreaView style={styles.container}>
         {/* while background is loading, show a subtle overlay to avoid flash */}
         {!bgLoaded && (
@@ -406,7 +423,7 @@ function HomeContent() {
           </View>
         </View>
       </SafeAreaView>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -436,6 +453,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+  },
+  bgImageLayer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   bgPlaceholder: {
     position: 'absolute',
