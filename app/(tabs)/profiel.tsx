@@ -3,6 +3,7 @@ import themeConstants from '@/constants/theme';
 import useAppTheme from '@/hooks/use-app-theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
@@ -104,14 +105,12 @@ export default function ProfileScreen() {
         alert('Fotokeuze is niet beschikbaar in de webversie.');
         return;
       }
-      // eslint-disable-next-line import/no-unresolved
-      const ImagePicker = await import('expo-image-picker');
       const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
       if (perm && perm.status !== 'granted') {
         alert("Toegang tot je foto's is nodig om een profielfoto te kiezen.");
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
       if (result && !result.cancelled) {
         const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
         if (uri) {
@@ -167,14 +166,12 @@ export default function ProfileScreen() {
         alert('Fotokeuze is niet beschikbaar in de webversie.');
         return;
       }
-          // eslint-disable-next-line import/no-unresolved
-          const ImagePicker = await import('expo-image-picker');
       const perm = ImagePicker.requestMediaLibraryPermissionsAsync ? await ImagePicker.requestMediaLibraryPermissionsAsync() : null;
       if (perm && perm.status !== 'granted') {
         alert("Toegang tot je foto's is nodig om een achtergrond te kiezen.");
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
       const cancelled = (result as any)?.canceled ?? (result as any)?.cancelled;
       if (cancelled) return;
 
