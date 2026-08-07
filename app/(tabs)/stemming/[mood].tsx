@@ -96,7 +96,7 @@ export default function MoodCheckInScreen() {
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Profiel')}>
               <View style={styles.iconCircle}>
-              <HeadAvatar style={styles.iconImage} />
+              <HeadAvatar style={styles.avatarImage} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => (navigation as any).navigate('Instellingen')}>
@@ -213,7 +213,11 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 28,
     height: 28,
-    tintColor: COLORS.foreground,
+    resizeMode: 'contain',
+  },
+  avatarImage: {
+    width: 28,
+    height: 28,
     resizeMode: 'contain',
   },
   headerTitle: {
