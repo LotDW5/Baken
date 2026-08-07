@@ -210,10 +210,9 @@ const styles = StyleSheet.create<any>({
     justifyContent: 'center',
     borderWidth: 0.5,
     borderColor: '#E0E0E0',
-    overflow: 'hidden',
   },
   iconImage: { width: 28, height: 28, resizeMode: 'contain' },
-  avatarImage: { width: 28, height: 28, borderRadius: 14, resizeMode: 'contain' },
+  avatarImage: { width: 28, height: 28, resizeMode: 'contain' },
   pageHeader: {
     marginTop: 86,
     marginBottom: 24,
