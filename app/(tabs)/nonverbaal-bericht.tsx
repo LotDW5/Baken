@@ -215,7 +215,7 @@ const styles = StyleSheet.create<any>({
   iconImage: { width: 28, height: 28, resizeMode: 'contain' },
   avatarImage: { width: 36, height: 36, borderRadius: 18, resizeMode: 'cover' },
   pageHeader: {
-    marginTop: 144,
+    marginTop: 86,
     marginBottom: 24,
     paddingHorizontal: 24,
     zIndex: 20,
