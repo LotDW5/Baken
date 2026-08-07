@@ -111,7 +111,10 @@ export default function ProfileScreen() {
         alert("Toegang tot je foto's is nodig om een profielfoto te kiezen.");
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+      const mediaTypes = (ImagePicker as any).MediaType?.Images
+        ? [(ImagePicker as any).MediaType.Images]
+        : ['images'];
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes, quality: 0.8 });
       if (result && !result.cancelled) {
         const uri = (result as any).uri || (result as any).assets?.[0]?.uri;
         if (uri) {
@@ -172,7 +175,10 @@ export default function ProfileScreen() {
         alert("Toegang tot je foto's is nodig om een achtergrond te kiezen.");
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+      const mediaTypes = (ImagePicker as any).MediaType?.Images
+        ? [(ImagePicker as any).MediaType.Images]
+        : ['images'];
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes, quality: 0.8 });
       const cancelled = (result as any)?.canceled ?? (result as any)?.cancelled;
       if (cancelled) return;
 
