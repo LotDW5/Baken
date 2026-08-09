@@ -4,7 +4,6 @@ import useAppTheme from '@/hooks/use-app-theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
@@ -67,14 +66,6 @@ export default function ProfileScreen() {
   useEffect(() => {
     loadPreferences();
   }, []);
-
-  useEffect(() => {
-    const uris = customBackgrounds
-      .map((entry) => entry?.uri)
-      .filter((uri): uri is string => typeof uri === 'string' && uri.trim().length > 0);
-    if (!uris.length) return;
-    ExpoImage.prefetch(uris).catch(() => {});
-  }, [customBackgrounds]);
 
   const loadPreferences = async () => {
     try {
@@ -319,12 +310,10 @@ export default function ProfileScreen() {
                     ]}
                     onPress={() => handleBackgroundChange(bg.id)}
                   >
-                    <ExpoImage
+                    <Image
                       source={source as any}
                       style={styles.bgThumbImage}
-                      contentFit="cover"
-                      cachePolicy="memory-disk"
-                      transition={120}
+                      resizeMode="cover"
                     />
 
                     {isSelected && (
