@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Image, ImageStyle } from 'react-native';
 
-const Fallback = require('../../assets/personage/krullen-wit-vest.png');
+const Fallback = require('../../assets/personage/hoofd-krullen-wit.png');
 function normalizeKey(v?: string | null) {
   if (!v) return '';
   return String(v).toLowerCase().trim();
@@ -95,9 +95,7 @@ export default function HeadAvatar({ style }: { style?: ImageStyle }) {
           return;
         }
 
-        // nothing usable found — keep fallback and log for debugging
-        // eslint-disable-next-line no-console
-        console.warn('[HeadAvatar] no avatar data found in storage', data);
+        // Nothing usable found; keep a neutral head fallback.
         if (mounted) setSrc(Fallback);
       } catch (e) { if (mounted) setSrc(Fallback); }
     };

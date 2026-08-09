@@ -637,6 +637,12 @@ export default function OnboardingScreen() {
 
   const handleSkipAvatar = async () => {
     try {
+      // When editing avatar from profile, cancel should keep existing avatar unchanged.
+      if (openedFromProfile) {
+        (navigation as any).navigate('Profiel');
+        return;
+      }
+
       const nameParts = fullName.trim().split(/\s+/);
       await AsyncStorage.setItem('user_data', JSON.stringify({
         firstName: nameParts[0] || '',
@@ -648,11 +654,6 @@ export default function OnboardingScreen() {
       await AsyncStorage.setItem('appTheme', selectedTheme);
       try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
       await AsyncStorage.setItem('copingActivities', JSON.stringify(selectedActivities));
-      // if opened from profile, return to Profiel after skipping avatar
-      if (openedFromProfile) {
-        (navigation as any).navigate('Profiel');
-        return;
-      }
       // move to theme selection so user can pick color/background
       setCurrentStep('theme');
     } catch (error) {
@@ -941,7 +942,7 @@ export default function OnboardingScreen() {
                   style={{ borderRadius: 20, paddingVertical: 14, width: '100%', alignItems: 'center', backgroundColor: COLORS.white, borderWidth: 1, borderColor: '#E0E0E0' }}
                   onPress={handleSkipAvatar}
                 >
-                  <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>Overslaan</Text>
+                  <Text style={[styles.secondaryButtonText, { color: COLORS.foreground }]}>{openedFromProfile ? 'Annuleren' : 'Overslaan'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
