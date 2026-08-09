@@ -209,6 +209,8 @@ export default function OnboardingScreen() {
     { name: 'Haar 1', src: require('../assets/personage/hoofd-krullen-wit.png') },
     { name: 'Haar 2', src: require('../assets/personage/hoofd-kort-wit.png') },
     { name: 'Haar 3', src: require('../assets/personage/hoofd-lang-wit.png') },
+    { name: 'Haar 4', src: require('../assets/personage/hoofd-kuif-wit.png') },
+    { name: 'Haar 5', src: require('../assets/personage/hoofd-vol-wit.png') },
   ];
   const TOPS = [
     { name: 'Top 1', src: require('../assets/personage/krullen-wit-vest.png') },
@@ -231,7 +233,7 @@ export default function OnboardingScreen() {
   const moodScrollRef = useRef<ScrollView | null>(null);
 
   // avatar option keys (match asset filenames like `${hair}-${skin}-${clothing}.png`)
-  const HAIR_KEYS = ['krullen', 'kort', 'lang'];
+  const HAIR_KEYS = ['krullen', 'kort', 'lang', 'kuif', 'vol'];
   const SKIN_KEYS = ['wit', 'bruin', 'donker'];
   const CLOTHING_KEYS = ['vest', 'shirt', 'hemd'];
 
@@ -286,6 +288,41 @@ export default function OnboardingScreen() {
         vest: require('../assets/personage/lang-donker-vest.png'),
         shirt: require('../assets/personage/lang-donker-shirt.png'),
         hemd: require('../assets/personage/lang-donker-hemd.png'),
+      }
+    },
+    // New head styles use their own body composites.
+    kuif: {
+      wit: {
+        vest: require('../assets/personage/kuif-wit-vest.png'),
+        shirt: require('../assets/personage/kuif-wit-shirt.png'),
+        hemd: require('../assets/personage/kuif-wit-hemd.png'),
+      },
+      bruin: {
+        vest: require('../assets/personage/kuif-bruin-vest.png'),
+        shirt: require('../assets/personage/kuif-bruin-shirt.png'),
+        hemd: require('../assets/personage/kuif-bruin-hemd.png'),
+      },
+      donker: {
+        vest: require('../assets/personage/kuif-donker-vest.png'),
+        shirt: require('../assets/personage/kuif-donker-shirt.png'),
+        hemd: require('../assets/personage/kuif-donker-hemd.png'),
+      }
+    },
+    vol: {
+      wit: {
+        vest: require('../assets/personage/vol-wit-vest.png'),
+        shirt: require('../assets/personage/vol-wit-shirt.png'),
+        hemd: require('../assets/personage/vol-wit-hemd.png'),
+      },
+      bruin: {
+        vest: require('../assets/personage/vol-bruin-vest.png'),
+        shirt: require('../assets/personage/vol-bruin-shirt.png'),
+        hemd: require('../assets/personage/vol-bruin-hemd.png'),
+      },
+      donker: {
+        vest: require('../assets/personage/vol-donker-vest.png'),
+        shirt: require('../assets/personage/vol-donker-shirt.png'),
+        hemd: require('../assets/personage/vol-donker-hemd.png'),
       }
     }
   };

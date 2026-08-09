@@ -73,6 +73,40 @@ function getCompositeByKeys(hair?: string | null, skin?: string | null, clothing
           shirt: require('../../assets/personage/lang-donker-shirt.png'),
           hemd: require('../../assets/personage/lang-donker-hemd.png'),
         }
+      },
+      kuif: {
+        wit: {
+          vest: require('../../assets/personage/kuif-wit-vest.png'),
+          shirt: require('../../assets/personage/kuif-wit-shirt.png'),
+          hemd: require('../../assets/personage/kuif-wit-hemd.png'),
+        },
+        bruin: {
+          vest: require('../../assets/personage/kuif-bruin-vest.png'),
+          shirt: require('../../assets/personage/kuif-bruin-shirt.png'),
+          hemd: require('../../assets/personage/kuif-bruin-hemd.png'),
+        },
+        donker: {
+          vest: require('../../assets/personage/kuif-donker-vest.png'),
+          shirt: require('../../assets/personage/kuif-donker-shirt.png'),
+          hemd: require('../../assets/personage/kuif-donker-hemd.png'),
+        }
+      },
+      vol: {
+        wit: {
+          vest: require('../../assets/personage/vol-wit-vest.png'),
+          shirt: require('../../assets/personage/vol-wit-shirt.png'),
+          hemd: require('../../assets/personage/vol-wit-hemd.png'),
+        },
+        bruin: {
+          vest: require('../../assets/personage/vol-bruin-vest.png'),
+          shirt: require('../../assets/personage/vol-bruin-shirt.png'),
+          hemd: require('../../assets/personage/vol-bruin-hemd.png'),
+        },
+        donker: {
+          vest: require('../../assets/personage/vol-donker-vest.png'),
+          shirt: require('../../assets/personage/vol-donker-shirt.png'),
+          hemd: require('../../assets/personage/vol-donker-hemd.png'),
+        }
       }
     };
     return map[h]?.[s]?.[c] || Fallback;

@@ -32,6 +32,16 @@ function getHeadByKeys(hair?: string | null, skin?: string | null) {
         wit: require('../../assets/personage/hoofd-lang-wit.png'),
         bruin: require('../../assets/personage/hoofd-lang-bruin.png'),
       },
+      kuif: {
+        wit: require('../../assets/personage/hoofd-kuif-wit.png'),
+        bruin: require('../../assets/personage/hoofd-kuif-bruin.png'),
+        donker: require('../../assets/personage/hoofd-kuif-donker.png'),
+      },
+      vol: {
+        wit: require('../../assets/personage/hoofd-vol-wit.png'),
+        bruin: require('../../assets/personage/hoofd-vol-bruin.png'),
+        donker: require('../../assets/personage/hoofd-vol-donker.png'),
+      },
     };
 
     // direct match
