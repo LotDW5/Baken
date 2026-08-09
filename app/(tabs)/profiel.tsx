@@ -147,6 +147,24 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleRemoveCustomBackground = async (id: string) => {
+    try {
+      const next = customBackgrounds.filter((entry) => entry.id !== id);
+      setCustomBackgrounds(next);
+      await AsyncStorage.setItem('customBackgrounds', JSON.stringify(next));
+
+      if (selectedBackground === id) {
+        const fallbackBackground = next[0]?.id || 'butterfly';
+        setSelectedBackground(fallbackBackground);
+        await AsyncStorage.setItem('homeBackground', fallbackBackground);
+      }
+
+      try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Build grid: plus tile, then custom backgrounds, then built-in backgrounds.
   const removedBuiltInId = BACKGROUNDS[2]?.id; // third item (index 2)
   const builtInEntries = BACKGROUNDS
@@ -155,7 +173,7 @@ export default function ProfileScreen() {
 
   const customEntries = customBackgrounds
     .filter(c => c && typeof c.uri === 'string' && c.uri.trim().length > 0)
-    .map(c => ({ id: c.id, file: { uri: c.uri } }));
+    .map(c => ({ id: c.id, file: { uri: c.uri }, isCustom: true }));
 
   const displayBackgrounds = [
     { id: 'add' },
@@ -287,43 +305,82 @@ export default function ProfileScreen() {
               {displayBackgrounds.map((bg) => {
                 if (bg.id === 'add') {
                   return (
-                    <TouchableOpacity
-                      key="add"
-                      style={[styles.bgThumbWrapper, styles.addThumb]}
-                      onPress={handleAddBackground}
-                    >
-                      <View style={styles.addInner}>
-                        <Image source={require('../../assets/icons/Plus.png')} style={styles.addIcon} />
-                      </View>
-                    </TouchableOpacity>
+                    <View key="add" style={styles.bgThumbCell}>
+                      <TouchableOpacity
+                        style={[styles.bgThumbWrapper, styles.addThumb]}
+                        onPress={handleAddBackground}
+                      >
+                        <View style={styles.addInner}>
+                          <Image source={require('../../assets/icons/Plus.png')} style={styles.addIcon} />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   );
                 }
 
                 const isSelected = selectedBackground === bg.id;
+                const isCustom = (bg as any).isCustom === true;
                 const source = (bg as any).file ?? require('../../assets/images/butterfly-wild.jpg');
-                return (
-                  <TouchableOpacity
-                    key={bg.id}
-                    style={[
-                      styles.bgThumbWrapper,
-                      isSelected && styles.bgThumbWrapperSelected,
-                    ]}
-                    onPress={() => handleBackgroundChange(bg.id)}
-                  >
-                    <Image
-                      source={source as any}
-                      style={styles.bgThumbImage}
-                      resizeMode="cover"
-                    />
+                if (isCustom) {
+                  return (
+                    <View key={bg.id} style={styles.bgThumbCell}>
+                      <TouchableOpacity
+                        style={[
+                          styles.bgThumbWrapper,
+                          isSelected && styles.bgThumbWrapperSelected,
+                        ]}
+                        onPress={() => handleBackgroundChange(bg.id)}
+                      >
+                        <Image
+                          source={source as any}
+                          style={styles.bgThumbImage}
+                          resizeMode="cover"
+                        />
 
-                    {isSelected && (
-                      <View style={styles.bgSelectedOverlay}>
-                        <View style={styles.bgSelectedCircle}>
-                                <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: uiTheme.color }]} />
+                        {isSelected && (
+                          <View style={styles.bgSelectedOverlay}>
+                            <View style={styles.bgSelectedCircle}>
+                              <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: uiTheme.color }]} />
+                            </View>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.bgRemoveButton}
+                        onPress={() => handleRemoveCustomBackground(bg.id)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Image source={require('../../assets/icons/Kruis.png')} style={styles.bgRemoveIcon} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+
+                return (
+                  <View key={bg.id} style={styles.bgThumbCell}>
+                    <TouchableOpacity
+                      style={[
+                        styles.bgThumbWrapper,
+                        isSelected && styles.bgThumbWrapperSelected,
+                      ]}
+                      onPress={() => handleBackgroundChange(bg.id)}
+                    >
+                      <Image
+                        source={source as any}
+                        style={styles.bgThumbImage}
+                        resizeMode="cover"
+                      />
+
+                      {isSelected && (
+                        <View style={styles.bgSelectedOverlay}>
+                          <View style={styles.bgSelectedCircle}>
+                                  <Image source={require('../../assets/icons/Check.png')} style={[styles.bgCheckIcon, { tintColor: uiTheme.color }]} />
+                          </View>
                         </View>
-                      </View>
-                    )}
-                  </TouchableOpacity>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>
@@ -592,9 +649,15 @@ const styles = StyleSheet.create({
     rowGap: 14,
   },
 
-  bgThumbWrapper: {
+  bgThumbCell: {
     width: '31.5%',
     aspectRatio: 0.7,
+    position: 'relative',
+  },
+
+  bgThumbWrapper: {
+    width: '100%',
+    height: '100%',
     borderRadius: 14,
     borderWidth: 1.5,
     borderColor: '#C9CCD4',
@@ -654,6 +717,26 @@ const styles = StyleSheet.create({
   bgCheckIcon: {
     width: 18,
     height: 18,
+    resizeMode: 'contain',
+  },
+  bgRemoveButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  bgRemoveIcon: {
+    width: 14,
+    height: 14,
+    tintColor: '#3C3D45',
     resizeMode: 'contain',
   },
   addIcon: {
