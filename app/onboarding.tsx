@@ -231,6 +231,7 @@ export default function OnboardingScreen() {
   const [activePart, setActivePart] = useState<string | null>(null);
 
   const moodScrollRef = useRef<ScrollView | null>(null);
+  const didPrefillAvatarEdit = useRef(false);
 
   // avatar option keys (match asset filenames like `${hair}-${skin}-${clothing}.png`)
   const HAIR_KEYS = ['krullen', 'kort', 'lang', 'kuif', 'vol'];
@@ -330,6 +331,8 @@ export default function OnboardingScreen() {
   const [hairIndex, setHairIndex] = useState(0);
   const [skinIndex, setSkinIndex] = useState(0);
   const [clothingIndex, setClothingIndex] = useState(0);
+
+  const normalizeAvatarKey = (value?: string | null) => String(value || '').toLowerCase().trim();
 
   const cycle = (idx: number, max: number, delta: number) => {
     return (idx + delta + max) % max;
@@ -469,6 +472,60 @@ export default function OnboardingScreen() {
     })();
   }, []);
 
+  // When editing avatar from profile, initialize picker with the currently saved avatar.
+  useEffect(() => {
+    if (!openedFromProfile || currentStep !== 'avatar') return;
+    if (didPrefillAvatarEdit.current) return;
+
+    didPrefillAvatarEdit.current = true;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem('user_data');
+        if (!raw || cancelled) return;
+
+        const data = JSON.parse(raw) || {};
+        const avatar = data.avatar || data || {};
+
+        let hair = normalizeAvatarKey(avatar?.hair);
+        let skin = normalizeAvatarKey(avatar?.skin);
+        let clothing = normalizeAvatarKey(avatar?.clothing);
+
+        if (avatar?.composite) {
+          const parts = String(avatar.composite)
+            .replace('.png', '')
+            .split('-')
+            .map(normalizeAvatarKey);
+          hair = hair || parts[0] || '';
+          skin = skin || parts[1] || '';
+          clothing = clothing || parts[2] || '';
+        }
+
+        const hairIdx = HAIR_KEYS.indexOf(hair);
+        const skinIdx = SKIN_KEYS.indexOf(skin);
+        const clothingIdx = CLOTHING_KEYS.indexOf(clothing);
+
+        if (cancelled) return;
+        if (hairIdx >= 0) setHairIndex(hairIdx);
+        if (skinIdx >= 0) setSkinIndex(skinIdx);
+        if (clothingIdx >= 0) setClothingIndex(clothingIdx);
+      } catch (e) {
+        console.warn('[onboarding] failed to load saved avatar for profile edit', e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openedFromProfile, currentStep]);
+
+  useEffect(() => {
+    if (currentStep !== 'avatar') {
+      didPrefillAvatarEdit.current = false;
+    }
+  }, [currentStep]);
+
   const handleActivityToggle = (moodId: string, activityName: string) => {
     setSelectedActivities(prev => {
       const next = {
@@ -575,8 +632,6 @@ export default function OnboardingScreen() {
       setCurrentStep('avatar');
     } else if (currentStep === 'avatar') {
       try {
-        const nameParts = fullName.trim().split(/\s+/);
-
         // save selected avatar if any
         const avatarData = {
           head: HEADS?.[headIndex]?.name || null,
@@ -587,13 +642,23 @@ export default function OnboardingScreen() {
           composite: `${HAIR_KEYS?.[hairIndex] || 'krullen'}-${SKIN_KEYS?.[skinIndex] || 'wit'}-${CLOTHING_KEYS?.[clothingIndex] || 'vest'}.png`,
         };
 
-        await AsyncStorage.setItem('user_data', JSON.stringify({
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(' '),
-          phoneNumber: phoneNumber.trim(),
-          email: email.trim(),
-          avatar: avatarData,
-        }));
+        if (openedFromProfile) {
+          const existingRaw = await AsyncStorage.getItem('user_data');
+          const existing = existingRaw ? (JSON.parse(existingRaw) || {}) : {};
+          await AsyncStorage.setItem('user_data', JSON.stringify({
+            ...existing,
+            avatar: avatarData,
+          }));
+        } else {
+          const nameParts = fullName.trim().split(/\s+/);
+          await AsyncStorage.setItem('user_data', JSON.stringify({
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' '),
+            phoneNumber: phoneNumber.trim(),
+            email: email.trim(),
+            avatar: avatarData,
+          }));
+        }
         // persist theme and activities so profile picks them up
         await AsyncStorage.setItem('appTheme', selectedTheme);
         try { (await import('@/utils/theme-events')).emitThemeChange(); } catch (e) { /* ignore */ }

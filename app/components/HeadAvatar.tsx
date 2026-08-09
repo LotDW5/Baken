@@ -22,7 +22,6 @@ function getHeadByKeys(hair?: string | null, skin?: string | null) {
           require('../../assets/personage/hoofd-krullen-donker.png')
         ),
         'donker-1': require('../../assets/personage/hoofd-krullen-donker-1.png'),
-        'donker-2': require('../../assets/personage/hoofd-krullen-donker-2.png'),
       },
       kort: {
         wit: require('../../assets/personage/hoofd-kort-wit.png'),
@@ -31,6 +30,7 @@ function getHeadByKeys(hair?: string | null, skin?: string | null) {
       lang: {
         wit: require('../../assets/personage/hoofd-lang-wit.png'),
         bruin: require('../../assets/personage/hoofd-lang-bruin.png'),
+        donker: require('../../assets/personage/hoofd-lang-donker.png'),
       },
       kuif: {
         wit: require('../../assets/personage/hoofd-kuif-wit.png'),

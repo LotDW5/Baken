@@ -38,6 +38,7 @@ export default function PersonageView(props: Props) {
   const HEAD_COMPOSITE: any = {
     lang: {
       bruin: require('../../assets/personage/hoofd-lang-bruin.png'),
+      donker: require('../../assets/personage/hoofd-lang-donker.png'),
       wit: require('../../assets/personage/hoofd-lang-wit.png'),
     },
     krullen: {
